@@ -40,7 +40,7 @@ The lab previews the plan, then applies local mock assignments with per-device r
 
 ## Reference app gaps
 
-The screenshot audit of ST Reborn v1.6.2 records additional capabilities and their intended contexts in [project/feature-coverage/coverage.md](../../project/feature-coverage/coverage.md). In particular, the global simulated Spotify connection and actual pairing discovery/acknowledgement are known mock limitations; production needs per-device account/source state and explicit pairing-compatibility contracts.
+[View coverage](VIEW_COVERAGE.md) distinguishes implemented workflows from placeholders. The global simulated Spotify connection and actual pairing discovery/acknowledgement remain mock limitations; production needs per-device account/source state and explicit pairing-compatibility contracts.
 
 
 ## Primary functions on composite outputs

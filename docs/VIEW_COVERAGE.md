@@ -26,7 +26,7 @@
 | W01/W02 Setup wizard | **Interactive** discovery choice, simulated device creation |
 | I01/I02 Help and feedback | **Navigable** entry points and links |
 | D01/D02 Maintenance | **Interactive** firmware progression and backup export; restart/reset mock dialogs |
-| Z01 States and errors | **Interactive** first-run, offline, updating, needs-setup, 30-device stress cases |
+| Z01 States and errors | **Interactive** first-run, offline, updating, needs-setup, 50-device stress cases |
 | SYS/MAP/BASIS | **Documented** architecture, tests and design tokens |
 
 **Added for the current discussion:** 50-device stress scenario, independent streams, player-vs-sidebar A/B variant, collapsible categories, source-first output selection, JSON scenario editing, design token editor, overlap constraints and single-row composites.

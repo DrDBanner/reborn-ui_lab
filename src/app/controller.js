@@ -1,0 +1,131 @@
+import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save} from './store.js';
+import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds} from './model.js';
+import {esc,icon} from '../components/shared.js';
+
+function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
+function openModal(kind,extras={}){mutate(s=>s.modal={kind,...extras},false)}
+function closeModal(){mutate(s=>s.modal=null,false)}
+function confirmAction(title,description,callback){if(window.confirm(`${title}\n\n${description}`))callback()}
+function exported(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download=name;a.href=url;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function notifySafe(task){try{task()}catch(err){toast(err?.message||String(err))}}
+function currentDevice(){return entity(state.model,state.detailDeviceId||state.model.selectedDeviceId)}
+function generic(title,description,body=''){openModal('generic',{title,description,body})}
+
+export async function onAction(action,element){
+ const m=state.model,id=element.dataset.id,val=element.dataset.value;
+ try{switch(action){
+ case 'navigate':navigate(val);break;
+ case 'toggle-section':mutate(s=>{s.model.ui.collapsed[val]=!s.model.ui.collapsed[val]});break;
+ case 'toggle-sidebar-mobile':mutate(s=>{s.sidebarOpen=!s.sidebarOpen},false);break;
+ case 'expand-outputs':mutate(s=>s.expandingOutputs=true,false);break;
+ case 'toggle-appearance':mutate(s=>{s.designTokens.appearance=s.designTokens.appearance==='dark'?'light':'dark';applyDesign()});break;
+ case 'select-output':mutate(s=>{s.model.selectedOutputId=id;s.sidebarOpen=false;s.detailOutputId=id;if(kind(m,id)==='device'){s.detailDeviceId=id;s.model.selectedDeviceId=id;s.view='device'}else{s.view='group'}});break;
+ case 'device-open':mutate(s=>{s.detailDeviceId=id;s.model.selectedDeviceId=id;s.view='device';s.model.ui.deviceTab='overview';s.modal=null;});break;
+ case 'group-open':mutate(s=>{s.detailOutputId=id;s.model.selectedOutputId=id;s.view='group';s.modal=null});break;
+ case 'target-actions':{
+  const target=entity(m,id),type=kind(m,id);generic(target.name,'Quick actions for this output',`<div class="button-row"><button class="btn-soft" data-action="target-play" data-id="${esc(id)}">${icon('play_arrow')} Play selected source</button><button class="btn-soft" data-action="${type==='device'?'device-open':'group-open'}" data-id="${esc(id)}">${icon('tune')} Manage</button></div>`);break;
+ }
+ case 'target-play':{const src=m.selectedSourceId||currentSession(m)?.sourceId||'flux';mutate(s=>{assignSource(s.model,src,id);s.modal=null;});break}
+ case 'open-output-picker':mutate(s=>{s.speakerPickerFor=m.selectedSourceId||currentSession(m)?.sourceId||'flux';s.modal={kind:'picker'}},false);break;
+ case 'source-select':mutate(s=>{s.model.selectedSourceId=id;s.speakerPickerFor=id;s.modal={kind:'picker'}},false);break;
+ case 'assign-output':{const src=state.speakerPickerFor||m.selectedSourceId||currentSession(m)?.sourceId||'flux';mutate(s=>{assignSource(s.model,src,id);s.model.history=[src,...s.model.history.filter(x=>x!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null;});toast(`Playing on ${entity(m,id)?.name}`);break}
+ case 'source-info':{const d=source(state.catalog,id);generic(d?.name||'Source',`${d?.type||''} · ${d?.country||''} · ${d?.bitrate||''}`,`<div class="key-values"><div><span>Genre</span><strong>${esc(d?.genre)}</strong></div><div><span>Station</span><strong>${esc(d?.subtitle)}</strong></div></div>`);break}
+ case 'toggle-favorite':mutate(s=>{s.model.favorites=s.model.favorites.includes(id)?s.model.favorites.filter(x=>x!==id):[...s.model.favorites,id]});break;
+ case 'radio-tab':mutate(s=>{s.model.ui.radioTab=val;s.filter=''});break;
+ case 'radio-filter':generic('Radio filters','Choose from the available filters.',`<div class="form-row"><label>Genre</label><select id="radio-genre" class="small-select">${['All','Pop','Alternative','Information','News','Culture','Oldies'].map(x=>`<option ${m.settings.radioGenre===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="modal-footer"><button class="primary-btn" data-action="apply-radio-filter">Apply</button></div>`);break;
+ case 'apply-radio-filter':{const genre=document.getElementById('radio-genre')?.value||'All';mutate(s=>{s.model.settings.radioGenre=genre;s.modal=null});break}
+ case 'preset-play':{const d=entity(m,m.selectedOutputId)||m.devices[0],sid=d?.presets?.[Number(val)];if(!sid)throw new Error('No station assigned to this key');mutate(s=>{s.model.selectedSourceId=sid;s.speakerPickerFor=sid;s.modal={kind:'picker'}},false);break}
+ case 'preset-edit':openModal('preset');break;
+ case 'preset-save':{
+  const d=document.getElementById('preset-device')?.value;
+  const selects=[...document.querySelectorAll('[data-preset-index]')];const presets=selects.map(x=>x.value||null);
+  mutate(s=>{const device=entity(s.model,d);if(!device||kind(s.model,d)!=='device')throw new Error('Select a physical speaker');device.presets=presets;s.model.selectedOutputId=d;s.modal=null});toast('Quick presets updated (mock data)');break;
+ }
+ case 'library-server':mutate(s=>s.model.ui.libraryServer=id);break;
+ case 'library-folder':generic(val,'Folder contents (simulated)',`<p>In the production application this view will request folders and tracks from the current music server. No playback engine is reimplemented here.</p>`);break;
+ case 'spotify-connect':mutate(s=>s.model.spotifyConnected=!s.model.spotifyConnected);break;
+ case 'filter-outputs':mutate(s=>s.model.ui.outputFilter=val);break;
+ case 'clear-selected':mutate(s=>s.selectedForComposite=[],false);break;
+ case 'start-group-create':mutate(s=>s.modal={kind:'create',type:'group'},false);break;
+ case 'start-pair-create':mutate(s=>s.modal={kind:'create',type:'pair'},false);break;
+ case 'composite-create':{
+   const type=state.modal.type,name=document.getElementById('composite-name')?.value||'';
+   const members=[...document.querySelectorAll('input[name="compositeMember"]:checked')].map(x=>x.value);
+   const persistent=document.getElementById('composite-persistent')?.checked??true;
+   mutate(s=>{const outputId=createComposite(s.model,type,name,members,persistent);s.detailOutputId=outputId;s.view='group';s.modal=null;s.selectedForComposite=[]});toast(type==='pair'?'Stereo pair created':'Group created');break;
+ }
+ case 'add-member':{
+  const group=entity(m,state.detailOutputId),candidates=visibleOutputs(m).filter(t=>t.id!==group.id);
+  generic('Add output',`Add an ungrouped speaker or pair to ${group.name}.`, `<div class="modal-list">${candidates.map(t=>`<button class="modal-output" data-action="group-add-item" data-id="${t.id}">${icon(t.memberIds?'speaker_group':'speaker')}<span>${esc(t.name)}</span>${icon('add')}</button>`).join('')}</div>`);break;
+ }
+ case 'group-add-item':mutate(s=>{updateMembership(s.model,s.detailOutputId,id,true);s.modal=null});break;
+ case 'remove-member':confirmAction('Remove member','The speaker will become available as an individual output.',()=>mutate(s=>updateMembership(s.model,s.detailOutputId,id,false)));break;
+ case 'dissolve-group':confirmAction('Dissolve this output?','The member speakers will remain configured and available.',()=>mutate(s=>{dissolveComposite(s.model,s.detailOutputId);s.detailOutputId=null;s.view='outputs'}));break;
+ case 'player-toggle':mutate(s=>{const session=currentSession(s.model);if(session)session.status=session.status==='playing'?'paused':'playing'});break;
+ case 'player-stop':mutate(s=>{const session=currentSession(s.model);if(session)session.status='stopped'});break;
+ case 'session-prev':case 'session-next':mutate(s=>{const list=s.model.sessions;if(!list.length)return;const ix=list.findIndex(x=>x.id===s.model.selectedSessionId);const next=action==='session-next'?ix+1:ix-1;s.model.selectedSessionId=list[(next+list.length)%list.length].id});break;
+ case 'device-tab':mutate(s=>s.model.ui.deviceTab=val);break;
+ case 'settings-tab':mutate(s=>s.model.ui.settingsTab=val);break;
+ case 'device-info':{const d=currentDevice();generic('Device information',`${d.name} · Data returned by the device.`,`<div class="key-values"><div><span>Model</span><strong>${esc(d.model)}</strong></div><div><span>IP address</span><strong>${esc(d.ip)}</strong></div><div><span>Firmware</span><strong>${esc(d.firmware)}</strong></div><div><span>Network</span><strong>${esc(d.network)}</strong></div></div>`);break}
+ case 'remote-preview':generic('Phone remote','This would use the real remote endpoint in the integrated application.','<p>A mocked remote is not a second source of truth. The production frontend should reuse the device endpoint returned by the backend.</p>');break;
+ case 'remote-qr':generic('Remote QR','QR codes should be generated from a verified backend endpoint.','<p>Not generated in the offline UI demo: no real device address was verified.</p>');break;
+ case 'wifi-change':if(currentDevice()?.status==='offline')throw new Error('Device is offline');openModal('wifi');break;
+ case 'wifi-save':{const net=document.getElementById('wifi-network')?.value;mutate(s=>{entity(s.model,s.detailDeviceId||m.selectedDeviceId).network=net;s.modal=null});toast('Network change simulated; verify rediscovery in production');break}
+ case 'device-ping':toast(`${currentDevice()?.name}: ${currentDevice()?.status==='offline'?'No response':'Device responded (mock)'}`);break;
+ case 'device-maintenance':openModal('maintenance');break;
+ case 'device-restart':{const d=currentDevice();confirmAction('Restart device?',`This simulates restarting ${d?.name}.`,()=>{closeModal();toast('Restart simulated')});break}
+ case 'device-remove':{const d=currentDevice();confirmAction('Remove device?',`Remove ${d?.name} from the local scenario?`,()=>mutate(s=>{removeDevice(s.model,d.id);s.view='outputs';s.modal=null}));break}
+ case 'device-reset':confirmAction('Factory reset?',`This is a simulation only. No command will be sent.`,()=>{closeModal();toast('Reset simulation completed')});break;
+ case 'alarms':generic('Alarms','View and configure device alarms.','<p>The scenario includes the alarm collection. Real scheduling and confirmation are backend responsibilities.</p>');break;
+ case 'button-actions':generic('Button actions','Assign supported actions to hardware buttons.','<p>This module will use per-device action definitions supplied by the backend.</p>');break;
+ case 'check-updates':toast('Simulated version check completed');break;
+ case 'update-start':mutate(s=>{const d=entity(s.model,id);if(d&&d.status==='online'){d.status='updating';d.updateProgress=5}});break;
+ case 'advance-updates':mutate(s=>s.model.devices.forEach(d=>{if(d.status==='updating'){d.updateProgress=Math.min(100,(d.updateProgress||0)+25);if(d.updateProgress===100){d.status='online';d.firmware=d.firmwareLatest;d.firmwareAvailable=false}}}));break;
+ case 'diagnostics':generic('Diagnostics','Simulated diagnostic summary',`<div class="key-values"><div><span>Known speakers</span><strong>${m.devices.length}</strong></div><div><span>Unavailable</span><strong>${m.devices.filter(x=>x.status==='offline').length}</strong></div><div><span>Firmware operations</span><strong>${m.devices.filter(x=>x.status==='updating').length}</strong></div></div>`);break;
+ case 'backup':exported('streborn-ui-settings-backup.json',{devices:m.devices.map(d=>({id:d.id,name:d.name,presets:d.presets,alarms:d.alarms,buttonActions:d.buttonActions})),settings:m.settings});toast('Downloaded sample settings backup');break;
+ case 'restore':generic('Restore settings','Choose a backup in the production implementation.','<p>Restoring requires validation against actual speakers and their capabilities. UI Lab does not apply a backup automatically.</p>');break;
+ case 'setup-next':if(state.setupStep===0){if(!state.setupSelection)throw new Error('Select a speaker');mutate(s=>s.setupStep=1,false)}else if(state.setupStep===1){const name=document.getElementById('setup-name')?.value.trim()||'New Speaker';const network=document.getElementById('setup-network')?.value||'Home Network';const cand=m.setupCandidates.find(x=>x.id===state.setupSelection);mutate(s=>{const id=`d${Math.max(0,...s.model.devices.map(d=>Number(d.id.replace(/\D/g,''))||0))+1}`;s.model.devices.push({id,name,model:'SoundTouch 10',ip:cand?.ip||'192.168.0.221',status:'online',firmware:'27.0.6',firmwareLatest:'27.0.6',firmwareAvailable:false,updateProgress:0,volume:25,bass:0,startVolumeEnabled:false,startVolume:20,language:'English',network,presets:[null,null,null,null,null,null],alarms:[],buttonActions:[]});s.model.selectedDeviceId=id;s.model.selectedOutputId=id;s.setupStep=2})}break;
+ case 'setup-back':mutate(s=>s.setupStep=Math.max(0,s.setupStep-1),false);break;
+ case 'help-open':generic(val==='guide'?'User guide':val==='feedback'?'Report a problem':'Wishes & voting', 'External project resources are not opened automatically.', '<p>Use the links and contribution process in the ST Reborn repository.</p>');break;
+ case 'toggle-json-editor':mutate(s=>s.scenarioEditorOpen=!s.scenarioEditorOpen,false);break;
+ case 'apply-json':applyScenarioJson(document.getElementById('scenario-json-editor')?.value||'');break;
+ case 'export-scenario':exported(`streborn-${state.scenarioId}.json`,m);break;
+ case 'export-tokens':exported('streborn-design-tokens.json',state.designTokens);break;
+ case 'reset-scenario':await loadScenario(state.scenarioId,false,true);break;
+ case 'load-scenario':await loadScenario(id);break;
+ case 'close-modal':closeModal();break;
+ case 'dismiss-toast':mutate(s=>s.toast=null,false);break;
+ default:console.warn('Unhandled action:',action);
+ }}catch(err){toast(err?.message||String(err))}
+}
+
+export async function onField(field,target){
+ const m=state.model,val=target.value;
+ try{switch(field){
+ case 'scenario':await loadScenario(val);break;
+ case 'speaker-variant':mutate(s=>s.model.ui.speakerVariant=val);break;
+ case 'radio-search':mutate(s=>s.filter=val,false);break;
+ case 'output-search':mutate(s=>s.outputSearch=val,false);break;
+ case 'member-select':mutate(s=>{s.selectedForComposite=target.checked?[...new Set([...s.selectedForComposite,val])]:s.selectedForComposite.filter(x=>x!==val)},false);break;
+ case 'session':mutate(s=>s.model.selectedSessionId=val);break;
+ case 'volume':mutate(s=>{const session=currentSession(s.model);if(session)session.volume=Number(val)});break;
+ case 'composite-volume':mutate(s=>{const g=entity(s.model,s.detailOutputId);if(g)g.volume=Number(val)});break;
+ case 'member-volume':mutate(s=>{const d=entity(s.model,target.dataset.id);if(d&&d.status==='online')d.volume=Number(val)});break;
+ case 'group-persistent':mutate(s=>{const g=entity(s.model,s.detailOutputId);if(g)g.persistent=target.checked});break;
+ case 'bass':mutate(s=>currentDevice().bass=Number(val));break;
+ case 'start-volume-enabled':mutate(s=>currentDevice().startVolumeEnabled=target.checked);break;
+ case 'start-volume':mutate(s=>currentDevice().startVolume=Number(val));break;
+ case 'language':mutate(s=>s.model.settings.language=val);break;
+ case 'restore-session':mutate(s=>s.model.settings.restoreSession=target.checked);break;
+ case 'auto-update':mutate(s=>s.model.settings.autoUpdate=target.checked);break;
+ case 'telemetry':mutate(s=>s.model.settings.telemetry=target.checked);break;
+ case 'setup-candidate':mutate(s=>s.setupSelection=val,false);break;
+ case 'accent':mutate(s=>{s.designTokens.accent=val;applyDesign()});break;
+ case 'appearance':mutate(s=>{s.designTokens.appearance=val;applyDesign()});break;
+ case 'density':mutate(s=>{s.designTokens.density=val;applyDesign()});break;
+ case 'radius':mutate(s=>{s.designTokens.radius=Number(val);applyDesign()});break;
+ case 'sidebar-width':mutate(s=>{s.designTokens.sidebarWidth=Number(val);applyDesign()});break;
+ case 'font-size':mutate(s=>{s.designTokens.fontSize=Number(val);applyDesign()});break;
+ default:console.warn('Unhandled field:',field)
+ }}catch(err){toast(err?.message||String(err))}
+}

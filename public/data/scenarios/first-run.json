@@ -1,0 +1,51 @@
+{
+  "devices": [],
+  "pairs": [],
+  "groups": [],
+  "sessions": [],
+  "favorites": [],
+  "history": [],
+  "spotifyConnected": false,
+  "selectedOutputId": null,
+  "selectedSessionId": null,
+  "selectedSourceId": "flux",
+  "selectedDeviceId": null,
+  "activeView": "setup",
+  "settings": {
+    "language": "English",
+    "appearance": "dark",
+    "autoUpdate": true,
+    "telemetry": false,
+    "searchCountry": "Germany",
+    "searchLanguage": "All",
+    "radioGenre": "All",
+    "restoreSession": true
+  },
+  "ui": {
+    "speakerVariant": "sidebar",
+    "density": "standard",
+    "sidebarLimit": 6,
+    "collapsed": {
+      "listen": false,
+      "outputs": false,
+      "system": true
+    },
+    "deviceTab": "overview",
+    "outputFilter": "all",
+    "radioTab": "discover",
+    "settingsTab": "general",
+    "libraryServer": "nas"
+  },
+  "setupCandidates": [
+    {
+      "id": "found1",
+      "name": "SoundTouch 10",
+      "ip": "192.168.0.220"
+    },
+    {
+      "id": "found2",
+      "name": "SoundTouch 30",
+      "ip": "192.168.0.221"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img">
+  <title>ST Reborn · Lautsprecher · Erweitert</title>
+  <rect x="0" y="0" width="1600" height="1200" rx="0" fill="#F0F1F3" stroke-width="1"/>
+  <text x="64" y="47" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="650" fill="#202226">ST Reborn</text>
+  <text x="1536" y="46" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">UI-KONZEPT / GERÄTEEINSTELLUNGEN</text>
+  <text x="64" y="94" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="650" fill="#202226">Lautsprecher · Erweitert</text>
+  <text x="64" y="128" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#646972">Einstellungen › Lautsprecher › David L › Erweitert</text>
+  <line x1="64" y1="1023" x2="1536" y2="1023" stroke="#D2D5DB" stroke-width="1" stroke-linecap="round"/>
+  <text x="64" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Seltene Aufgaben bündeln</text>
+  <text x="64" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Automationen und Wartung sind auffindbar, beanspruchen aber</text>
+  <text x="64" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">keinen Platz beim Musikhören.</text>
+  <text x="570" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Updates sauber trennen</text>
+  <text x="570" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">„Software auf dem Lautsprecher“ ist nicht das App-Update. Die</text>
+  <text x="570" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Überschrift nennt das betroffene System.</text>
+  <text x="1076" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Riskante Aktionen entkoppeln</text>
+  <text x="1076" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Neustart, Deinstallation und Zurücksetzen stehen in einem</text>
+  <text x="1076" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">nachgelagerten, bestätigten Wartungskontext.</text>
+  <line x1="64" y1="1153" x2="1536" y2="1153" stroke="#D2D5DB" stroke-width="1" stroke-linecap="round"/>
+  <text x="64" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="400" fill="#646972">SCHEMATISCHER ENTWURF · Beispieldaten · 14.10.2026</text>
+  <text x="1536" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">E06</text>
+  <svg width="1472" height="840" viewBox="0 0 1472 840" role="img" aria-labelledby="u28-document-title u28-document-desc" version="1.1" x="64" y="160">
+  <title id="u28-document-title">ST Reborn: Hauptansicht</title>
+  <desc id="u28-document-desc">Schematischer macOS-UI-Entwurf, Dark Mode. Hauptansicht ohne Erläuterungen. Navigation, sechs Lautsprechertasten als Schnellwahl, exemplarische Senderliste und genau ein dauerhafter Player. Ausgabe und Einzelpegel über den Ausgabewähler; Filter und Schnellwahlbearbeitung über ihre jeweiligen Schaltflächen. Keine Rasterbilder oder eingebetteten Schriftdateien.</desc>
+  <defs>
+    <filter id="u28-window-shadow" x="-10%" y="-12%" width="120%" height="135%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#12161E" flood-opacity=".14"/>
+    </filter>
+    <clipPath id="u28-window-clip">
+      <rect x="0" y="0" width="1472" height="840" rx="14" fill="#fff"/>
+    </clipPath>
+  </defs>
+  <g id="u28-main-window" transform="translate(0 0)">
+    <rect x="0" y="0" width="1472" height="840" rx="14" fill="#191A1D"/>
+    <g clip-path="url(#u28-window-clip)">
+      <rect x="0" y="0" width="224" height="736" rx="0" fill="#222327"/>
+      <rect x="224" y="0" width="1248" height="64" rx="0" fill="#202125"/>
+      <line x1="224" y1="64" x2="1472" y2="64" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+      <line x1="224" y1="0" x2="224" y2="736" stroke="#303137" stroke-width="1" stroke-linecap="round"/>
+      <g id="u28-sidebar">
+        <title>Navigation: Radio, Mediathek, Zuletzt gehört und Spotify. App-Einstellungen am unteren Rand.</title>
+        <circle cx="28" cy="30" r="6" fill="#FF6058"/>
+        <circle cx="48" cy="30" r="6" fill="#FFBD2E"/>
+        <circle cx="68" cy="30" r="6" fill="#28C840"/>
+        <g transform="translate(182 19) scale(0.875)" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="#AFB2BC" stroke-width="1.7"/>
+          <line x1="9" y1="5" x2="9" y2="19" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round"/>
+        </g>
+        <text x="24" y="107" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="650" fill="#F4F5F7" letter-spacing="-.4">ST Reborn</text>
+        <text x="24" y="148" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="650" fill="#989DA8" letter-spacing="1.1">MUSIK</text>
+        <rect x="12" y="680" width="200" height="38" rx="7" fill="#203955"/>
+        <g transform="translate(25 171) scale(0.8333333333333334)" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="M5 8 18 3" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="3" y="8" width="18" height="13" rx="3" fill="none" stroke="#AFB2BC" stroke-width="1.7"/>
+          <circle cx="8" cy="14.5" r="2.1" fill="none" stroke="#AFB2BC" stroke-width="1.7"/>
+          <line x1="14" y1="12" x2="18" y2="12" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round"/>
+          <line x1="14" y1="16" x2="18" y2="16" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round"/>
+        </g>
+        <text x="57" y="187" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#AFB2BC">Radio</text>
+        <g transform="translate(25 215) scale(0.8333333333333334)" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <rect x="4" y="4" width="4" height="16" rx="1" fill="none" stroke="#AFB2BC" stroke-width="1.7"/>
+          <rect x="10" y="4" width="4" height="16" rx="1" fill="none" stroke="#AFB2BC" stroke-width="1.7"/>
+          <path d="M17 4 21 19" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <text x="57" y="231" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#AFB2BC">Mediathek</text>
+        <g transform="translate(25 259) scale(0.8333333333333334)" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="M3 10a9 9 0 1 1 1.2 7.3M3 4v6h6M12 7v6l4 2" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <text x="57" y="275" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#AFB2BC">Zuletzt gehört</text>
+        <line x1="24" y1="315" x2="200" y2="315" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+        <text x="24" y="350" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="650" fill="#989DA8" letter-spacing="1.1">DIENSTE</text>
+        <g transform="translate(25 376) scale(0.8333333333333334)" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="#AFB2BC" stroke-width="1.7"/>
+          <path d="M6.5 9.5q6-3 11.5 0.5" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7.5 13q4.7-2.3 9.2.4" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8.4 16q3.8-1.6 7.3.3" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <text x="57" y="392" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#AFB2BC">Spotify</text>
+        <g transform="translate(25 689) scale(0.8333333333333334)" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="m10 3 .5-1h3l.5 1 .5 2 1.5.7 2-.6 2.1 2.1-.6 2 .7 1.5 2 .5v3l-2 .5-.7 1.5.6 2-2.1 2.1-2-.6-1.5.7-.5 2h-3l-.5-2-1.5-.7-2 .6-2.1-2.1.6-2-.7-1.5-2-.5v-3l2-.5.7-1.5-.6-2L6 5.1l2 .6L9.5 5Z" fill="none" stroke="#83B9FF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="3" fill="none" stroke="#83B9FF" stroke-width="1.7"/>
+        </g>
+        <text x="57" y="705" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7">Einstellungen</text>
+      </g>
+      <g id="u28-toolbar"><text x="264" y="41" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="620" fill="#F4F5F7">Einstellungen</text></g><g id="u28-content-einstellungen"><g transform="translate(264 87) scale(0.75)"><path d="M15 5l-7 7 7 7" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><text x="290" y="102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#83B9FF">Lautsprecher</text><text x="264" y="149" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="26" font-weight="630" fill="#F4F5F7">David L</text><text x="264" y="176" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC">SoundTouch 10 · Verbunden</text><rect x="264" y="195" width="710" height="36" rx="8" fill="#202125" stroke="#383A40" stroke-width="1"/><text x="355.0" y="218.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">Übersicht</text><text x="531.0" y="218.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">Klang</text><text x="707.0" y="218.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">Netzwerk</text><rect x="795.0" y="198" width="176.0" height="30" rx="6" fill="#203955" stroke="#659FE5" stroke-width="1"/><text x="883.0" y="218.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#83B9FF" text-anchor="middle">Erweitert</text><text x="264" y="276" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="600" fill="#F4F5F7">Automationen</text><rect x="264" y="294" width="1168" height="122" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/><g transform="translate(282 318) scale(0.875)"><path d="M5 17h14l-2-4V9a5 5 0 0 0-10 0v4z M9 20h6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><text x="316" y="331.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Wecker</text><text x="1386" y="331.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="end">2 Einträge</text><g transform="translate(1399 317.5) scale(0.75)"><path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><line x1="286" y1="355" x2="1410" y2="355" stroke="#383A40" stroke-width="1" stroke-linecap="round"/><g transform="translate(282 375) scale(0.875)"><path d="M8 6l-6 6 6 6 M16 6l6 6-6 6 M14 3l-4 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><text x="316" y="388.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Tastenaktionen</text><text x="1386" y="388.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="end">Keine Aktion eingerichtet</text><g transform="translate(1399 374.5) scale(0.75)"><path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><text x="264" y="470" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="600" fill="#F4F5F7">Wartung</text><rect x="264" y="488" width="1168" height="179" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/><g transform="translate(282 512) scale(0.875)"><path d="M20 10a8 8 0 1 0-2 8 M20 3v7h-7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><text x="316" y="525.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Software auf dem Lautsprecher</text><text x="1386" y="525.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="end">STR 1.0.12 · Beispiel</text><g transform="translate(1399 511.5) scale(0.75)"><path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><line x1="286" y1="549" x2="1410" y2="549" stroke="#383A40" stroke-width="1" stroke-linecap="round"/><g transform="translate(282 569) scale(0.875)"><path d="M12 3v12 M7 10l5 5 5-5 M4 15v6h16v-6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><text x="316" y="582.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Sicherung und Wiederherstellung</text><text x="1386" y="582.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="end">Favoriten und Schnellwahl</text><g transform="translate(1399 568.5) scale(0.75)"><path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><line x1="286" y1="606" x2="1410" y2="606" stroke="#383A40" stroke-width="1" stroke-linecap="round"/><g transform="translate(282 626) scale(0.875)"><path d="M12 3l3 2 4-1 1 4 2 3-2 3-1 4-4-1-3 2-3-2-4 1-1-4-2-3 2-3 1-4 4 1z M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g><text x="316" y="639.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Weitere Wartungsaktionen…</text><text x="1386" y="639.5" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="end">Neustart, Entfernen, Zurücksetzen</text><g transform="translate(1399 625.5) scale(0.75)"><path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></g></g><g id="u28-persistent-player">
+        <title>Ein fester Player: aktueller Sender, Quellenmenü, Wiedergabe, Ausgabe und ein gemeinsamer Lautstärkeregler. Keine Zeitleiste für Live-Radio.</title>
+        <rect x="0" y="736" width="1472" height="104" rx="0" fill="#25262B"/>
+        <line x1="0" y1="736" x2="1472" y2="736" stroke="#40424A" stroke-width="1" stroke-linecap="round"/>
+        <g transform="translate(24 761)">
+          <rect x="0" y="0" width="54" height="54" rx="9.719999999999999" fill="#294968"/>
+          <g transform="scale(1.2272727272727273)">
+            <path d="M11 12h23v20H11L5 22Z" fill="#83B9FF" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+        </g>
+        <text x="95" y="786" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="620" fill="#F4F5F7">FluxFM</text>
+        <rect x="166" y="773" width="35" height="16" rx="4" fill="none" stroke="#66758A" stroke-width="1"/>
+        <text x="183.5" y="785" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="9" font-weight="600" fill="#AFB2BC" text-anchor="middle" letter-spacing=".3">LIVE</text>
+        <text x="95" y="808" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#AFB2BC">Radio</text>
+        <g transform="translate(132 795) scale(0.75)" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="M7 9.5 12 14.5 17 9.5" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <circle cx="711" cy="788" r="25" fill="#F4F5F7"/>
+        <g transform="translate(699 776) scale(1.0)" stroke="#22252B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <rect x="6" y="4" width="4" height="16" rx="1.2" fill="#22252B"/>
+          <rect x="14" y="4" width="4" height="16" rx="1.2" fill="#22252B"/>
+        </g>
+        <g transform="translate(758 776) scale(1.0)" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <circle cx="5" cy="12" r="1.5" fill="#AFB2BC"/>
+          <circle cx="12" cy="12" r="1.5" fill="#AFB2BC"/>
+          <circle cx="19" cy="12" r="1.5" fill="#AFB2BC"/>
+        </g>
+        <rect x="971" y="760" width="201" height="56" rx="8" fill="#303238"/>
+        <g transform="translate(984 776) scale(1.0)" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <rect x="2" y="5" width="10" height="17" rx="2.5" fill="none" stroke="#83B9FF" stroke-width="1.7"/>
+          <circle cx="7" cy="15" r="2.5" fill="none" stroke="#83B9FF" stroke-width="1.7"/>
+          <path d="M14 2h5a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-4" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 9a3 3 0 0 1 0 6" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <text x="1020" y="784" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="550" fill="#F4F5F7">David L + 2</text>
+        <text x="1020" y="804" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="400" fill="#AFB2BC">Ausgabe</text>
+        <g transform="translate(1141 776) scale(0.8333333333333334)" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="M7 9.5 12 14.5 17 9.5" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <g transform="translate(1200 778) scale(0.875)" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="M3 9h4l5-4v14l-5-4H3ZM16 8a6 6 0 0 1 0 8" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+        <line x1="1236" y1="788" x2="1380" y2="788" stroke="#50535B" stroke-width="4" stroke-linecap="round"/>
+        <line x1="1236" y1="788" x2="1272" y2="788" stroke="#83B9FF" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="1272" cy="788" r="7" fill="#F4F5F7"/>
+        <text x="1420" y="793" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#AFB2BC" text-anchor="end">25</text>
+      </g>
+    </g>
+    <rect x="0.5" y="0.5" width="1471" height="839" rx="14" fill="none" stroke="#494C54" stroke-width="1"/>
+  </g>
+</svg>
+  <text x="800" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="middle">23 / 34</text>
+</svg>

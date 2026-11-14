@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" data-theme="streborn-dark" class="symbols-missing">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ST Reborn UI Lab — dependency-free preview</title>
+  <link rel="stylesheet" href="/src/styles/base.css" />
+  <link rel="stylesheet" href="/src/styles/theme.css" />
+</head>
+<body>
+  <div id="app">Loading ST Reborn UI Lab…</div>
+  <script>
+    // Plain HTTP servers expose public/data at /public/data, unlike Vite.
+    const realFetch = window.fetch.bind(window);
+    window.fetch = (request, ...options) => {
+      if (typeof request === 'string' && request.startsWith('/data/'))
+        return realFetch(`/public${request}`, ...options);
+      return realFetch(request, ...options);
+    };
+  </script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

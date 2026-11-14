@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img">
+  <title>ST Reborn · Ausgabe · Wechseln und auflösen</title>
+  <rect x="0" y="0" width="1600" height="1200" rx="0" fill="#F0F1F3" stroke-width="1"/>
+  <text x="64" y="47" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="650" fill="#202226">ST Reborn</text>
+  <text x="1536" y="46" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">UI-KONZEPT / KONTEXTE</text>
+  <text x="64" y="94" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="650" fill="#202226">Ausgabe · Wechseln und auflösen</text>
+  <text x="64" y="128" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#646972">Player › Ausgabe › Ausgabe wechseln oder Gruppe bearbeiten</text>
+  <line x1="64" y1="1023" x2="1536" y2="1023" stroke="#D2D5DB" stroke-width="1" stroke-linecap="round"/>
+  <text x="64" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Vorherige Ausgabe erhalten</text>
+  <text x="64" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Auswählen und Starten sind unterscheidbare Schritte. Ob ein</text>
+  <text x="64" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">laufender Stream mitzieht, wird explizit angezeigt.</text>
+  <text x="570" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Einzelgerät aus einer Gruppe</text>
+  <text x="570" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Die Konsequenz für eine bestehende Gruppe wird vor einem</text>
+  <text x="570" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Wechsel genannt, nicht erst danach.</text>
+  <text x="1076" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Kein Geräte-Löschen</text>
+  <text x="1076" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Eine Gruppe aufzulösen entfernt nicht die Lautsprecher aus der</text>
+  <text x="1076" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Verwaltung.</text>
+  <line x1="64" y1="1153" x2="1536" y2="1153" stroke="#D2D5DB" stroke-width="1" stroke-linecap="round"/>
+  <text x="64" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="400" fill="#646972">SCHEMATISCHER ENTWURF · Beispieldaten · 14.10.2026</text>
+  <text x="1536" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">O03</text>
+  <text x="64" y="186" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="650" fill="#646972">A / AUSGABE AUSWÄHLEN</text>
+  <svg width="720" height="760" viewBox="0 0 720 760" role="img" x="64" y="204">
+    <title>Ausgabe wählen</title>
+    <rect x="0" y="0" width="720" height="760" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">Ausgabe wählen</text>
+    <g transform="translate(676 22) scale(0.9166666666666666)">
+      <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="648">Die aktuelle Wiedergabe bleibt bis zur Bestätigung auf der bisherigen Ausgabe.</text>
+    <text x="24" y="141" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#F4F5F7">Gespeicherte Ausgaben</text>
+    <rect x="24" y="165" width="672" height="94" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <g transform="translate(46 193) scale(1.3333333333333333)">
+      <path d="M7 3h10v18H7z M10 7h4 M12 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="98" y="200" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="19" font-weight="600" fill="#F4F5F7">David L + 2</text>
+    <text x="98" y="229" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC">3 Lautsprecher · Dauerhafte Gruppe</text>
+    <g transform="translate(648 194) scale(1.0)">
+      <path d="M4 12l5 5L20 6" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="311" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#F4F5F7">Einzelne Lautsprecher</text>
+    <g transform="translate(22 350) scale(0.875)">
+      <path d="M7 3h10v18H7z M10 7h4 M12 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="56" y="369.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">David L</text>
+    <text x="670" y="369.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="end">In Gruppe David L</text>
+    <line x1="24" y1="397" x2="696" y2="397" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+    <g transform="translate(22 422) scale(0.875)">
+      <path d="M7 3h10v18H7z M10 7h4 M12 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="56" y="441.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">David 3</text>
+    <text x="670" y="441.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="end">In Gruppe David L</text>
+    <line x1="24" y1="469" x2="696" y2="469" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+    <g transform="translate(22 494) scale(0.875)">
+      <path d="M7 3h10v18H7z M10 7h4 M12 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="56" y="513.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">David R</text>
+    <text x="670" y="513.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="end">In Gruppe David L</text>
+    <rect x="24" y="579" width="254" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <g transform="translate(36 587.0) scale(0.8333333333333334)">
+      <path d="M12 4v16 M4 12h16" fill="none" stroke="#F4F5F7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="64" y="602.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7">Neue Gruppe…</text>
+    <rect x="294" y="579" width="256" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <g transform="translate(306 587.0) scale(0.8333333333333334)">
+      <path d="M7 3h10v18H7z M10 7h4 M12 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6" fill="none" stroke="#F4F5F7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="334" y="602.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7">Stereopaar erstellen…</text>
+    <line x1="24" y1="684" x2="696" y2="684" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+    <rect x="420" y="703" width="128" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <text x="484.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Abbrechen</text>
+    <rect x="560" y="703" width="136" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+    <text x="628.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Ausgabe wählen</text>
+  </svg>
+  <text x="816" y="186" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="650" fill="#646972">B / GRUPPE AUFLÖSEN</text>
+  <svg width="720" height="760" viewBox="0 0 720 760" role="img" x="816" y="204">
+    <title>Gruppe auflösen?</title>
+    <rect x="0" y="0" width="720" height="760" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">Gruppe auflösen?</text>
+    <g transform="translate(676 22) scale(0.9166666666666666)">
+      <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="648">Gruppe David L · 3 Lautsprecher</text>
+    <g transform="translate(317 124) scale(3.4166666666666665)">
+      <path d="M7 3h10v18H7z M10 7h4 M12 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="360" y="251" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="24" font-weight="630" fill="#F4F5F7" text-anchor="middle">Lautsprecher wieder einzeln nutzen</text>
+    <text x="44" y="302" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="400" fill="#AFB2BC" data-wrap-width="625">David L, David 3 und David R werden aus der gemeinsamen Ausgabe gelöst.</text>
+    <text x="44" y="327" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="400" fill="#AFB2BC" data-wrap-width="625">Die dauerhafte Gruppierung wird entfernt.</text>
+    <rect x="24" y="405" width="672" height="150" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <text x="46" y="439" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#F4F5F7">Auswirkung auf die Wiedergabe</text>
+    <text x="46" y="464" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="628">Vor der Bestätigung anzeigen, auf welchem Lautsprecher die Wiedergabe fortgeführt wird.</text>
+    <text x="46" y="485" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="628">Keine Quelle stillschweigend auf ein anderes Gerät übertragen.</text>
+    <text x="24" y="616" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#AFB2BC" data-wrap-width="657">Die einzelnen Geräte, ihre Favoriten und Schnellwahltasten werden nicht gelöscht.</text>
+    <line x1="24" y1="684" x2="696" y2="684" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+    <rect x="420" y="703" width="128" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <text x="484.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Abbrechen</text>
+    <rect x="560" y="703" width="136" height="36" rx="7" fill="#573235" stroke-width="1"/>
+    <text x="628.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#FF8585" text-anchor="middle">Gruppe auflösen</text>
+  </svg>
+  <text x="800" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="middle">15 / 34</text>
+</svg>

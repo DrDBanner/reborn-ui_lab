@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img">
+  <title>ST Reborn · Zustände · Leer, laden, offline, Fehler</title>
+  <rect x="0" y="0" width="1600" height="1200" rx="0" fill="#F0F1F3" stroke-width="1"/>
+  <text x="64" y="47" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="650" fill="#202226">ST Reborn</text>
+  <text x="1536" y="46" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">UI-KONZEPT / VERHALTEN</text>
+  <text x="64" y="94" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="650" fill="#202226">Zustände · Leer, laden, offline, Fehler</text>
+  <text x="64" y="128" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#646972">Keine Sackgassen. Jeder Zustand erklärt, was passiert ist und was als Nächstes möglich ist.</text>
+  <line x1="64" y1="1023" x2="1536" y2="1023" stroke="#D2D5DB" stroke-width="1" stroke-linecap="round"/>
+  <text x="64" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Bestehendes erhalten</text>
+  <text x="64" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Ein Verbindungsfehler löscht weder Favoriten noch Geräte oder</text>
+  <text x="64" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Belegungen.</text>
+  <text x="570" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Status nicht nur farbig</text>
+  <text x="570" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Symbol, Text und eine passende Aktion ergänzen jede</text>
+  <text x="570" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Markierung.</text>
+  <text x="1076" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Kein globaler Alarm für alles</text>
+  <text x="1076" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Ein fehlgeschlagener Sender erhält eine lokale Meldung. Nur die</text>
+  <text x="1076" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Ersteinrichtung darf den gesamten Inhalt prägen.</text>
+  <line x1="64" y1="1153" x2="1536" y2="1153" stroke="#D2D5DB" stroke-width="1" stroke-linecap="round"/>
+  <text x="64" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="400" fill="#646972">SCHEMATISCHER ENTWURF · Beispieldaten · 14.10.2026</text>
+  <text x="1536" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">Z01</text>
+  <svg width="720" height="360" viewBox="0 0 720 360" role="img" x="64" y="193">
+    <title>Noch kein Lautsprecher eingerichtet</title>
+    <rect x="0" y="0" width="720" height="360" rx="14" fill="#191A1D" stroke="#383A40" stroke-width="1"/>
+    <g transform="translate(24 24) scale(1.3333333333333333)">
+      <path d="M7 3h10v18H7z M10 7h4 M12 12a3 3 0 1 0 0 6 3 3 0 0 0 0-6" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="108" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="23" font-weight="630" fill="#F4F5F7">Noch kein Lautsprecher eingerichtet</text>
+    <text x="24" y="146" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="654">Lautsprecher einschalten und im gleichen Netzwerk verbinden.</text>
+    <rect x="24" y="239" width="300" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+    <text x="174.0" y="262.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Lautsprecher hinzufügen…</text>
+    <text x="24" y="323" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#AFB2BC">Details und konkrete Hilfe im betroffenen Kontext</text>
+  </svg>
+  <svg width="720" height="360" viewBox="0 0 720 360" role="img" x="816" y="193">
+    <title>Suche läuft</title>
+    <rect x="0" y="0" width="720" height="360" rx="14" fill="#191A1D" stroke="#383A40" stroke-width="1"/>
+    <g transform="translate(24 24) scale(1.3333333333333333)">
+      <path d="M15 15l6 6 M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="108" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="23" font-weight="630" fill="#F4F5F7">Suche läuft</text>
+    <text x="24" y="146" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="654">Sender werden geladen. Die bisherige Wiedergabe läuft weiter.</text>
+    <rect x="24" y="239" width="300" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+    <text x="174.0" y="262.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Suche abbrechen</text>
+    <text x="24" y="323" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#AFB2BC">Details und konkrete Hilfe im betroffenen Kontext</text>
+  </svg>
+  <svg width="720" height="360" viewBox="0 0 720 360" role="img" x="64" y="601">
+    <title>David R ist nicht erreichbar</title>
+    <rect x="0" y="0" width="720" height="360" rx="14" fill="#191A1D" stroke="#383A40" stroke-width="1"/>
+    <g transform="translate(24 24) scale(1.3333333333333333)">
+      <path d="M3 8q9-8 18 0 M6 12q6-5 12 0 M9 16q3-3 6 0 M12 20h.01" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="108" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="23" font-weight="630" fill="#F4F5F7">David R ist nicht erreichbar</text>
+    <text x="24" y="146" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="654">Zuletzt verbunden vor 3 Minuten. Andere Gruppenmitglieder spielen weiter.</text>
+    <rect x="24" y="239" width="300" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+    <text x="174.0" y="262.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Verbindung prüfen</text>
+    <text x="24" y="323" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#AFB2BC">Details und konkrete Hilfe im betroffenen Kontext</text>
+  </svg>
+  <svg width="720" height="360" viewBox="0 0 720 360" role="img" x="816" y="601">
+    <title>Dieser Sender spielt gerade nicht</title>
+    <rect x="0" y="0" width="720" height="360" rx="14" fill="#191A1D" stroke="#383A40" stroke-width="1"/>
+    <g transform="translate(24 24) scale(1.3333333333333333)">
+      <path d="M12 3L2 21h20z M12 9v5 M12 17h.01" fill="none" stroke="#E5BE7B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="108" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="23" font-weight="630" fill="#F4F5F7">Dieser Sender spielt gerade nicht</text>
+    <text x="24" y="146" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="654">Der Stream konnte nicht geöffnet werden. Andere Ergebnisse bleiben verfügbar.</text>
+    <rect x="24" y="239" width="300" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+    <text x="174.0" y="262.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Erneut versuchen</text>
+    <text x="24" y="323" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#AFB2BC">Details und konkrete Hilfe im betroffenen Kontext</text>
+  </svg>
+  <text x="800" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="middle">31 / 34</text>
+</svg>

@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="760" viewBox="0 0 720 760" role="img">
+  <title>Schnellwahl bearbeiten</title>
+  <rect x="0" y="0" width="720" height="760" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+  <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">Schnellwahl bearbeiten</text>
+  <g transform="translate(676 22) scale(0.9166666666666666)">
+    <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="648">David L · Lautsprechertasten 1–6</text>
+  <rect x="24" y="111" width="672" height="44" rx="8" fill="#202125" stroke="#383A40" stroke-width="1"/>
+  <text x="82.5" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">1</text>
+  <text x="193.5" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">2</text>
+  <text x="304.5" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">3</text>
+  <rect x="360.0" y="114" width="111.0" height="38" rx="6" fill="#203955" stroke="#659FE5" stroke-width="1"/>
+  <text x="415.5" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#83B9FF" text-anchor="middle">4</text>
+  <text x="526.5" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">5</text>
+  <text x="637.5" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">6</text>
+  <rect x="24" y="179" width="672" height="100" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+  <rect x="44" y="201" width="56" height="56" rx="8" fill="#383B43" stroke-width="1"/>
+  <g transform="translate(58 215) scale(1.1666666666666667)">
+    <path d="M9 17V5l11-2v12 M9 17c-6-4-9 4-4 4 3 0 4-2 4-4 M20 15c-6-4-9 4-4 4 3 0 4-2 4-4 M9 9l11-2" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="120" y="218" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#AFB2BC">Taste 4</text>
+  <text x="120" y="247" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="21" font-weight="630" fill="#F4F5F7">Schwarzwaldradio</text>
+  <text x="24" y="322" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Beschriftung der Taste</text>
+  <rect x="24" y="342" width="672" height="40" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+  <text x="36" y="367.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#F4F5F7">Schwarzwaldradio</text>
+  <g transform="translate(22 429) scale(0.875)">
+    <path d="M15 15l6 6 M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="56" y="445.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Quelle ersetzen…</text>
+  <g transform="translate(683 431.0) scale(0.75)">
+    <path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <line x1="24" y1="471" x2="696" y2="471" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+  <g transform="translate(22 491) scale(0.875)">
+    <path d="M7 4l13 8-13 8z" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="56" y="497" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Aktuelle Wiedergabe verwenden</text>
+  <text x="56" y="519" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#AFB2BC" data-wrap-width="612">FluxFM · Radio</text>
+  <g transform="translate(683 502.0) scale(0.75)">
+    <path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <line x1="24" y1="554" x2="696" y2="554" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+  <g transform="translate(22 574) scale(0.875)">
+    <path d="M3 6h18 M8 6V3h8v3 M5 6l1 15h12l1-15 M9 10v7 M15 10v7" fill="none" stroke="#FF8585" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="56" y="590.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#FF8585">Belegung entfernen…</text>
+  <g transform="translate(683 576.0) scale(0.75)">
+    <path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="24" y="653" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="660">Die Taste wird erst nach „Sichern“ geändert. Andere Tasten bleiben unverändert.</text>
+  <line x1="24" y1="684" x2="696" y2="684" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+  <rect x="420" y="703" width="128" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+  <text x="484.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Abbrechen</text>
+  <rect x="560" y="703" width="136" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+  <text x="628.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Sichern</text>
+</svg>

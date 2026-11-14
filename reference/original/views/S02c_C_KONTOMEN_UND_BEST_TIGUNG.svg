@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="464" height="750" viewBox="0 0 464 750" role="img">
+  <title>Kontomenü</title>
+  <rect x="0" y="0" width="464" height="750" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+  <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">Kontomenü</text>
+  <g transform="translate(420 22) scale(0.9166666666666666)">
+    <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="392">David · David L</text>
+  <g transform="translate(22 148) scale(0.875)">
+    <path d="M4 12l5 5L20 6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="56" y="164.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Als aktives Konto verwenden</text>
+  <g transform="translate(427 150.0) scale(0.75)">
+    <path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <line x1="24" y1="190" x2="440" y2="190" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+  <g transform="translate(22 210) scale(0.875)">
+    <path d="M12 16V4 M7 9l5-5 5 5 M4 15v6h16v-6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="56" y="226.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Auf Lautsprecher übertragen…</text>
+  <g transform="translate(427 212.0) scale(0.75)">
+    <path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <line x1="24" y1="252" x2="440" y2="252" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+  <g transform="translate(22 272) scale(0.875)">
+    <path d="M3 6h18 M8 6V3h8v3 M5 6l1 15h12l1-15 M9 10v7 M15 10v7" fill="none" stroke="#FF8585" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="56" y="288.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#FF8585">Konto von David L entfernen…</text>
+  <g transform="translate(427 274.0) scale(0.75)">
+    <path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <rect x="24" y="372" width="416" height="222" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+  <text x="46" y="406" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#F4F5F7">Konto entfernen?</text>
+  <text x="46" y="431" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">Nur die Anmeldung auf David L wird entfernt. Spotify</text>
+  <text x="46" y="452" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">selbst und andere Lautsprecher bleiben unverändert.</text>
+  <rect x="44" y="521" width="164" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+  <text x="126.0" y="544.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Abbrechen</text>
+  <rect x="224" y="521" width="192" height="36" rx="7" fill="#573235" stroke-width="1"/>
+  <text x="320.0" y="544.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#FF8585" text-anchor="middle">Konto entfernen</text>
+  <text x="24" y="667" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="406">Menü und Bestätigung sind alternative Zustände. Die</text>
+  <text x="24" y="688" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="406">Bestätigung ist hier separat hervorgehoben.</text>
+</svg>

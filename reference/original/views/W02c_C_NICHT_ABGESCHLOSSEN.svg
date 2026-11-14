@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="464" height="750" viewBox="0 0 464 750" role="img">
+  <title>Noch nicht abgeschlossen</title>
+  <rect x="0" y="0" width="464" height="750" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+  <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">Noch nicht abgeschlossen</text>
+  <g transform="translate(420 22) scale(0.9166666666666666)">
+    <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="392">Wohnzimmer · Verbindung nach Neustart fehlt</text>
+  <g transform="translate(195 147) scale(3.0833333333333335)">
+    <path d="M12 3L2 21h20z M12 9v5 M12 17h.01" fill="none" stroke="#E5BE7B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="232" y="283" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="21" font-weight="630" fill="#F4F5F7" text-anchor="middle">Gerät antwortet noch nicht</text>
+  <text x="24" y="332" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="408">Die Software wurde übertragen. Eine neue</text>
+  <text x="24" y="356" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="408">Verbindung konnte noch nicht bestätigt werden. Nicht</text>
+  <text x="24" y="380" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="408">ohne Prüfung erneut installieren.</text>
+  <rect x="24" y="455" width="416" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+  <g transform="translate(36 463.0) scale(0.8333333333333334)">
+    <path d="M20 10a8 8 0 1 0-2 8 M20 3v7h-7" fill="none" stroke="#F4F5F7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="64" y="478.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7">Verbindung erneut prüfen</text>
+  <g transform="translate(22 541) scale(0.875)">
+    <path d="M12 16v-5 M12 7h.01 M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="56" y="557.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Einrichtungsdetails anzeigen</text>
+  <g transform="translate(427 543.0) scale(0.75)">
+    <path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <line x1="24" y1="583" x2="440" y2="583" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+  <g transform="translate(22 604) scale(0.875)">
+    <path d="M12 3l3 2 4-1 1 4 2 3-2 3-1 4-4-1-3 2-3-2-4 1-1-4-2-3 2-3 1-4 4 1z M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="56" y="620.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Alternative Einrichtung…</text>
+  <g transform="translate(427 606.0) scale(0.75)">
+    <path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="24" y="684" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="408">Bei nicht unterstütztem Modell oder Firmwarestand einen</text>
+  <text x="24" y="705" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="408">konkreten Hilfeschritt anbieten.</text>
+</svg>

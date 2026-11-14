@@ -1,0 +1,27 @@
+[
+  {
+    "id": "home",
+    "name": "Everyday use",
+    "description": "7 speakers, one stereo pair, an active group and two streams"
+  },
+  {
+    "id": "many",
+    "name": "Problem of N · 30 speakers",
+    "description": "30 devices, multiple pairs and groups: sidebar scalability"
+  },
+  {
+    "id": "multistream",
+    "name": "Several streams",
+    "description": "Four independent playback sessions on different outputs"
+  },
+  {
+    "id": "maintenance",
+    "name": "Maintenance & errors",
+    "description": "Updating, offline, and unconfigured devices"
+  },
+  {
+    "id": "first-run",
+    "name": "First run",
+    "description": "No configured speakers; setup flow and empty states"
+  }
+]

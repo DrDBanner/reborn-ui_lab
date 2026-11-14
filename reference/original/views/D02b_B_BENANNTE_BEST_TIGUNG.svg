@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="760" viewBox="0 0 720 760" role="img">
+  <title>STR von David L entfernen?</title>
+  <rect x="0" y="0" width="720" height="760" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+  <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">STR von David L entfernen?</text>
+  <g transform="translate(676 22) scale(0.9166666666666666)">
+    <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="648">Diese Bestätigung betrifft nur diesen Lautsprecher.</text>
+  <g transform="translate(322 123) scale(3.1666666666666665)">
+    <path d="M12 3L2 21h20z M12 9v5 M12 17h.01" fill="none" stroke="#E5BE7B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="44" y="257" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="400" fill="#F4F5F7" data-wrap-width="632">STR wird vom ausgewählten Lautsprecher entfernt. Vor dem Fortfahren</text>
+  <text x="44" y="284" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="400" fill="#F4F5F7" data-wrap-width="632">muss der tatsächliche Datenumfang für die verwendete Programmversion</text>
+  <text x="44" y="311" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="18" font-weight="400" fill="#F4F5F7" data-wrap-width="632">angezeigt werden.</text>
+  <rect x="24" y="377" width="672" height="125" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+  <text x="46" y="411" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#F4F5F7">Vorbereitungen</text>
+  <text x="46" y="436" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="628">Sicherung anbieten. Einen vorhandenen Einrichtungsstick entfernen, damit STR nicht erneut</text>
+  <text x="46" y="457" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="628">installiert wird. [P2]</text>
+  <rect x="24" y="542" width="18" height="18" rx="4" fill="#303238" stroke="#383A40" stroke-width="1"/>
+  <text x="54" y="556" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Ich habe die Folgen für David L geprüft.</text>
+  <text x="24" y="615" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#AFB2BC" data-wrap-width="663">Ein Factory Reset und das Entfernen von STR dürfen nicht gleichgesetzt werden.</text>
+  <line x1="24" y1="684" x2="696" y2="684" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+  <rect x="420" y="703" width="128" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+  <text x="484.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Abbrechen</text>
+  <rect x="560" y="703" width="136" height="36" rx="7" fill="#33353A" stroke-width="1"/>
+  <text x="628.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#989DA8" text-anchor="middle">STR entfernen</text>
+</svg>

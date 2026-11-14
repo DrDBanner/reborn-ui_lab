@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img">
+  <title>ST Reborn · Wartung · Updates, Sicherung und Diagnose</title>
+  <rect x="0" y="0" width="1600" height="1200" rx="0" fill="#F0F1F3" stroke-width="1"/>
+  <text x="64" y="47" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="650" fill="#202226">ST Reborn</text>
+  <text x="1536" y="46" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">UI-KONZEPT / KONTEXTE</text>
+  <text x="64" y="94" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="650" fill="#202226">Wartung · Updates, Sicherung und Diagnose</text>
+  <text x="64" y="128" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#646972">Getrennte Vorgänge mit benanntem Ziel und sichtbarem Umfang.</text>
+  <line x1="64" y1="1023" x2="1536" y2="1023" stroke="#D2D5DB" stroke-width="1" stroke-linecap="round"/>
+  <text x="64" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Sichern</text>
+  <text x="64" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">„Sicherung erstellen“ öffnet den nativen Dateidialog.</text>
+  <text x="64" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Wiederherstellen benötigt zusätzlich eine Inhaltsvorschau.</text>
+  <text x="570" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Diagnose ist kein Upload</text>
+  <text x="570" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Export und Problem melden bleiben getrennte Aktionen. Eine</text>
+  <text x="570" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Datei wird nicht stillschweigend angehängt oder versendet.</text>
+  <text x="1076" y="1055" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="650" fill="#202226">Produktbasis</text>
+  <text x="1076" y="1081" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Geräte-Updates, Sicherung der Tasten/Favoriten und</text>
+  <text x="1076" y="1102" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#646972" data-wrap-width="463">Diagnoseexport sind vorhandene Funktionsbereiche. [P1]</text>
+  <line x1="64" y1="1153" x2="1536" y2="1153" stroke="#D2D5DB" stroke-width="1" stroke-linecap="round"/>
+  <text x="64" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="400" fill="#646972">SCHEMATISCHER ENTWURF · Beispieldaten · 14.10.2026</text>
+  <text x="1536" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">D01</text>
+  <text x="64" y="186" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="650" fill="#646972">A / GERÄTE-UPDATE</text>
+  <svg width="464" height="750" viewBox="0 0 464 750" role="img" x="64" y="204">
+    <title>Software aktualisieren</title>
+    <rect x="0" y="0" width="464" height="750" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">Software aktualisieren</text>
+    <g transform="translate(420 22) scale(0.9166666666666666)">
+      <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="392">David L · STR auf dem Lautsprecher</text>
+    <rect x="24" y="123" width="416" height="137" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <text x="46" y="157" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#F4F5F7">Installiert: 1.0.12</text>
+    <text x="46" y="182" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">Beispielstand. Verfügbare Version und Änderungen aus</text>
+    <text x="46" y="203" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">dem Update-Dienst laden.</text>
+    <rect x="24" y="290" width="416" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+    <g transform="translate(36 298.0) scale(0.8333333333333334)">
+      <path d="M20 10a8 8 0 1 0-2 8 M20 3v7h-7" fill="none" stroke="#F4F5F7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="64" y="313.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7">Nach Geräte-Updates suchen</text>
+    <g transform="translate(22 374) scale(0.875)">
+      <path d="M12 16v-5 M12 7h.01 M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="56" y="390.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="500" fill="#F4F5F7">Versionshinweise</text>
+    <g transform="translate(427 376.0) scale(0.75)">
+      <path d="M9 5l7 7-7 7" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <line x1="24" y1="416" x2="440" y2="416" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+    <text x="24" y="460" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="408">Vor dem Aktualisieren Zielgerät, Version und</text>
+    <text x="24" y="484" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="408">erforderlichen Neustart anzeigen.</text>
+    <text x="24" y="555" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="408">Eine App-Aktualisierung ist ein anderer Vorgang und</text>
+    <text x="24" y="579" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#AFB2BC" data-wrap-width="408">liegt unter Einstellungen › Allgemein.</text>
+    <text x="24" y="702" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC">Kein automatischer Neustart ohne Rückmeldung.</text>
+  </svg>
+  <text x="568" y="186" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="650" fill="#646972">B / SICHERUNG IMPORTIEREN</text>
+  <svg width="464" height="750" viewBox="0 0 464 750" role="img" x="568" y="204">
+    <title>Sicherung wiederherstellen</title>
+    <rect x="0" y="0" width="464" height="750" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">Sicherung wiederherstellen</text>
+    <g transform="translate(420 22) scale(0.9166666666666666)">
+      <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="392">Datei wählen, Inhalt prüfen, Änderungen bestätigen.</text>
+    <rect x="24" y="124" width="416" height="40" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <text x="36" y="149.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC">Sicherungsdatei auswählen…</text>
+    <rect x="24" y="183" width="416" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <g transform="translate(36 191.0) scale(0.8333333333333334)">
+      <path d="M3 7V5h7l3 3h8v12H3z" fill="none" stroke="#F4F5F7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="64" y="206.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7">Datei öffnen…</text>
+    <rect x="24" y="256" width="416" height="220" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <text x="46" y="290" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#F4F5F7">Vorschau der Sicherung</text>
+    <text x="46" y="315" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">Quelle: David L</text>
+    <text x="46" y="336" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">6 Schnellwahltasten</text>
+    <text x="46" y="357" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">5 Favoriten</text>
+    <text x="46" y="378" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">Beispielwerte nach dem Einlesen</text>
+    <text x="24" y="519" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Zielgerät</text>
+    <rect x="154" y="493" width="286" height="38" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <text x="166" y="517.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#F4F5F7">David L</text>
+    <g transform="translate(411 503.5) scale(0.7083333333333334)">
+      <path d="M6 9l6 6 6-6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <rect x="24" y="571" width="18" height="18" rx="4" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <text x="54" y="585" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Vorhandene Belegungen ersetzen</text>
+    <text x="24" y="627" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="408">Nur tatsächlich enthaltene Daten anzeigen. Vor dem</text>
+    <text x="24" y="648" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="408">Überschreiben eine neue Sicherung anbieten.</text>
+    <line x1="24" y1="674" x2="440" y2="674" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+    <rect x="164" y="693" width="128" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <text x="228.0" y="716.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Abbrechen</text>
+    <rect x="304" y="693" width="136" height="36" rx="7" fill="#33353A" stroke-width="1"/>
+    <text x="372.0" y="716.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#989DA8" text-anchor="middle">Wiederherstellen</text>
+  </svg>
+  <text x="1072" y="186" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="650" fill="#646972">C / DIAGNOSE EXPORTIEREN</text>
+  <svg width="464" height="750" viewBox="0 0 464 750" role="img" x="1072" y="204">
+    <title>Diagnose exportieren</title>
+    <rect x="0" y="0" width="464" height="750" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">Diagnose exportieren</text>
+    <g transform="translate(420 22) scale(0.9166666666666666)">
+      <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="392">Nur speichern, nicht automatisch versenden.</text>
+    <text x="24" y="136" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#F4F5F7">Enthaltene Informationen</text>
+    <g transform="translate(24 167) scale(0.8333333333333334)">
+      <path d="M4 12l5 5L20 6" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="57" y="183" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">App- und Gerätestand</text>
+    <g transform="translate(24 219) scale(0.8333333333333334)">
+      <path d="M4 12l5 5L20 6" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="57" y="235" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Fehler und Verbindungsereignisse</text>
+    <g transform="translate(24 271) scale(0.8333333333333334)">
+      <path d="M4 12l5 5L20 6" fill="none" stroke="#83B9FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="57" y="287" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Zeitstempel und Betriebszustände</text>
+    <rect x="24" y="354" width="416" height="194" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+    <text x="46" y="388" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="600" fill="#F4F5F7">Vor dem Export prüfen</text>
+    <text x="46" y="413" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">Die Datei zeigt vor dem Speichern eine Vorschau.</text>
+    <text x="46" y="434" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">Zugangsdaten, sensible Streamparameter und andere</text>
+    <text x="46" y="455" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="372">Geheimnisse müssen entfernt sein.</text>
+    <rect x="24" y="575" width="416" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <g transform="translate(36 583.0) scale(0.8333333333333334)">
+      <path d="M2 12q10-15 20 0-10 15-20 0z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6" fill="none" stroke="#F4F5F7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text x="64" y="598.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7">Vorschau öffnen…</text>
+    <text x="24" y="642" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="408">Die endgültige Datei wird erst nach Bestätigung am</text>
+    <text x="24" y="663" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="408">gewählten Ort gespeichert.</text>
+    <line x1="24" y1="674" x2="440" y2="674" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+    <rect x="164" y="693" width="128" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+    <text x="228.0" y="716.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Abbrechen</text>
+    <rect x="304" y="693" width="136" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+    <text x="372.0" y="716.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Speichern…</text>
+  </svg>
+  <text x="800" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="middle">29 / 34</text>
+</svg>

@@ -1,0 +1,388 @@
+{
+  "devices": [
+    {
+      "id": "d1",
+      "name": "Living Room L",
+      "model": "SoundTouch 10",
+      "ip": "192.168.0.101",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 25,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "1live",
+        "flux",
+        "ffn",
+        "sw",
+        "dl",
+        "ndrinfo"
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d2",
+      "name": "Living Room R",
+      "model": "SoundTouch 10",
+      "ip": "192.168.0.102",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 26,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "1live",
+        "flux",
+        "ffn",
+        "sw",
+        "dl",
+        "ndrinfo"
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d3",
+      "name": "Kitchen",
+      "model": "SoundTouch 30",
+      "ip": "192.168.0.103",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 27,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "1live",
+        "flux",
+        "ffn",
+        "sw",
+        "dl",
+        "ndrinfo"
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d4",
+      "name": "Office",
+      "model": "SoundTouch 10",
+      "ip": "192.168.0.104",
+      "status": "online",
+      "firmware": "26.1.4",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": true,
+      "updateProgress": 0,
+      "volume": 28,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d5",
+      "name": "Terrace L",
+      "model": "SoundTouch 10",
+      "ip": "192.168.0.105",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 29,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d6",
+      "name": "Terrace R",
+      "model": "SoundTouch 30",
+      "ip": "192.168.0.106",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 30,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d7",
+      "name": "Bedroom",
+      "model": "SoundTouch 10",
+      "ip": "192.168.0.107",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 24,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d8",
+      "name": "Guest Room",
+      "model": "SoundTouch 10",
+      "ip": "192.168.0.108",
+      "status": "online",
+      "firmware": "26.1.4",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": true,
+      "updateProgress": 0,
+      "volume": 25,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d9",
+      "name": "Workshop",
+      "model": "SoundTouch 30",
+      "ip": "192.168.0.109",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 26,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d10",
+      "name": "Hallway",
+      "model": "SoundTouch 10",
+      "ip": "192.168.0.110",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 27,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    }
+  ],
+  "pairs": [
+    {
+      "id": "p1",
+      "name": "Living Room",
+      "memberIds": [
+        "d1",
+        "d2"
+      ],
+      "persistent": true,
+      "volume": 24
+    }
+  ],
+  "groups": [
+    {
+      "id": "g1",
+      "name": "Downstairs",
+      "memberIds": [
+        "p1",
+        "d3"
+      ],
+      "persistent": true,
+      "volume": 25
+    },
+    {
+      "id": "g2",
+      "name": "Terrace",
+      "memberIds": [
+        "d5",
+        "d6"
+      ],
+      "persistent": false,
+      "volume": 22
+    }
+  ],
+  "sessions": [
+    {
+      "id": "s1",
+      "targetId": "g1",
+      "sourceId": "flux",
+      "status": "playing",
+      "volume": 25
+    },
+    {
+      "id": "s2",
+      "targetId": "d4",
+      "sourceId": "ndrinfo",
+      "status": "playing",
+      "volume": 20
+    },
+    {
+      "id": "s3",
+      "targetId": "g2",
+      "sourceId": "album1",
+      "status": "playing",
+      "volume": 34
+    },
+    {
+      "id": "s4",
+      "targetId": "d7",
+      "sourceId": "discover",
+      "status": "paused",
+      "volume": 18
+    }
+  ],
+  "favorites": [
+    "flux",
+    "ndrinfo",
+    "dl"
+  ],
+  "history": [
+    "flux",
+    "ndrinfo",
+    "1live",
+    "album1",
+    "dl"
+  ],
+  "spotifyConnected": false,
+  "selectedOutputId": "g1",
+  "selectedSessionId": "s1",
+  "selectedSourceId": "flux",
+  "selectedDeviceId": "d1",
+  "activeView": "outputs",
+  "settings": {
+    "language": "English",
+    "appearance": "dark",
+    "autoUpdate": true,
+    "telemetry": false,
+    "searchCountry": "Germany",
+    "searchLanguage": "All",
+    "radioGenre": "All",
+    "restoreSession": true
+  },
+  "ui": {
+    "speakerVariant": "sidebar",
+    "density": "standard",
+    "sidebarLimit": 6,
+    "collapsed": {
+      "listen": false,
+      "outputs": false,
+      "system": true
+    },
+    "deviceTab": "overview",
+    "outputFilter": "all",
+    "radioTab": "discover",
+    "settingsTab": "general",
+    "libraryServer": "nas"
+  },
+  "setupCandidates": [
+    {
+      "id": "found1",
+      "name": "SoundTouch 10 (new)",
+      "ip": "192.168.0.220"
+    }
+  ]
+}

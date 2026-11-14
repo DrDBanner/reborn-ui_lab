@@ -1,0 +1,85 @@
+"""Regenerate the self-contained JSON scenarios: python3 scripts/generate-fixtures.py"""
+import json
+from pathlib import Path
+
+ROOT=Path(__file__).resolve().parents[1]/'public/data'
+OUT=ROOT/'scenarios'
+OUT.mkdir(parents=True,exist_ok=True)
+
+CATALOG={
+ 'sources':[
+  {'id':'flux','name':'FluxFM','type':'radio','subtitle':'Sound of Berlin','genre':'Alternative','country':'Germany','bitrate':'320 kbit/s','color':'#f2cb38'},
+  {'id':'1live','name':'1LIVE','type':'radio','subtitle':'Cologne','genre':'Pop','country':'Germany','bitrate':'320 kbit/s','color':'#67ac59'},
+  {'id':'ndrinfo','name':'NDR Info','type':'radio','subtitle':'Hamburg','genre':'News','country':'Germany','bitrate':'128 kbit/s','color':'#3473b8'},
+  {'id':'ffn','name':'ffn','type':'radio','subtitle':'Lower Saxony','genre':'Pop','country':'Germany','bitrate':'192 kbit/s','color':'#ba5361'},
+  {'id':'sw','name':'Schwarzwaldradio','type':'radio','subtitle':'Regional','genre':'Oldies','country':'Germany','bitrate':'128 kbit/s','color':'#dd8460'},
+  {'id':'dl','name':'Deutschlandfunk','type':'radio','subtitle':'News & talk','genre':'Information','country':'Germany','bitrate':'192 kbit/s','color':'#617996'},
+  {'id':'ndr2','name':'NDR 2','type':'radio','subtitle':'Northern Germany','genre':'Pop','country':'Germany','bitrate':'128 kbit/s','color':'#3269b9'},
+  {'id':'wdr5','name':'WDR 5','type':'radio','subtitle':'Culture','genre':'Culture','country':'Germany','bitrate':'128 kbit/s','color':'#688ba7'},
+  {'id':'album1','name':'Evening Jazz','type':'library','subtitle':'Music Server · 44 tracks','genre':'Jazz','country':'Local','bitrate':'FLAC','color':'#795c9f'},
+  {'id':'album2','name':'Quiet Sunday','type':'library','subtitle':'NAS · 18 tracks','genre':'Ambient','country':'Local','bitrate':'FLAC','color':'#3f8c9a'},
+  {'id':'discover','name':'Discover Weekly','type':'spotify','subtitle':'Spotify playlist','genre':'Mixed','country':'Online','bitrate':'Spotify','color':'#198c56'},
+  {'id':'focus','name':'Deep Focus','type':'spotify','subtitle':'Spotify playlist','genre':'Electronic','country':'Online','bitrate':'Spotify','color':'#336f65'},
+ ],
+ 'servers':[{'id':'nas','name':'Living Room NAS','address':'192.168.0.20','folders':['Albums','Artists','Jazz','Playlists','Saved Queues']}, {'id':'plex','name':'Media Server','address':'192.168.0.22','folders':['Music Shares','Favorites','Internet Radio','Queues']}],
+ 'languages':['English','Deutsch','Français','Italiano','Español','Nederlands','Dansk','Svenska','Português','Polski','Suomi','Norsk','العربية']
+}
+
+def device(i,name=None,status='online'):
+ return {'id':f'd{i}','name':name or f'Speaker {i:02d}','model':'SoundTouch 10' if i%3 else 'SoundTouch 30', 'ip':f'192.168.0.{100+i}','status':status,
+         'firmware':'27.0.6' if i%4 else '26.1.4','firmwareLatest':'27.0.6','firmwareAvailable':i%4==0,'updateProgress':62 if status=='updating' else 0,
+         'volume':24+(i%7),'bass':0,'startVolumeEnabled':False,'startVolume':20,'language':'English','network':'Home Network',
+         'presets':['1live','flux','ffn','sw','dl','ndrinfo'] if i<=3 else ['flux','ndr2',None,'dl',None,None],
+         'alarms':[],'buttonActions':[]}
+
+def sample(ui='listen',n=7):
+ return {
+ 'devices':[device(1,'Living Room L'),device(2,'Living Room R'),device(3,'Kitchen'),device(4,'Office'),device(5,'Terrace L'),device(6,'Terrace R'),device(7,'Bedroom')],
+ 'pairs':[{'id':'p1','name':'Living Room','memberIds':['d1','d2'],'persistent':True,'volume':24}],
+ 'groups':[{'id':'g1','name':'Downstairs','memberIds':['p1','d3'],'persistent':True,'volume':25}],
+ 'sessions':[{'id':'s1','targetId':'g1','sourceId':'flux','status':'playing','volume':25},{'id':'s2','targetId':'d4','sourceId':'ndrinfo','status':'playing','volume':28}],
+ 'favorites':['flux','ndrinfo','dl'], 'history':['flux','ndrinfo','1live','album1','dl'], 'spotifyConnected':False,
+ 'selectedOutputId':'g1','selectedSessionId':'s1','selectedSourceId':'flux','selectedDeviceId':'d1','activeView':ui,
+ 'settings':{'language':'English','appearance':'dark','autoUpdate':True,'telemetry':False,'searchCountry':'Germany','searchLanguage':'All','radioGenre':'All','restoreSession':True},
+ 'ui':{'speakerVariant':'sidebar','density':'standard','sidebarLimit':6,'collapsed':{'listen':False,'outputs':False,'system':True},'deviceTab':'overview','outputFilter':'all','radioTab':'discover','settingsTab':'general','libraryServer':'nas'},
+ 'setupCandidates':[{'id':'found1','name':'SoundTouch 10 (new)','ip':'192.168.0.220'}],
+ }
+
+scenarios={}
+base=sample()
+scenarios['home']=base
+
+big=sample('outputs');big['devices']=[device(i, (['Living Room L','Living Room R','Kitchen','Office','Terrace L','Terrace R','Bedroom','Hallway','Guest room','Study','Dining Room','Workshop','Basement','Sauna','Garage','Front Desk','Lobby','Corridor','Conference A','Conference B','Studio','Meeting Room','Warehouse','Patio','Pool','Entrance','Music Room','Reading Room','Server Room','Attic'][i-1])) for i in range(1,31)]
+big['pairs']=[{'id':f'p{i}','name':n,'memberIds':[f'd{2*i-1}',f'd{2*i}'],'persistent':True,'volume':25} for i,n in enumerate(['Living Room','Terrace','Bedroom','Guest Room'],1)]
+big['groups']=[{'id':'g1','name':'Ground Floor','memberIds':['p1','d9','d11','d12'],'persistent':True,'volume':26}, {'id':'g2','name':'Upper Floor','memberIds':['p3','p4','d10'],'persistent':True,'volume':24}, {'id':'g3','name':'Office Wing','memberIds':['d16','d17','d19','d20'],'persistent':False,'volume':30}]
+big['sessions']=[{'id':'s1','targetId':'g1','sourceId':'flux','status':'playing','volume':26},{'id':'s2','targetId':'g2','sourceId':'album1','status':'playing','volume':23},{'id':'s3','targetId':'g3','sourceId':'dl','status':'playing','volume':28},{'id':'s4','targetId':'d28','sourceId':'ndrinfo','status':'paused','volume':20}]
+big['ui']['sidebarLimit']=6
+scenarios['many']=big
+
+multi=sample('outputs');multi['groups'].append({'id':'g2','name':'Terrace','memberIds':['d5','d6'],'persistent':False,'volume':22})
+multi['devices']+=[device(8,'Guest Room'),device(9,'Workshop'),device(10,'Hallway')]
+multi['sessions']=[{'id':'s1','targetId':'g1','sourceId':'flux','status':'playing','volume':25},{'id':'s2','targetId':'d4','sourceId':'ndrinfo','status':'playing','volume':20},{'id':'s3','targetId':'g2','sourceId':'album1','status':'playing','volume':34},{'id':'s4','targetId':'d7','sourceId':'discover','status':'paused','volume':18}]
+scenarios['multistream']=multi
+
+maint=sample('updates');maint['devices'][3]['status']='updating';maint['devices'][3]['updateProgress']=62;maint['devices'][3]['firmwareAvailable']=True
+maint['devices'][4]['status']='offline';maint['devices'][5]['status']='needs_setup';maint['devices'][6]['status']='offline'
+maint['sessions']=[maint['sessions'][0]]
+scenarios['maintenance']=maint
+
+fresh=sample('setup');fresh.update({'devices':[],'pairs':[],'groups':[],'sessions':[],'selectedOutputId':None,'selectedSessionId':None,'selectedDeviceId':None,'favorites':[],'history':[]})
+fresh['setupCandidates']=[{'id':'found1','name':'SoundTouch 10','ip':'192.168.0.220'},{'id':'found2','name':'SoundTouch 30','ip':'192.168.0.221'}]
+scenarios['first-run']=fresh
+
+indexes=[
+ {'id':'home','name':'Everyday use','description':'7 speakers, one stereo pair, an active group and two streams'},
+ {'id':'many','name':'Problem of N · 30 speakers','description':'30 devices, multiple pairs and groups: sidebar scalability'},
+ {'id':'multistream','name':'Several streams','description':'Four independent playback sessions on different outputs'},
+ {'id':'maintenance','name':'Maintenance & errors','description':'Updating, offline, and unconfigured devices'},
+ {'id':'first-run','name':'First run','description':'No configured speakers; setup flow and empty states'},
+]
+(ROOT/'catalog.json').write_text(json.dumps(CATALOG,ensure_ascii=False,indent=2)+'\n')
+(ROOT/'scenario-index.json').write_text(json.dumps(indexes,ensure_ascii=False,indent=2)+'\n')
+for name,scenario in scenarios.items():
+ (OUT/f'{name}.json').write_text(json.dumps(scenario,ensure_ascii=False,indent=2)+'\n')
+(ROOT/'design-tokens.json').write_text(json.dumps({'accent':'#79b8ff','density':'standard','radius':12,'sidebarWidth':270,'fontSize':14,'appearance':'dark'},indent=2)+'\n')
+print(f'Wrote {len(scenarios)} scenarios to {OUT}')

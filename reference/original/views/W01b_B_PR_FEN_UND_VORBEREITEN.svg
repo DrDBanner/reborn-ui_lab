@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="760" viewBox="0 0 720 760" role="img">
+  <title>Einrichtung prüfen</title>
+  <rect x="0" y="0" width="720" height="760" rx="14" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+  <text x="24" y="44" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="22" font-weight="630" fill="#F4F5F7">Einrichtung prüfen</text>
+  <g transform="translate(676 22) scale(0.9166666666666666)">
+    <path d="M6 6l12 12 M18 6L6 18" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="24" y="74" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" data-wrap-width="648">Ausgewählt: SoundTouch 10 · 192.168.0.201</text>
+  <rect x="24" y="113" width="672" height="40" rx="8" fill="#202125" stroke="#383A40" stroke-width="1"/>
+  <text x="110.25" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">1 Finden</text>
+  <rect x="193.5" y="116" width="166.5" height="34" rx="6" fill="#203955" stroke="#659FE5" stroke-width="1"/>
+  <text x="276.75" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="600" fill="#83B9FF" text-anchor="middle">2 Prüfen</text>
+  <text x="443.25" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">3 Installieren</text>
+  <text x="609.75" y="138.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#AFB2BC" text-anchor="middle">4 Fertig</text>
+  <text x="24" y="212" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Name</text>
+  <rect x="206" y="186" width="490" height="40" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+  <text x="218" y="211.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#F4F5F7">Wohnzimmer</text>
+  <text x="24" y="286" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Gerätesprache</text>
+  <rect x="206" y="260" width="490" height="38" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+  <text x="218" y="284.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#F4F5F7">Deutsch</text>
+  <g transform="translate(667 270.5) scale(0.7083333333333334)">
+    <path d="M6 9l6 6 6-6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="24" y="360" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Region</text>
+  <rect x="206" y="334" width="490" height="38" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+  <text x="218" y="358.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#F4F5F7">Deutschland</text>
+  <g transform="translate(667 344.5) scale(0.7083333333333334)">
+    <path d="M6 9l6 6 6-6" fill="none" stroke="#AFB2BC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <rect x="24" y="410" width="672" height="138" rx="10" fill="#26272C" stroke="#383A40" stroke-width="1"/>
+  <g transform="translate(44 431) scale(0.9166666666666666)">
+    <path d="M4 12l5 5L20 6" fill="none" stroke="#87B99A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="77" y="448" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Netzwerk erreichbar</text>
+  <g transform="translate(44 465) scale(0.9166666666666666)">
+    <path d="M4 12l5 5L20 6" fill="none" stroke="#87B99A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="77" y="482" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Gerätemodell unterstützt</text>
+  <g transform="translate(44 499) scale(0.9166666666666666)">
+    <path d="M4 12l5 5L20 6" fill="none" stroke="#87B99A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="77" y="516" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#F4F5F7">Firmware geprüft</text>
+  <text x="24" y="593" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#AFB2BC" data-wrap-width="659">Die Installation verändert die Software auf diesem Lautsprecher und startet das Gerät neu.</text>
+  <text x="24" y="615" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="15" font-weight="400" fill="#AFB2BC" data-wrap-width="659">Andere Geräte werden nicht verändert.</text>
+  <line x1="24" y1="684" x2="696" y2="684" stroke="#383A40" stroke-width="1" stroke-linecap="round"/>
+  <rect x="420" y="703" width="128" height="36" rx="7" fill="#303238" stroke="#383A40" stroke-width="1"/>
+  <text x="484.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Zurück</text>
+  <rect x="560" y="703" width="136" height="36" rx="7" fill="#0A84FF" stroke-width="1"/>
+  <text x="628.0" y="726.0" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#F4F5F7" text-anchor="middle">Installieren</text>
+</svg>

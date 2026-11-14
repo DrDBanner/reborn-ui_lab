@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img">
+  <title>ST Reborn · Funktionszuordnung · Nichts verschwindet im Aufräumen</title>
+  <rect x="0" y="0" width="1600" height="1200" rx="0" fill="#F0F1F3" stroke-width="1"/>
+  <text x="64" y="47" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="17" font-weight="650" fill="#202226">ST Reborn</text>
+  <text x="1536" y="46" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">UI-KONZEPT / ABGLEICH</text>
+  <text x="64" y="94" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="30" font-weight="650" fill="#202226">Funktionszuordnung · Nichts verschwindet im Aufräumen</text>
+  <text x="64" y="128" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#646972">Die ursprünglichen Einstiege erhalten einen eindeutigen Zielkontext.</text>
+  <line x1="64" y1="1153" x2="1536" y2="1153" stroke="#D2D5DB" stroke-width="1" stroke-linecap="round"/>
+  <text x="64" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="400" fill="#646972">SCHEMATISCHER ENTWURF · Beispieldaten · 14.10.2026</text>
+  <text x="1536" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="end">MAP</text>
+  <text x="80" y="188" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="650" fill="#646972">BISHER</text>
+  <text x="466" y="188" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="650" fill="#646972">IM GEMEINSAMEN KONZEPT</text>
+  <text x="1508" y="188" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="12" font-weight="650" fill="#646972" text-anchor="end">ANSICHTEN</text>
+  <line x1="64" y1="207" x2="1536" y2="207" stroke="#CBD0D6" stroke-width="1" stroke-linecap="round"/>
+  <rect x="64" y="211" width="1472" height="52" rx="0" fill="#E7E9ED" stroke-width="1"/>
+  <text x="80" y="243" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Musik hören</text>
+  <text x="466" y="243" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Radio mit Schnellwahl, Entdecken, Favoriten und einem Player</text>
+  <text x="1508" y="243" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">R01–R04, P01</text>
+  <text x="80" y="295" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Mediathek / Zuletzt gehört</text>
+  <text x="466" y="295" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Eigene Hauptansichten in derselben Seitenleiste</text>
+  <text x="1508" y="295" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">M01–M02, H01</text>
+  <rect x="64" y="315" width="1472" height="52" rx="0" fill="#E7E9ED" stroke-width="1"/>
+  <text x="80" y="347" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Lautsprecher-Einstellungen</text>
+  <text x="466" y="347" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Einstellungen › Lautsprecher › ausgewähltes Gerät</text>
+  <text x="1508" y="347" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">E02–E08</text>
+  <text x="80" y="399" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Lautsprecher einrichten</text>
+  <text x="466" y="399" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Hinzufügen in der Geräteverwaltung, geführter Assistent</text>
+  <text x="1508" y="399" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">W01–W02</text>
+  <rect x="64" y="419" width="1472" height="52" rx="0" fill="#E7E9ED" stroke-width="1"/>
+  <text x="80" y="451" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Multi-Room, Gruppen, Dauerhaftigkeit</text>
+  <text x="466" y="451" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Player › Ausgabe › Gruppe bearbeiten</text>
+  <text x="1508" y="451" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">O01–O03</text>
+  <text x="80" y="503" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Spotify</text>
+  <text x="466" y="503" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Eigener Dienstbereich mit gerätebezogener Kontoverwaltung</text>
+  <text x="1508" y="503" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">S01–S02</text>
+  <rect x="64" y="523" width="1472" height="52" rx="0" fill="#E7E9ED" stroke-width="1"/>
+  <text x="80" y="555" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Pause, Stop, AUX, Bluetooth, Standby</text>
+  <text x="466" y="555" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Player und dessen Quellen- bzw. Aktionsmenü</text>
+  <text x="1508" y="555" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">P01</text>
+  <text x="80" y="607" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Gruppenpegel / Gerätepegel</text>
+  <text x="466" y="607" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Ein Gesamtpegel im Player, Einzelpegel im Ausgabe-Popover</text>
+  <text x="1508" y="607" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">O01</text>
+  <rect x="64" y="627" width="1472" height="52" rx="0" fill="#E7E9ED" stroke-width="1"/>
+  <text x="80" y="659" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Tasten bearbeiten, löschen, übertragen</text>
+  <text x="466" y="659" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Schnellwahl-Bearbeitung und bestätigter Übertragungsdialog</text>
+  <text x="1508" y="659" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">Q01</text>
+  <text x="80" y="711" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Suche, Land, Sprache, Genre, Bitrate</text>
+  <text x="466" y="711" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Radio-Suche mit Filter-Popover und Erweiterung</text>
+  <text x="1508" y="711" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">R02, R04</text>
+  <rect x="64" y="731" width="1472" height="52" rx="0" fill="#E7E9ED" stroke-width="1"/>
+  <text x="80" y="763" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Fehlender Sender / Streamdaten</text>
+  <text x="466" y="763" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Senderdetails und bewusstes Ergänzen des Verzeichnisses</text>
+  <text x="1508" y="763" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">R04</text>
+  <text x="80" y="815" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Aa, Sprache, App-Updates</text>
+  <text x="466" y="815" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Einstellungen › Allgemein</text>
+  <text x="1508" y="815" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">E01</text>
+  <rect x="64" y="835" width="1472" height="52" rx="0" fill="#E7E9ED" stroke-width="1"/>
+  <text x="80" y="867" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Wünsche, Abstimmen, Problem melden</text>
+  <text x="466" y="867" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Einstellungen › Hilfe &amp; Info</text>
+  <text x="1508" y="867" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">I01–I02</text>
+  <text x="80" y="919" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Spenden, Weltkarte, GitHub, Lizenzen</text>
+  <text x="466" y="919" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Projektbereich und nachgelagerte Auswahl</text>
+  <text x="1508" y="919" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">I01, SYS</text>
+  <rect x="64" y="939" width="1472" height="52" rx="0" fill="#E7E9ED" stroke-width="1"/>
+  <text x="80" y="971" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Diagnose, Sicherung, Wartung</text>
+  <text x="466" y="971" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Benannte Detaildialoge mit Ziel, Umfang und Bestätigung</text>
+  <text x="1508" y="971" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">D01–D02</text>
+  <text x="80" y="1023" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="550" fill="#202226">Wecker, Tastenaktionen, Geräteklang</text>
+  <text x="466" y="1023" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#646972">Modellabhängige Gerätekontexte unter Erweitert / Klang</text>
+  <text x="1508" y="1023" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="500" fill="#646972" text-anchor="end">E04, E06–E07</text>
+  <text x="64" y="1088" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="16" font-weight="400" fill="#646972" data-wrap-width="1460">Die Zuordnung beschreibt die Informationsarchitektur. Plattform- oder modellabhängige Sonderfälle werden über die dokumentierten Kontextmuster ergänzt.</text>
+  <text x="800" y="1180" font-family="'SF Pro Text', 'SF Pro Display', Inter, 'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="600" fill="#646972" text-anchor="middle">33 / 34</text>
+</svg>

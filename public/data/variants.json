@@ -1,0 +1,6 @@
+{
+  "speakerManagement": [
+    {"id":"panel","label":"A · Contextual player panel","description":"Output selection and grouping from the player context.","icon":"vertical_split"},
+    {"id":"sidebar","label":"B · Persistent sidebar","description":"Speaker and group shortcuts in the collapsible sidebar.","icon":"dock_to_left"}
+  ]
+}

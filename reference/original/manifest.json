@@ -1,0 +1,450 @@
+{
+  "title": "ST Reborn · Gemeinsames UI-Konzept",
+  "date": "2026-10-14",
+  "pages": [
+    {
+      "code": "00",
+      "title": "Ein Konzept. Alle Ansichten.",
+      "sub": "Musik, Lautsprecher und Einstellungen in einer gemeinsamen Oberfläche.",
+      "section": "GESAMTÜBERSICHT",
+      "file": "svg/01_00_Ein_Konzept_Alle_Ansichten.svg"
+    },
+    {
+      "code": "INDEX",
+      "title": "Ansichten und Wege",
+      "sub": "Vier Musikbereiche. Eine Geräteverwaltung. Ein durchgängiger Player.",
+      "section": "ORIENTIERUNG",
+      "file": "svg/02_INDEX_Ansichten_und_Wege.svg"
+    },
+    {
+      "code": "R01",
+      "title": "Radio · Schnellwahl und Entdecken",
+      "sub": "Seitenleiste › Radio",
+      "section": "ANSICHTEN",
+      "file": "svg/03_R01_Radio_Schnellwahl_und_Entdecken.svg"
+    },
+    {
+      "code": "R02",
+      "title": "Radio · Suche",
+      "sub": "Radio › Suchfeld · Enter oder Suche während der Eingabe",
+      "section": "ANSICHTEN",
+      "file": "svg/04_R02_Radio_Suche.svg"
+    },
+    {
+      "code": "R03",
+      "title": "Radio · Favoriten",
+      "sub": "Radio › Favoriten",
+      "section": "ANSICHTEN",
+      "file": "svg/05_R03_Radio_Favoriten.svg"
+    },
+    {
+      "code": "R04",
+      "title": "Sender · Details, Filter und fehlende Einträge",
+      "sub": "Drei getrennte Kontextansichten, nicht gleichzeitig geöffnet.",
+      "section": "KONTEXTE",
+      "file": "svg/06_R04_Sender_Details_Filter_und_fehlende_Eintraege.svg"
+    },
+    {
+      "code": "Q01",
+      "title": "Schnellwahl · Bearbeiten und Übertragen",
+      "sub": "Radio › Bearbeiten · Übertragung über das Schnellwahlmenü",
+      "section": "KONTEXTE",
+      "file": "svg/07_Q01_Schnellwahl_Bearbeiten_und_bertragen.svg"
+    },
+    {
+      "code": "M01",
+      "title": "Mediathek · Quellen",
+      "sub": "Seitenleiste › Mediathek",
+      "section": "ANSICHTEN",
+      "file": "svg/08_M01_Mediathek_Quellen.svg"
+    },
+    {
+      "code": "M02",
+      "title": "Mediathek · Sammlung und Titel",
+      "sub": "Mediathek › Musikserver › Alben › Abendstücke",
+      "section": "ANSICHTEN",
+      "file": "svg/09_M02_Mediathek_Sammlung_und_Titel.svg"
+    },
+    {
+      "code": "H01",
+      "title": "Zuletzt gehört · Wieder aufnehmen",
+      "sub": "Seitenleiste › Zuletzt gehört",
+      "section": "ANSICHTEN",
+      "file": "svg/10_H01_Zuletzt_gehoert_Wieder_aufnehmen.svg"
+    },
+    {
+      "code": "S01",
+      "title": "Spotify · Verbindung und Konten",
+      "sub": "Seitenleiste › Spotify",
+      "section": "ANSICHTEN",
+      "file": "svg/11_S01_Spotify_Verbindung_und_Konten.svg"
+    },
+    {
+      "code": "S02",
+      "title": "Spotify · Verbinden und verwalten",
+      "sub": "Drei Detailzustände des gleichen Spotify-Bereichs.",
+      "section": "KONTEXTE",
+      "file": "svg/12_S02_Spotify_Verbinden_und_verwalten.svg"
+    },
+    {
+      "code": "P01",
+      "title": "Player · Eine Wiedergabe, passende Details",
+      "sub": "Ansicht und Bedienelemente passen sich der Quelle an.",
+      "section": "KONTEXTE",
+      "file": "svg/13_P01_Player_Eine_Wiedergabe_passende_Details.svg"
+    },
+    {
+      "code": "O01",
+      "title": "Ausgabe · Geräte und Einzelpegel",
+      "sub": "Player › Ausgabe",
+      "section": "ANSICHTEN",
+      "file": "svg/14_O01_Ausgabe_Geraete_und_Einzelpegel.svg"
+    },
+    {
+      "code": "O03",
+      "title": "Ausgabe · Wechseln und auflösen",
+      "sub": "Player › Ausgabe › Ausgabe wechseln oder Gruppe bearbeiten",
+      "section": "KONTEXTE",
+      "file": "svg/15_O03_Ausgabe_Wechseln_und_aufloesen.svg"
+    },
+    {
+      "code": "O02",
+      "title": "Gruppen · Multiroom und Stereopaar",
+      "sub": "Player › Ausgabe › Gruppe bearbeiten oder neue Ausgabe anlegen",
+      "section": "KONTEXTE",
+      "file": "svg/16_O02_Gruppen_Multiroom_und_Stereopaar.svg"
+    },
+    {
+      "code": "E01",
+      "title": "Einstellungen · Allgemein",
+      "sub": "Seitenleiste › Einstellungen · Tastatur: ⌘ ,",
+      "section": "EINSTELLUNGEN",
+      "file": "svg/17_E01_Einstellungen_Allgemein.svg"
+    },
+    {
+      "code": "E02",
+      "title": "Einstellungen · Lautsprecher",
+      "sub": "Einstellungen › Lautsprecher",
+      "section": "EINSTELLUNGEN",
+      "file": "svg/18_E02_Einstellungen_Lautsprecher.svg"
+    },
+    {
+      "code": "E03",
+      "title": "Lautsprecher · Übersicht",
+      "sub": "Einstellungen › Lautsprecher › David L",
+      "section": "GERÄTEEINSTELLUNGEN",
+      "file": "svg/19_E03_Lautsprecher_bersicht.svg"
+    },
+    {
+      "code": "E04",
+      "title": "Lautsprecher · Klang",
+      "sub": "Einstellungen › Lautsprecher › David L › Klang",
+      "section": "GERÄTEEINSTELLUNGEN",
+      "file": "svg/20_E04_Lautsprecher_Klang.svg"
+    },
+    {
+      "code": "E05",
+      "title": "Lautsprecher · Netzwerk",
+      "sub": "Einstellungen › Lautsprecher › David L › Netzwerk",
+      "section": "GERÄTEEINSTELLUNGEN",
+      "file": "svg/21_E05_Lautsprecher_Netzwerk.svg"
+    },
+    {
+      "code": "E08",
+      "title": "Gerätedetails · Informationen und WLAN-Wechsel",
+      "sub": "Zwei Detaildialoge aus Übersicht und Netzwerk.",
+      "section": "KONTEXTE",
+      "file": "svg/22_E08_Geraetedetails_Informationen_und_WLAN_Wechsel.svg"
+    },
+    {
+      "code": "E06",
+      "title": "Lautsprecher · Erweitert",
+      "sub": "Einstellungen › Lautsprecher › David L › Erweitert",
+      "section": "GERÄTEEINSTELLUNGEN",
+      "file": "svg/23_E06_Lautsprecher_Erweitert.svg"
+    },
+    {
+      "code": "E07",
+      "title": "Automationen · Wecker und Tastenaktionen",
+      "sub": "Lautsprecher › Erweitert · Zwei getrennte Detaildialoge",
+      "section": "KONTEXTE",
+      "file": "svg/24_E07_Automationen_Wecker_und_Tastenaktionen.svg"
+    },
+    {
+      "code": "W01",
+      "title": "Einrichten · Finden und prüfen",
+      "sub": "Lautsprecher hinzufügen › Geführter Assistent",
+      "section": "KONTEXTE",
+      "file": "svg/25_W01_Einrichten_Finden_und_pruefen.svg"
+    },
+    {
+      "code": "W02",
+      "title": "Einrichten · Fortschritt, Abschluss und Wiederaufnahme",
+      "sub": "Alternative Zustände innerhalb desselben Assistenten.",
+      "section": "KONTEXTE",
+      "file": "svg/26_W02_Einrichten_Fortschritt_Abschluss_und_Wiederaufnahme.svg"
+    },
+    {
+      "code": "I01",
+      "title": "Hilfe & Info · Unterstützung und Projekt",
+      "sub": "Einstellungen › Hilfe & Info",
+      "section": "HILFE UND PROJEKT",
+      "file": "svg/27_I01_Hilfe_Info_Unterstuetzung_und_Projekt.svg"
+    },
+    {
+      "code": "I02",
+      "title": "Hilfe · Wünsche und Feedback",
+      "sub": "Einstellungen › Hilfe & Info › Wünsche und Feedback",
+      "section": "HILFE UND PROJEKT",
+      "file": "svg/28_I02_Hilfe_Wuensche_und_Feedback.svg"
+    },
+    {
+      "code": "D01",
+      "title": "Wartung · Updates, Sicherung und Diagnose",
+      "sub": "Getrennte Vorgänge mit benanntem Ziel und sichtbarem Umfang.",
+      "section": "KONTEXTE",
+      "file": "svg/29_D01_Wartung_Updates_Sicherung_und_Diagnose.svg"
+    },
+    {
+      "code": "D02",
+      "title": "Wartung · Neustart, Entfernen und Zurücksetzen",
+      "sub": "Lautsprecher › Erweitert › Weitere Wartungsaktionen",
+      "section": "KONTEXTE",
+      "file": "svg/30_D02_Wartung_Neustart_Entfernen_und_Zuruecksetzen.svg"
+    },
+    {
+      "code": "Z01",
+      "title": "Zustände · Leer, laden, offline, Fehler",
+      "sub": "Keine Sackgassen. Jeder Zustand erklärt, was passiert ist und was als Nächstes möglich ist.",
+      "section": "VERHALTEN",
+      "file": "svg/31_Z01_Zustaende_Leer_laden_offline_Fehler.svg"
+    },
+    {
+      "code": "SYS",
+      "title": "Komponenten und Bedienregeln",
+      "sub": "Ein gemeinsamer Baukasten für alle gezeigten Ansichten.",
+      "section": "DESIGNSYSTEM",
+      "file": "svg/32_SYS_Komponenten_und_Bedienregeln.svg"
+    },
+    {
+      "code": "MAP",
+      "title": "Funktionszuordnung · Nichts verschwindet im Aufräumen",
+      "sub": "Die ursprünglichen Einstiege erhalten einen eindeutigen Zielkontext.",
+      "section": "ABGLEICH",
+      "file": "svg/33_MAP_Funktionszuordnung_Nichts_verschwindet_im_Aufraeumen.svg"
+    },
+    {
+      "code": "BASIS",
+      "title": "Grundlagen und Übergabe",
+      "sub": "Vektorbasierte Mockups als gemeinsame Diskussions- und Umsetzungsgrundlage.",
+      "section": "QUELLEN UND UMFANG",
+      "file": "svg/34_BASIS_Grundlagen_und_bergabe.svg"
+    }
+  ],
+  "views": {
+    "R01": {
+      "title": "Radio · Schnellwahl und Entdecken",
+      "file": "views/R01_Radio_Schnellwahl_und_Entdecken.svg"
+    },
+    "R02": {
+      "title": "Radio · Suche",
+      "file": "views/R02_Radio_Suche.svg"
+    },
+    "R03": {
+      "title": "Radio · Favoriten",
+      "file": "views/R03_Radio_Favoriten.svg"
+    },
+    "R04a": {
+      "title": "A / SENDERDETAILS",
+      "file": "views/R04a_A_SENDERDETAILS.svg"
+    },
+    "R04b": {
+      "title": "B / FILTER MIT ERWEITERUNG",
+      "file": "views/R04b_B_FILTER_MIT_ERWEITERUNG.svg"
+    },
+    "R04c": {
+      "title": "C / SENDER FEHLT",
+      "file": "views/R04c_C_SENDER_FEHLT.svg"
+    },
+    "Q01a": {
+      "title": "A / EINE TASTE BEARBEITEN",
+      "file": "views/Q01a_A_EINE_TASTE_BEARBEITEN.svg"
+    },
+    "Q01b": {
+      "title": "B / BELEGUNGEN AUF ANDERE GERÄTE KOPIEREN",
+      "file": "views/Q01b_B_BELEGUNGEN_AUF_ANDERE_GER_TE_KOPIEREN.svg"
+    },
+    "M01": {
+      "title": "Mediathek · Quellen",
+      "file": "views/M01_Mediathek_Quellen.svg"
+    },
+    "M02": {
+      "title": "Mediathek · Sammlung und Titel",
+      "file": "views/M02_Mediathek_Sammlung_und_Titel.svg"
+    },
+    "H01": {
+      "title": "Zuletzt gehört · Wieder aufnehmen",
+      "file": "views/H01_Zuletzt_gehoert_Wieder_aufnehmen.svg"
+    },
+    "S01": {
+      "title": "Spotify · Verbindung und Konten",
+      "file": "views/S01_Spotify_Verbindung_und_Konten.svg"
+    },
+    "S02a": {
+      "title": "A / NICHT VERBUNDEN",
+      "file": "views/S02a_A_NICHT_VERBUNDEN.svg"
+    },
+    "S02b": {
+      "title": "B / KONTO ÜBERTRAGEN",
+      "file": "views/S02b_B_KONTO_BERTRAGEN.svg"
+    },
+    "S02c": {
+      "title": "C / KONTOMENÜ UND BESTÄTIGUNG",
+      "file": "views/S02c_C_KONTOMEN_UND_BEST_TIGUNG.svg"
+    },
+    "P01a": {
+      "title": "A / JETZT LÄUFT",
+      "file": "views/P01a_A_JETZT_L_UFT.svg"
+    },
+    "P01b": {
+      "title": "B / QUELLEN UND AKTIONEN",
+      "file": "views/P01b_B_QUELLEN_UND_AKTIONEN.svg"
+    },
+    "P01c": {
+      "title": "C / KOMPAKT UND SEEKFÄHIGER TITEL",
+      "file": "views/P01c_C_KOMPAKT_UND_SEEKF_HIGER_TITEL.svg"
+    },
+    "O01": {
+      "title": "Ausgabe · Geräte und Einzelpegel",
+      "file": "views/O01_Ausgabe_Geraete_und_Einzelpegel.svg"
+    },
+    "O01p": {
+      "title": "Ausgabe Popover",
+      "file": "views/O01p_Ausgabe_Popover.svg"
+    },
+    "O02a": {
+      "title": "A / MULTIROOM-GRUPPE",
+      "file": "views/O02a_A_MULTIROOM_GRUPPE.svg"
+    },
+    "O02b": {
+      "title": "B / STEREOPAAR",
+      "file": "views/O02b_B_STEREOPAAR.svg"
+    },
+    "E01": {
+      "title": "Einstellungen · Allgemein",
+      "file": "views/E01_Einstellungen_Allgemein.svg"
+    },
+    "E02": {
+      "title": "Einstellungen · Lautsprecher",
+      "file": "views/E02_Einstellungen_Lautsprecher.svg"
+    },
+    "E03": {
+      "title": "Lautsprecher · Übersicht",
+      "file": "views/E03_Lautsprecher_bersicht.svg"
+    },
+    "E04": {
+      "title": "Lautsprecher · Klang",
+      "file": "views/E04_Lautsprecher_Klang.svg"
+    },
+    "E05": {
+      "title": "Lautsprecher · Netzwerk",
+      "file": "views/E05_Lautsprecher_Netzwerk.svg"
+    },
+    "E06": {
+      "title": "Lautsprecher · Erweitert",
+      "file": "views/E06_Lautsprecher_Erweitert.svg"
+    },
+    "E07a": {
+      "title": "A / WECKER",
+      "file": "views/E07a_A_WECKER.svg"
+    },
+    "E07b": {
+      "title": "B / TASTENAKTION",
+      "file": "views/E07b_B_TASTENAKTION.svg"
+    },
+    "O03a": {
+      "title": "A / AUSGABE AUSWÄHLEN",
+      "file": "views/O03a_A_AUSGABE_AUSW_HLEN.svg"
+    },
+    "O03b": {
+      "title": "B / GRUPPE AUFLÖSEN",
+      "file": "views/O03b_B_GRUPPE_AUFL_SEN.svg"
+    },
+    "E08a": {
+      "title": "A / GERÄTEINFORMATIONEN",
+      "file": "views/E08a_A_GER_TEINFORMATIONEN.svg"
+    },
+    "E08b": {
+      "title": "B / WLAN ÄNDERN",
+      "file": "views/E08b_B_WLAN_NDERN.svg"
+    },
+    "W01a": {
+      "title": "A / GERÄT FINDEN",
+      "file": "views/W01a_A_GER_T_FINDEN.svg"
+    },
+    "W01b": {
+      "title": "B / PRÜFEN UND VORBEREITEN",
+      "file": "views/W01b_B_PR_FEN_UND_VORBEREITEN.svg"
+    },
+    "W02a": {
+      "title": "A / INSTALLATION",
+      "file": "views/W02a_A_INSTALLATION.svg"
+    },
+    "W02b": {
+      "title": "B / ERFOLG",
+      "file": "views/W02b_B_ERFOLG.svg"
+    },
+    "W02c": {
+      "title": "C / NICHT ABGESCHLOSSEN",
+      "file": "views/W02c_C_NICHT_ABGESCHLOSSEN.svg"
+    },
+    "I01": {
+      "title": "Hilfe & Info · Unterstützung und Projekt",
+      "file": "views/I01_Hilfe_Info_Unterstuetzung_und_Projekt.svg"
+    },
+    "I02": {
+      "title": "Hilfe · Wünsche und Feedback",
+      "file": "views/I02_Hilfe_Wuensche_und_Feedback.svg"
+    },
+    "D01a": {
+      "title": "A / GERÄTE-UPDATE",
+      "file": "views/D01a_A_GER_TE_UPDATE.svg"
+    },
+    "D01b": {
+      "title": "B / SICHERUNG IMPORTIEREN",
+      "file": "views/D01b_B_SICHERUNG_IMPORTIEREN.svg"
+    },
+    "D01c": {
+      "title": "C / DIAGNOSE EXPORTIEREN",
+      "file": "views/D01c_C_DIAGNOSE_EXPORTIEREN.svg"
+    },
+    "D02a": {
+      "title": "A / WARTUNGSAKTIONEN",
+      "file": "views/D02a_A_WARTUNGSAKTIONEN.svg"
+    },
+    "D02b": {
+      "title": "B / BENANNTE BESTÄTIGUNG",
+      "file": "views/D02b_B_BENANNTE_BEST_TIGUNG.svg"
+    },
+    "Z01a": {
+      "title": "Noch kein Lautsprecher eingerichtet",
+      "file": "views/Z01a_Noch_kein_Lautsprecher_eingerichtet.svg"
+    },
+    "Z01b": {
+      "title": "Suche läuft",
+      "file": "views/Z01b_Suche_laeuft.svg"
+    },
+    "Z01c": {
+      "title": "David R ist nicht erreichbar",
+      "file": "views/Z01c_David_R_ist_nicht_erreichbar.svg"
+    },
+    "Z01d": {
+      "title": "Dieser Sender spielt gerade nicht",
+      "file": "views/Z01d_Dieser_Sender_spielt_gerade_nicht.svg"
+    },
+    "SYSa": {
+      "title": "Komponenten",
+      "file": "views/SYSa_Komponenten.svg"
+    }
+  }
+}

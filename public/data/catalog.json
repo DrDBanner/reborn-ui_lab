@@ -1,0 +1,164 @@
+{
+  "sources": [
+    {
+      "id": "flux",
+      "name": "FluxFM",
+      "type": "radio",
+      "subtitle": "Sound of Berlin",
+      "genre": "Alternative",
+      "country": "Germany",
+      "bitrate": "320 kbit/s",
+      "color": "#f2cb38"
+    },
+    {
+      "id": "1live",
+      "name": "1LIVE",
+      "type": "radio",
+      "subtitle": "Cologne",
+      "genre": "Pop",
+      "country": "Germany",
+      "bitrate": "320 kbit/s",
+      "color": "#67ac59"
+    },
+    {
+      "id": "ndrinfo",
+      "name": "NDR Info",
+      "type": "radio",
+      "subtitle": "Hamburg",
+      "genre": "News",
+      "country": "Germany",
+      "bitrate": "128 kbit/s",
+      "color": "#3473b8"
+    },
+    {
+      "id": "ffn",
+      "name": "ffn",
+      "type": "radio",
+      "subtitle": "Lower Saxony",
+      "genre": "Pop",
+      "country": "Germany",
+      "bitrate": "192 kbit/s",
+      "color": "#ba5361"
+    },
+    {
+      "id": "sw",
+      "name": "Schwarzwaldradio",
+      "type": "radio",
+      "subtitle": "Regional",
+      "genre": "Oldies",
+      "country": "Germany",
+      "bitrate": "128 kbit/s",
+      "color": "#dd8460"
+    },
+    {
+      "id": "dl",
+      "name": "Deutschlandfunk",
+      "type": "radio",
+      "subtitle": "News & talk",
+      "genre": "Information",
+      "country": "Germany",
+      "bitrate": "192 kbit/s",
+      "color": "#617996"
+    },
+    {
+      "id": "ndr2",
+      "name": "NDR 2",
+      "type": "radio",
+      "subtitle": "Northern Germany",
+      "genre": "Pop",
+      "country": "Germany",
+      "bitrate": "128 kbit/s",
+      "color": "#3269b9"
+    },
+    {
+      "id": "wdr5",
+      "name": "WDR 5",
+      "type": "radio",
+      "subtitle": "Culture",
+      "genre": "Culture",
+      "country": "Germany",
+      "bitrate": "128 kbit/s",
+      "color": "#688ba7"
+    },
+    {
+      "id": "album1",
+      "name": "Evening Jazz",
+      "type": "library",
+      "subtitle": "Music Server · 44 tracks",
+      "genre": "Jazz",
+      "country": "Local",
+      "bitrate": "FLAC",
+      "color": "#795c9f"
+    },
+    {
+      "id": "album2",
+      "name": "Quiet Sunday",
+      "type": "library",
+      "subtitle": "NAS · 18 tracks",
+      "genre": "Ambient",
+      "country": "Local",
+      "bitrate": "FLAC",
+      "color": "#3f8c9a"
+    },
+    {
+      "id": "discover",
+      "name": "Discover Weekly",
+      "type": "spotify",
+      "subtitle": "Spotify playlist",
+      "genre": "Mixed",
+      "country": "Online",
+      "bitrate": "Spotify",
+      "color": "#198c56"
+    },
+    {
+      "id": "focus",
+      "name": "Deep Focus",
+      "type": "spotify",
+      "subtitle": "Spotify playlist",
+      "genre": "Electronic",
+      "country": "Online",
+      "bitrate": "Spotify",
+      "color": "#336f65"
+    }
+  ],
+  "servers": [
+    {
+      "id": "nas",
+      "name": "Living Room NAS",
+      "address": "192.168.0.20",
+      "folders": [
+        "Albums",
+        "Artists",
+        "Jazz",
+        "Playlists",
+        "Saved Queues"
+      ]
+    },
+    {
+      "id": "plex",
+      "name": "Media Server",
+      "address": "192.168.0.22",
+      "folders": [
+        "Music Shares",
+        "Favorites",
+        "Internet Radio",
+        "Queues"
+      ]
+    }
+  ],
+  "languages": [
+    "English",
+    "Deutsch",
+    "Français",
+    "Italiano",
+    "Español",
+    "Nederlands",
+    "Dansk",
+    "Svenska",
+    "Português",
+    "Polski",
+    "Suomi",
+    "Norsk",
+    "العربية"
+  ]
+}

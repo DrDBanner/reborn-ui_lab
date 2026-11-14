@@ -33,7 +33,8 @@ export function applyScenarioJson(json){
 }
 export function applyDesign(){
   const d=state.designTokens||{};const root=document.documentElement;
-  root.style.setProperty('--accent',d.accent||'#79b8ff');root.style.setProperty('--radius',`${Number(d.radius||12)}px`);
+  const accent=d.accent||'#79b8ff';
+  root.style.setProperty('--accent',d.appearance==='light'?`color-mix(in srgb,${accent} 35%,#173d6a)`:accent);root.style.setProperty('--radius',`${Number(d.radius||12)}px`);
   root.style.setProperty('--sidebar-width',`${Number(d.sidebarWidth||270)}px`);
   root.style.setProperty('--font-size',`${Number(d.fontSize||14)}px`);
   root.dataset.density=d.density||'standard';root.dataset.appearance=d.appearance||'dark';

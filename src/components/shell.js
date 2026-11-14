@@ -1,4 +1,4 @@
-import {esc,icon,action,statusLabel,outputItem} from './shared.js';
+import {esc,icon,action,statusLabel,outputItem,targetIcon} from './shared.js';
 import {entity,visibleOutputs,kind,source,currentSession,targetStatus,sessionFor} from '../app/model.js';
 
 const navSections=[
@@ -46,7 +46,7 @@ export function player(s){
   <div class="player__content"><span class="player__art" style="--source-color:${esc(now?.color||'#435064')}">${icon(now?.type==='library'?'album':'radio')}</span><div class="player__label"><strong>${esc(now?.name||'Nothing playing')}</strong><small>${esc(now?.subtitle||'Select music and an output')}</small></div></div>
   <div class="player__transport">${action('session-prev',icon('skip_previous'),'icon-btn transport-extra','aria-label="Previous"')}${action('player-toggle',icon(session?.status==='playing'?'pause':'play_arrow'),'transport-play',`aria-label="${session?.status==='playing'?'Pause':'Play'}" ${!session?'disabled':''}`)}${action('session-next',icon('skip_next'),'icon-btn transport-extra','aria-label="Next"')}${action('player-stop',icon('stop'),'icon-btn transport-extra',`${!session?'disabled':''} aria-label="Stop"`)}</div>
   <div class="player__outputs">${sessions.length>1?`<select class="session-select" data-field="session" aria-label="Active playback session">${sessions.map(x=>`<option value="${x.id}" ${session?.id===x.id?'selected':''}>${esc(entity(m,x.targetId)?.name||'Unknown')} · ${esc(source(s.catalog,x.sourceId)?.name||'')}</option>`).join('')}</select>`:''}
-   ${action('open-output-picker',icon('speaker_group')+`<span>${esc(selectedTarget?.name||'Choose output')}</span>`+icon('expand_less'),'output-trigger',`title="Choose output"`)}
+   ${action('open-output-picker',icon(targetIcon(kind(m,selectedTarget?.id)))+`<span>${esc(selectedTarget?.name||'Choose output')}</span>`+icon('expand_less'),'output-trigger','title="Choose output"')}
    ${icon('volume_up','player__volume-icon')}
    <input type="range" class="volume-range" min="0" max="100" value="${esc(session?.volume??25)}" data-field="volume" ${!session?'disabled':''} aria-label="Output volume" />
    <span class="volume-value">${session?.volume??'–'}</span>

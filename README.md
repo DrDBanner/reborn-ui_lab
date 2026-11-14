@@ -19,7 +19,7 @@ Or choose **Run Task → Start ST Reborn UI Lab**, then launch the browser confi
 
 **No npm available?** `preview.html` is a lightweight offline-style preview using the same JavaScript modules and handwritten component styles. Serve the project folder over HTTP, e.g. `python3 -m http.server 8765`, then visit `http://localhost:8765/preview.html`. Do **not** open the HTML directly as a `file://` URL: the UI fetches JSON fixtures.
 
-The normal Vite version compiles Tailwind and daisyUI. `preview.html` omits these external build dependencies; it is intended only for inspecting interactions. Google Material Symbols are fetched from Google Fonts in the normal build, with Unicode fallbacks when unavailable. **No font files are bundled.**
+The normal Vite version compiles Tailwind and daisyUI. `preview.html` omits these external build dependencies; it is intended only for inspecting interactions. Google Material Symbols Rounded are bundled locally as SVG paths, including in the standalone review. Icons work offline without external fonts. See `docs/MATERIAL_ICONS.md` for provenance, license and regeneration.
 
 ## What can I try?
 

@@ -5,7 +5,7 @@ For review only. The normal Vite build remains the maintained source of truth.
 import json,re
 from pathlib import Path
 root=Path(__file__).resolve().parent.parent
-files=['src/app/model.js','src/app/store.js','src/components/shared.js','src/components/shell.js','src/components/dialog.js','src/views/listen.js','src/views/outputs.js','src/views/management.js','src/views/lab.js','src/app/controller.js','src/main.js']
+files=['src/components/material-icons.js','src/app/model.js','src/app/store.js','src/components/shared.js','src/components/shell.js','src/components/dialog.js','src/views/listen.js','src/views/outputs.js','src/views/management.js','src/views/lab.js','src/app/controller.js','src/main.js']
 js=[]
 for filename in files:
  text=(root/filename).read_text()
@@ -27,8 +27,6 @@ fixturejson=json.dumps(fixtures,ensure_ascii=False).replace('</script>','<\\/scr
 html=f'''<!doctype html><html lang="en" data-theme="streborn-dark"><head><meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>ST Reborn — UI Lab · Single-file Review</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
 <style>{css}</style></head><body><div id="app"><div class="boot">Loading UI Lab…</div></div>
 <script>window.__reviewFixtures={fixturejson};
 const __realFetch=window.fetch.bind(window);

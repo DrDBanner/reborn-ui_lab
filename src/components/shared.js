@@ -1,7 +1,11 @@
 import {entity,kind,targetStatus,source,sessionFor,leafDeviceIds} from '../app/model.js';
+import {materialIcons} from './material-icons.js';
 export const esc=(x)=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const iconFallback={graphic_eq:'≋',radio:'♫',speaker:'▣',speaker_group:'▥',groups:'▤',library_music:'♫',history:'◷',settings:'⚙',help:'?',science:'◇',tune:'☷',grid_view:'▦',add_circle_outline:'⊕',add_circle:'⊕',system_update:'↻',expand_more:'⌄',chevron_right:'›',close:'×',menu:'☰',light_mode:'☀',dark_mode:'☾',search:'⌕',play_arrow:'▶',pause:'Ⅱ',stop:'■',skip_next:'⏭',skip_previous:'⏮',volume_up:'◖',group_add:'⊕',add:'+',arrow_forward:'→',arrow_back:'←',favorite:'♥',favorite_border:'♡',more_horiz:'•••',edit:'✎',album:'◉',folder:'▱',dns:'▤',speaker_group:'▥',info:'i',delete_outline:'×',remove_circle_outline:'⊖',network_check:'◎',wifi:'◉',build:'⚒',alarm:'◷',code:'⌘',backup:'↑',settings_backup_restore:'↻',restart_alt:'↻',bug_report:'!',fast_forward:'≫',sync:'↻',download:'↓',desktop_windows:'▣',task_alt:'✓',add:'+',warning:'!',experiment:'◇',vertical_split:'▯',dock_to_left:'▣',check_circle:'✓',search_off:'∅',phone_iphone:'▯',delete:'×',check:'✓'};
-export const icon=(name,extra='')=>`<span class="material-symbols-rounded ${extra}" data-fallback="${esc(iconFallback[name]||'•')}" aria-hidden="true">${esc(name)}</span>`;
+// Local Google Material Symbols SVGs work in every preview, including offline.
+export const icon=(name,extra='')=>{
+ const symbol=materialIcons[name]||materialIcons.help;
+ return `<span class="material-symbols-rounded ${esc(extra)}" data-icon="${esc(name)}" aria-hidden="true"><svg viewBox="${esc(symbol.viewBox)}" fill="currentColor" focusable="false">${symbol.paths.map(d=>`<path d="${esc(d)}"/>`).join('')}</svg></span>`;
+};
 const daisyRole={
  'btn-soft':'btn btn-sm btn-ghost',
  'btn-quiet':'btn btn-sm btn-ghost',
@@ -10,10 +14,14 @@ const daisyRole={
  'icon-btn':'btn btn-square btn-sm btn-ghost',
  'text-action':'btn btn-sm btn-link',
 };
-export const action=(name,label,cls='btn',props='')=>`<button type="button" class="${daisyRole[cls.split(' ')[0]]||''} ${cls}" data-action="${esc(name)}" ${props}>${label}</button>`;
+export const action=(name,label,cls='btn',props='')=>{
+ const iconOnly=!label.replace(/<[^>]*>/g,'').trim();
+ const accessibleLabel=iconOnly&&!props.includes('aria-label=')?`aria-label="${esc(props.match(/title="([^"]+)"/)?.[1]||name.replace(/-/g,' '))}"`:'';
+ return `<button type="button" class="${daisyRole[cls.split(' ')[0]]||''} ${cls}" data-action="${esc(name)}" ${props} ${accessibleLabel}>${label}</button>`;
+};
 export const statusLabel=(status)=>({online:'Online',offline:'Offline',updating:'Updating',partial:'Partly offline',needs_setup:'Needs setup',unknown:'Unknown'})[status]||esc(status);
-export const statusBadge=(status)=>`<span class="status status--${esc(status)}"><i></i>${statusLabel(status)}</span>`;
-export function targetIcon(type){return type==='pair'?'speaker_group':type==='group'?'groups':'speaker'}
+export const statusBadge=(status)=>`<span class="device-status device-status--${esc(status)}"><i></i>${statusLabel(status)}</span>`;
+export function targetIcon(type){return type==='pair'?'speaker_group':type==='group'?'hub':'speaker'}
 export function labelForTarget(model,id){return entity(model,id)?.name||'Choose output'}
 export function subline(model,id){const k=kind(model,id);if(k==='device')return `${esc(entity(model,id)?.model||'Speaker')} · ${statusLabel(targetStatus(model,id))}`;return `${k==='pair'?'Stereo pair':'Group'} · ${leafDeviceIds(model,id).length} speakers`}
 export function outputItem(model,id,{compact=false,selected=false,extra=''}={}){

@@ -58,9 +58,9 @@ export async function onAction(action,element){
  case 'pin-radio-filters':mutate(s=>s.model.ui.radioFiltersPinned=!s.model.ui.radioFiltersPinned);break;
  case 'radio-genre':mutate(s=>s.model.settings.radioGenre=val);break;
  case 'reset-radio-filters':mutate(s=>{Object.assign(s.model.settings,{searchCountry:'All',searchLanguage:'All',radioGenre:'All',radioOrder:'votes',radioMinBitrate:0,radioOnlyWorking:false,radioOnlyCompatible:false});s.filter=''});break;
- case 'button-transfer-open':{const device=entity(m,id);if(!buttonProfile(device))throw new Error('No button presets');openModal('button-transfer',{deviceId:id,targetIds:[],keys:presetAssignments(device).map(item=>item.token)});break;}
+ case 'button-transfer-open':{const device=entity(m,id);if(!buttonProfile(device))throw new Error('No button presets');openModal('button-transfer',{deviceId:id,targetIds:[],overwrite:false,keys:presetAssignments(device).map(item=>item.token)});break;}
  case 'button-transfer-all':mutate(s=>s.modal.keys=val==='none'?[]:presetAssignments(entity(s.model,s.modal.deviceId)).map(item=>item.token),false);break;
- case 'button-transfer-save':{const modal=state.modal;if(modal?.kind!=='button-transfer')break;mutate(s=>{const report=transferButtonPresets(s.model,modal.deviceId,modal.targetIds,modal.keys);s.modal={kind:'button-transfer-result',report}});break;}
+ case 'button-transfer-save':{const modal=state.modal;if(modal?.kind!=='button-transfer')break;mutate(s=>{const report=transferButtonPresets(s.model,modal.deviceId,modal.targetIds,modal.keys,{overwrite:modal.overwrite});s.modal={kind:'button-transfer-result',report}});break;}
  case 'preset-play':{const deviceId=id||currentDevice()?.id;mutate(s=>{recallButtonPreset(s.model,deviceId,Number(element.dataset.key),element.dataset.gesture||'single')});break}
  case 'preset-edit':{
   const device=entity(m,id||currentDevice()?.id),gesture=element.dataset.gesture||state.presetGesture||'single';
@@ -159,6 +159,7 @@ export async function onField(field,target){
  try{switch(field){
  case 'scenario':await loadScenario(val);break;
  case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
+ case 'button-transfer-overwrite':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.overwrite=target.checked,false);break;
  case 'button-transfer-key':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.keys=target.checked?[...new Set([...s.modal.keys,val])]:s.modal.keys.filter(item=>item!==val),false);break;
  case 'button-transfer-target':if(state.modal?.kind==='button-transfer')mutate(s=>{const selected=new Set(s.modal.targetIds.flatMap(id=>leafDeviceIds(m,id))),ids=leafDeviceIds(m,val).filter(id=>id!==s.modal.deviceId&&buttonProfile(entity(m,id))&&entity(m,id).status==='online');for(const id of ids)target.checked?selected.add(id):selected.delete(id);s.modal.targetIds=[...selected]},false);break;
  case 'group-settings-persistent':case 'group-settings-leader':case 'group-settings-receiver':case 'group-settings-key':{

@@ -458,3 +458,22 @@ test('Add to existing group reviews playback, cancels safely and binds the selec
  await vm.runInContext("onAction('add-member',{dataset:{id:'g1'}});onAction('membership-choice',{dataset:{id:'d7'}});onAction('membership-save',{dataset:{}})",ctx);
  assert(vm.runInContext("entity(state.model,'g1').memberIds.includes('d7')",ctx));assert.equal(vm.runInContext('state.model.sessions.length',ctx),1);
 });
+
+test('transfer overwrite is explicit, cancellable and shows the cleared key in review and results',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("state.model.devices[0].presets=['flux'];state.model.devices[0].doublePresets=[];state.model.devices.find(d=>d.id==='d5').presets=['ndrinfo',null,'flux'];state.model.devices.find(d=>d.id==='d5').doublePresets=[];onAction('button-transfer-open',{dataset:{id:'d1'}});onField('button-transfer-target',{value:'d5',checked:true})",ctx);
+ assert.equal(vm.runInContext('state.modal.overwrite',ctx),false);
+ assert(app.innerHTML.includes('Whole-set transfer refused'));
+ const before=vm.runInContext('JSON.stringify(state.model)',ctx);
+ await vm.runInContext("onField('button-transfer-overwrite',{checked:true})",ctx);
+ assert(app.innerHTML.includes('previous key will be cleared'));
+ assert(app.innerHTML.includes('NDR Info → FluxFM'));
+ assert.equal(vm.runInContext('JSON.stringify(state.model)',ctx),before);
+ await vm.runInContext("onAction('close-modal',{dataset:{}});onAction('button-transfer-open',{dataset:{id:'d1'}})",ctx);
+ assert.equal(vm.runInContext('state.modal.overwrite',ctx),false);
+ assert.equal(vm.runInContext('JSON.stringify(state.model)',ctx),before);
+ await vm.runInContext("onField('button-transfer-target',{value:'d5',checked:true});onField('button-transfer-overwrite',{checked:true});onAction('button-transfer-save',{dataset:{}})",ctx);
+ assert(app.innerHTML.includes('previous key cleared'));
+ assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d5').presets[0]",ctx),'flux');
+ assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d5').presets[2]",ctx),null);
+});

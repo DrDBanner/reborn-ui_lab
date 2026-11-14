@@ -37,7 +37,7 @@ Playback capture initially selects the physical device's effective output. Concu
 
 Transfer buttons performs a one-time copy of occupied keys or a selected subset. Group/pair selections expand into unique physical destination IDs. The source device is identified and excluded. Individual selection supports a subset of a group's devices.
 
-The review shows copied, skipped, conflicting and unsupported slots per destination. Unselected and empty source slots preserve destination assignments. Both gesture layers participate according to each destination's reported capabilities. Confirmation applies the local plan and presents per-device results.
+The review shows copied, skipped, conflicting and unsupported slots per destination. Selected key numbers replace the corresponding destination assignments. “Overwrite conflicting assignments” additionally moves sources already assigned elsewhere to those keys; review names each replacement and the previous keys to clear. Other destination keys retain their assignments. Both gesture layers participate according to each destination's reported capabilities. Confirmation applies the local plan and presents per-device results.
 
 ## Stereo and group configuration
 
@@ -67,6 +67,7 @@ Source reference: [JRpersonal/streborn](https://github.com/JRpersonal/streborn/t
 | Typed sources | Library streams, folders/queues, Spotify playlist/album URIs, native ContentItems and playing-source capture use typed payloads. See [app_presets.go](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/desktop-app/app_presets.go). |
 | Whole-bank transfer | `CopyPresetsAcrossBoxes` validates the completed assignment set and reports destination conflicts. See [app_presets.go](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/desktop-app/app_presets.go). |
 | Selected-key transfer | `CopyPresetKeysAcrossBoxes` reports copied, skipped and unsupported slots. See [app_presets_keycopy.go](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/desktop-app/app_presets_keycopy.go). |
+| Explicit relocation | `MovePreset(host, port, from, to)` uses `/api/box/preset-move` for a source already stored on another key. Overwrite transfer orchestration must retain the incoming typed source payload and report each confirmed move/replacement. See [app_presets.go](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/desktop-app/app_presets.go). |
 | Transfer validation | Device-side validation and acknowledgements use [presets_http.go](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/internal/webui/presets_http.go). |
 | Group execution | A zone has a physical master and followers; permanent membership restores when the main speaker starts music. See [zones.go](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/internal/zones/zones.go). |
 | Remote group keys | Receiver-owned named templates bind thumbsUp/thumbsDown to group formation/dissolution. See [AUTOMATION.md](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/docs/AUTOMATION.md). |

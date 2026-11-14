@@ -250,8 +250,8 @@ export function presetAssignments(device){
   return (buttonProfile(device)?.gestures||[]).flatMap(gesture=>buttonPresets(device,gesture).flatMap((sourceId,index)=>sourceId?[{key:index+1,gesture,sourceId,token:`${gesture}:${index+1}`}]:[]));
 }
 
-/** Mirrors STR's whole-set / chosen-key copy. Composite targets fan out once per device. */
-export function planPresetTransfer(model,sourceId,targetIds,tokens=null){
+/** Composite targets fan out once per device; explicit overwrite relocates conflicting sources. */
+export function planPresetTransfer(model,sourceId,targetIds,tokens=null,{overwrite=false}={}){
   const device=model.devices.find(item=>item.id===sourceId);
   if(!buttonProfile(device))throw new Error('Source device has no button presets');
   if(device.status!=='online')throw new Error('Source device must be online');
@@ -261,7 +261,7 @@ export function planPresetTransfer(model,sourceId,targetIds,tokens=null){
   const ids=[...new Set(targetIds.flatMap(id=>leafDeviceIds(model,id)))].filter(id=>id!==sourceId);
   if(!ids.length)throw new Error('Choose another device or group');
   const results=ids.map(id=>{
-    const target=entity(model,id),profile=buttonProfile(target),result={id,name:target.name,copied:[],skipped:[],error:null};
+    const target=entity(model,id),profile=buttonProfile(target),result={id,name:target.name,copied:[],cleared:[],replaced:[],skipped:[],error:null};
     if(!profile){result.error='No hardware button presets';return result;}
     if(target.status!=='online'){result.error=`Device is ${target.status}`;return result;}
     let pending=selected.filter(item=>{
@@ -270,21 +270,29 @@ export function planPresetTransfer(model,sourceId,targetIds,tokens=null){
     });
     const existing=presetAssignments(target);
     while(pending.length){
-      const conflict=pending.map((item,index)=>({item,other:pending.slice(0,index).find(other=>other.sourceId===item.sourceId)||existing.find(other=>other.sourceId===item.sourceId&&other.token!==item.token&&!pending.some(write=>write.token===other.token))})).find(entry=>entry.other);
+      const conflict=pending.map((item,index)=>({item,other:pending.slice(0,index).find(other=>other.sourceId===item.sourceId)||existing.find(other=>other.sourceId===item.sourceId&&other.token!==item.token&&!pending.some(write=>write.token===other.token)&&!result.cleared.some(clear=>clear.token===other.token))})).find(entry=>entry.other);
       if(!conflict)break;
+      if(overwrite&&!pending.some(item=>item.token===conflict.other.token)){
+        result.cleared.push({...conflict.other,movedTo:conflict.item.token});continue;
+      }
       const reason=`Source already assigned to key ${conflict.other.key} (${conflict.other.gesture==='double'?'Twice':'Once'})`;
       if(whole){result.error=reason;result.skipped.push(...pending.map(item=>({...item,reason:'Whole-set transfer refused; target unchanged'})));pending=[];break;}
       result.skipped.push({...conflict.item,reason});pending=pending.filter(item=>item.token!==conflict.item.token);
     }
+    result.cleared=result.cleared.filter(item=>pending.some(write=>write.token===item.movedTo));
+    result.replaced=pending.flatMap(item=>{const old=existing.find(other=>other.token===item.token&&other.sourceId!==item.sourceId);return old?[{...old,replacementSourceId:item.sourceId}]:[]});
     result.copied=pending;
     return result;
   });
-  return {sourceId,sourceName:device.name,whole,selectedKeys:selected.length,results};
+  return {sourceId,sourceName:device.name,whole,overwrite,selectedKeys:selected.length,results};
 }
 
-export function transferButtonPresets(model,sourceId,targetIds,tokens=null){
-  const report=planPresetTransfer(model,sourceId,targetIds,tokens);
-  for(const result of report.results)for(const item of result.copied)setButtonPreset(model,result.id,item.key,item.gesture,item.sourceId);
+export function transferButtonPresets(model,sourceId,targetIds,tokens=null,options={}){
+  const report=planPresetTransfer(model,sourceId,targetIds,tokens,options);
+  for(const result of report.results){
+    for(const item of result.cleared)setButtonPreset(model,result.id,item.key,item.gesture,null);
+    for(const item of result.copied)setButtonPreset(model,result.id,item.key,item.gesture,item.sourceId);
+  }
   return report;
 }
 

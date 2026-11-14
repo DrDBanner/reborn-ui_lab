@@ -160,7 +160,7 @@ small{font-size:11px}
 .source-row:hover{background:var(--panel-hi)}.source-row__main{flex:1;min-width:0}.source-row__main strong,.source-row__main small{display:block}
 .source-row__main strong{font-size:12px;font-weight:600}.source-row__main small{color:var(--faint);font-size:10px;margin-top:2px}.source-row__genre{font-size:11px;color:var(--muted);min-width:100px}
 .source-row__actions{display:flex;gap:3px}.source-row__actions .icon-btn{border:1px solid var(--border);background:var(--panel-hi)}
-.server-list{padding:10px 14px 16px}.list-card{display:flex;align-items:center;width:100%;gap:12px;padding:12px;border-radius:9px;text-align:left;border:1px solid transparent;background:transparent}
+.server-list{display:flex;flex-direction:column;gap:6px;padding:10px 14px 16px}.list-card{display:flex;align-items:center;width:100%;gap:12px;padding:12px;border-radius:9px;text-align:left;border:1px solid transparent;background:transparent}
 .list-card>span:nth-child(2){flex:1}.list-card strong,.list-card small{display:block}.list-card strong{font-size:12px}.list-card small{color:var(--muted);margin-top:3px}.list-card.active,.list-card:hover{background:var(--panel-hi);border-color:var(--border)}
 .folder-list{padding:8px 12px 15px}.folder-row{background:none;border:0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px;padding:12px;width:100%;text-align:left;font-size:12px}
 .folder-row:hover{color:var(--accent)}.folder-row span:nth-child(2){flex:1}.folder-row:last-child{border-bottom:0}
@@ -463,6 +463,8 @@ input[role=switch]:checked{background:var(--accent);border-color:var(--accent)}i
 .composite-mode{display:flex;align-items:flex-start;gap:10px;font-size:12px;cursor:pointer}
 .composite-mode input{margin-top:2px;flex-shrink:0}.composite-mode strong{font-weight:550}.composite-mode small{display:block;color:var(--muted);font-size:11px;line-height:1.5;margin-top:3px}
 .composite-members{border:0;padding:0;margin:0;min-width:0}.composite-members legend{font-size:12px;margin-bottom:8px}.composite-members .choice-row{margin:0;border:0;border-radius:0;border-bottom:1px solid var(--border)}.composite-members .choice-row:last-child{border-bottom:0}
+.composite-members .modal-list:has(>.empty-line){border:0;border-radius:0}
+.composite-members .empty-line{margin:0;padding:18px 14px;color:var(--muted);font-size:12px;line-height:1.5}
 .composite-channels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.composite-channel select{width:100%}
 .composite-hint{font-size:11px;line-height:1.6;color:var(--muted);margin:0}.panel-body>.composite-hint{margin-top:12px}
 @media(max-width:480px){.composite-channels{grid-template-columns:minmax(0,1fr)}}
@@ -558,6 +560,8 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 .source-row__actions .icon-btn[data-action=toggle-favorite][aria-pressed=true],
 .source-row__actions .icon-btn[data-action=toggle-favorite]:hover,
 .source-row__actions .icon-btn[data-action=toggle-favorite]:focus-visible{color:var(--favorite)}
+
+.transfer-overwrite{display:flex;align-items:flex-start;gap:10px;margin:14px 0;font-size:12px;cursor:pointer}.transfer-overwrite input{flex-shrink:0;margin-top:2px}.transfer-overwrite strong{font-weight:550}.transfer-overwrite small{display:block;margin-top:4px;font-size:11px;line-height:1.5;color:var(--muted)}.transfer-result .transfer-changes{color:var(--muted);line-height:1.6}
 
 /* Local Google Material Symbols Rounded chevron; see docs/MATERIAL_ICONS.md. */
 :root{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23a4aab5%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
@@ -832,8 +836,8 @@ function presetAssignments(device){
   return (buttonProfile(device)?.gestures||[]).flatMap(gesture=>buttonPresets(device,gesture).flatMap((sourceId,index)=>sourceId?[{key:index+1,gesture,sourceId,token:`${gesture}:${index+1}`}]:[]));
 }
 
-/** Mirrors STR's whole-set / chosen-key copy. Composite targets fan out once per device. */
-function planPresetTransfer(model,sourceId,targetIds,tokens=null){
+/** Composite targets fan out once per device; explicit overwrite relocates conflicting sources. */
+function planPresetTransfer(model,sourceId,targetIds,tokens=null,{overwrite=false}={}){
   const device=model.devices.find(item=>item.id===sourceId);
   if(!buttonProfile(device))throw new Error('Source device has no button presets');
   if(device.status!=='online')throw new Error('Source device must be online');
@@ -843,7 +847,7 @@ function planPresetTransfer(model,sourceId,targetIds,tokens=null){
   const ids=[...new Set(targetIds.flatMap(id=>leafDeviceIds(model,id)))].filter(id=>id!==sourceId);
   if(!ids.length)throw new Error('Choose another device or group');
   const results=ids.map(id=>{
-    const target=entity(model,id),profile=buttonProfile(target),result={id,name:target.name,copied:[],skipped:[],error:null};
+    const target=entity(model,id),profile=buttonProfile(target),result={id,name:target.name,copied:[],cleared:[],replaced:[],skipped:[],error:null};
     if(!profile){result.error='No hardware button presets';return result;}
     if(target.status!=='online'){result.error=`Device is ${target.status}`;return result;}
     let pending=selected.filter(item=>{
@@ -852,21 +856,29 @@ function planPresetTransfer(model,sourceId,targetIds,tokens=null){
     });
     const existing=presetAssignments(target);
     while(pending.length){
-      const conflict=pending.map((item,index)=>({item,other:pending.slice(0,index).find(other=>other.sourceId===item.sourceId)||existing.find(other=>other.sourceId===item.sourceId&&other.token!==item.token&&!pending.some(write=>write.token===other.token))})).find(entry=>entry.other);
+      const conflict=pending.map((item,index)=>({item,other:pending.slice(0,index).find(other=>other.sourceId===item.sourceId)||existing.find(other=>other.sourceId===item.sourceId&&other.token!==item.token&&!pending.some(write=>write.token===other.token)&&!result.cleared.some(clear=>clear.token===other.token))})).find(entry=>entry.other);
       if(!conflict)break;
+      if(overwrite&&!pending.some(item=>item.token===conflict.other.token)){
+        result.cleared.push({...conflict.other,movedTo:conflict.item.token});continue;
+      }
       const reason=`Source already assigned to key ${conflict.other.key} (${conflict.other.gesture==='double'?'Twice':'Once'})`;
       if(whole){result.error=reason;result.skipped.push(...pending.map(item=>({...item,reason:'Whole-set transfer refused; target unchanged'})));pending=[];break;}
       result.skipped.push({...conflict.item,reason});pending=pending.filter(item=>item.token!==conflict.item.token);
     }
+    result.cleared=result.cleared.filter(item=>pending.some(write=>write.token===item.movedTo));
+    result.replaced=pending.flatMap(item=>{const old=existing.find(other=>other.token===item.token&&other.sourceId!==item.sourceId);return old?[{...old,replacementSourceId:item.sourceId}]:[]});
     result.copied=pending;
     return result;
   });
-  return {sourceId,sourceName:device.name,whole,selectedKeys:selected.length,results};
+  return {sourceId,sourceName:device.name,whole,overwrite,selectedKeys:selected.length,results};
 }
 
-function transferButtonPresets(model,sourceId,targetIds,tokens=null){
-  const report=planPresetTransfer(model,sourceId,targetIds,tokens);
-  for(const result of report.results)for(const item of result.copied)setButtonPreset(model,result.id,item.key,item.gesture,item.sourceId);
+function transferButtonPresets(model,sourceId,targetIds,tokens=null,options={}){
+  const report=planPresetTransfer(model,sourceId,targetIds,tokens,options);
+  for(const result of report.results){
+    for(const item of result.cleared)setButtonPreset(model,result.id,item.key,item.gesture,null);
+    for(const item of result.copied)setButtonPreset(model,result.id,item.key,item.gesture,item.sourceId);
+  }
   return report;
 }
 
@@ -1326,13 +1338,14 @@ function player(s){
 
 
 const keyName=item=>`Key ${item.key} · ${item.gesture==='double'?'Twice':'Once'}`;
-function transferResults(report){
- return `<div class="transfer-results">${report.results.map(result=>`<section class="transfer-result"><strong>${esc(result.name)}</strong><p>${result.error?esc(result.error):`${result.copied.length} ${result.copied.length===1?'assignment':'assignments'} ${report.applied?'copied':'to copy'}`}</p>${result.skipped.length?`<ul>${result.skipped.map(item=>`<li>${esc(keyName(item))}: ${esc(item.reason)}</li>`).join('')}</ul>`:''}</section>`).join('')}</div>`;
+function transferResults(report,catalog){
+ const name=id=>esc(source(catalog,id)?.name||id);
+ return `<div class="transfer-results">${report.results.map(result=>`<section class="transfer-result"><strong>${esc(result.name)}</strong><p>${result.error?esc(result.error):`${result.copied.length} ${result.copied.length===1?'assignment':'assignments'} ${report.applied?'copied':'to copy'}`}</p>${result.replaced?.length||result.cleared?.length?`<ul class="transfer-changes">${(result.replaced||[]).map(item=>`<li>${esc(keyName(item))}: ${name(item.sourceId)} → ${name(item.replacementSourceId)}</li>`).join('')}${(result.cleared||[]).map(item=>{const [gesture,key]=item.movedTo.split(':');return `<li>${name(item.sourceId)}: ${esc(keyName(item))} → ${esc(keyName({key,gesture}))}; previous key ${report.applied?'cleared':'will be cleared'}</li>`}).join('')}</ul>`:''}${result.skipped.length?`<ul>${result.skipped.map(item=>`<li>${esc(keyName(item))}: ${esc(item.reason)}</li>`).join('')}</ul>`:''}</section>`).join('')}</div>`;
 }
 function renderPresetTransfer(s){
  const m=s.model,modal=s.modal,device=entity(m,modal.deviceId),keys=presetAssignments(device),selected=modal.keys||[],targets=modal.targetIds||[];
  let report=null,error='';
- if(targets.length&&selected.length)try{report=planPresetTransfer(m,device.id,targets,selected)}catch(problem){error=problem.message}
+ if(targets.length&&selected.length)try{report=planPresetTransfer(m,device.id,targets,selected,{overwrite:modal.overwrite})}catch(problem){error=problem.message}
  const copyCount=report?.results.reduce((total,result)=>total+result.copied.length,0)||0;
  const selectedIds=new Set(targets.flatMap(id=>leafDeviceIds(m,id)));
  const destinationRow=id=>{
@@ -1346,15 +1359,15 @@ function renderPresetTransfer(s){
   return `<section class="transfer-target-group"><label class="transfer-target-heading"><input type="checkbox" data-field="button-transfer-target" value="${esc(output.id)}" ${all?'checked':''} aria-checked="${some&&!all?'mixed':all}" ${!eligible.length?'disabled':''}/>${typeIcon(kind(m,output.id))}<span><strong>${esc(output.name)}</strong><small>${ids.length} ${ids.length===1?'destination':'destinations'}${leafDeviceIds(m,output.id).includes(device.id)?' · Source device excluded':''}</small></span></label><div>${ids.map(destinationRow).join('')}</div></section>`;
  }).join('');
  return `<div class="modal-heading"><h2>Transfer button assignments</h2><p>Copy from ${esc(device?.name)}. The source device is excluded from destinations.</p></div>
- <div class="transfer-body"><div class="transfer-workbench"><section class="transfer-keys" aria-label="Choose assigned keys"><header class="transfer-section-heading"><h3>Which assignments?</h3><div class="transfer-key-tools">${action('button-transfer-all','All','text-action','data-value="all"')}${action('button-transfer-all','None','text-action','data-value="none"')}</div></header>${['single','double'].map(gesture=>{const bank=keys.filter(item=>item.gesture===gesture);return bank.length?`<section class="transfer-key-bank"><h4>${gesture==='double'?'Twice':'Once'}</h4><div class="transfer-key-grid">${bank.map(item=>`<label><input type="checkbox" data-field="button-transfer-key" value="${esc(item.token)}" ${selected.includes(item.token)?'checked':''}/><span class="transfer-key-number">${item.key}</span><span><strong>${esc(source(s.catalog,item.sourceId)?.name||item.sourceId)}</strong></span></label>`).join('')}</div></section>`:''}).join('')}<p class="transfer-scope">Unselected and empty keys do not erase target assignments.</p></section>
+ <div class="transfer-body"><div class="transfer-workbench"><section class="transfer-keys" aria-label="Choose assigned keys"><header class="transfer-section-heading"><h3>Which assignments?</h3><div class="transfer-key-tools">${action('button-transfer-all','All','text-action','data-value="all"')}${action('button-transfer-all','None','text-action','data-value="none"')}</div></header>${['single','double'].map(gesture=>{const bank=keys.filter(item=>item.gesture===gesture);return bank.length?`<section class="transfer-key-bank"><h4>${gesture==='double'?'Twice':'Once'}</h4><div class="transfer-key-grid">${bank.map(item=>`<label><input type="checkbox" data-field="button-transfer-key" value="${esc(item.token)}" ${selected.includes(item.token)?'checked':''}/><span class="transfer-key-number">${item.key}</span><span><strong>${esc(source(s.catalog,item.sourceId)?.name||item.sourceId)}</strong></span></label>`).join('')}</div></section>`:''}).join('')}<p class="transfer-scope">Copies to the same key numbers. Existing assignments on those keys are replaced.</p></section>
  <section class="transfer-destinations" aria-label="Choose destination devices"><header class="transfer-section-heading"><h3>Copy to</h3></header><div class="transfer-targets">${destinations||'<p class="transfer-scope">No other devices available.</p>'}</div></section></div>
- <section class="transfer-review" aria-label="Transfer preview"><h3>Review</h3>${report?transferResults(report):`<p class="transfer-scope">${esc(error||'Choose assignments and destinations to preview the changes.')}</p>`}</section></div>
- <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('button-transfer-save',icon('add_link')+(copyCount?` Transfer ${copyCount} assignments`:' Transfer'),'primary-btn',!copyCount?'disabled':'')}</div>`;
+ <section class="transfer-review" aria-label="Transfer preview"><h3>Review</h3><label class="transfer-overwrite"><input type="checkbox" data-field="button-transfer-overwrite" ${modal.overwrite?'checked':''}/><span><strong>Overwrite conflicting assignments</strong><small>Move sources already assigned elsewhere to the selected keys. Their previous keys will be cleared, as listed below.</small></span></label>${report?transferResults(report,s.catalog):`<p class="transfer-scope">${esc(error||'Choose assignments and destinations to preview the changes.')}</p>`}</section></div>
+ <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('button-transfer-save',icon('add_link')+(copyCount?` Transfer ${copyCount} ${copyCount===1?'assignment':'assignments'}`:' Transfer'),'primary-btn',!copyCount?'disabled':'')}</div>`;
 
 }
 function renderPresetTransferResult(s){
  const report={...s.modal.report,applied:true};
- return `<div class="modal-heading"><h2>Transfer results</h2><p>From ${esc(report.sourceName)} · ${report.whole?'All assigned keys':'Selected keys'}</p></div>${transferResults(report)}<div class="modal-footer">${action('close-modal','Done','primary-btn')}</div>`;
+ return `<div class="modal-heading"><h2>Transfer results</h2><p>From ${esc(report.sourceName)} · ${report.whole?'All assigned keys':'Selected keys'}</p></div>${transferResults(report,s.catalog)}<div class="modal-footer">${action('close-modal','Done','primary-btn')}</div>`;
 }
 
 // ===== src/components/preset-editor.js =====
@@ -1766,9 +1779,9 @@ async function onAction(action,element){
  case 'pin-radio-filters':mutate(s=>s.model.ui.radioFiltersPinned=!s.model.ui.radioFiltersPinned);break;
  case 'radio-genre':mutate(s=>s.model.settings.radioGenre=val);break;
  case 'reset-radio-filters':mutate(s=>{Object.assign(s.model.settings,{searchCountry:'All',searchLanguage:'All',radioGenre:'All',radioOrder:'votes',radioMinBitrate:0,radioOnlyWorking:false,radioOnlyCompatible:false});s.filter=''});break;
- case 'button-transfer-open':{const device=entity(m,id);if(!buttonProfile(device))throw new Error('No button presets');openModal('button-transfer',{deviceId:id,targetIds:[],keys:presetAssignments(device).map(item=>item.token)});break;}
+ case 'button-transfer-open':{const device=entity(m,id);if(!buttonProfile(device))throw new Error('No button presets');openModal('button-transfer',{deviceId:id,targetIds:[],overwrite:false,keys:presetAssignments(device).map(item=>item.token)});break;}
  case 'button-transfer-all':mutate(s=>s.modal.keys=val==='none'?[]:presetAssignments(entity(s.model,s.modal.deviceId)).map(item=>item.token),false);break;
- case 'button-transfer-save':{const modal=state.modal;if(modal?.kind!=='button-transfer')break;mutate(s=>{const report=transferButtonPresets(s.model,modal.deviceId,modal.targetIds,modal.keys);s.modal={kind:'button-transfer-result',report}});break;}
+ case 'button-transfer-save':{const modal=state.modal;if(modal?.kind!=='button-transfer')break;mutate(s=>{const report=transferButtonPresets(s.model,modal.deviceId,modal.targetIds,modal.keys,{overwrite:modal.overwrite});s.modal={kind:'button-transfer-result',report}});break;}
  case 'preset-play':{const deviceId=id||currentDevice()?.id;mutate(s=>{recallButtonPreset(s.model,deviceId,Number(element.dataset.key),element.dataset.gesture||'single')});break}
  case 'preset-edit':{
   const device=entity(m,id||currentDevice()?.id),gesture=element.dataset.gesture||state.presetGesture||'single';
@@ -1867,6 +1880,7 @@ async function onField(field,target){
  try{switch(field){
  case 'scenario':await loadScenario(val);break;
  case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
+ case 'button-transfer-overwrite':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.overwrite=target.checked,false);break;
  case 'button-transfer-key':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.keys=target.checked?[...new Set([...s.modal.keys,val])]:s.modal.keys.filter(item=>item!==val),false);break;
  case 'button-transfer-target':if(state.modal?.kind==='button-transfer')mutate(s=>{const selected=new Set(s.modal.targetIds.flatMap(id=>leafDeviceIds(m,id))),ids=leafDeviceIds(m,val).filter(id=>id!==s.modal.deviceId&&buttonProfile(entity(m,id))&&entity(m,id).status==='online');for(const id of ids)target.checked?selected.add(id):selected.delete(id);s.modal.targetIds=[...selected]},false);break;
  case 'group-settings-persistent':case 'group-settings-leader':case 'group-settings-receiver':case 'group-settings-key':{

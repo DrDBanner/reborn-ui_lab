@@ -208,3 +208,39 @@ test('joining with an explicitly chosen new source switches the whole joined out
  assert.equal(m.sessions.find(s=>s.id==='s1').sourceId,'ndr2');assert.equal(m.sessions.find(s=>s.id==='s1').status,'playing');
  assert.deepEqual(m.sessions.find(s=>s.id==='s2'),other);
 });
+
+test('explicit transfer overwrite previews replacements and relocates cross-layer duplicates',()=>{
+ const m=fresh(),target=m.devices.find(d=>d.id==='d5');
+ m.devices[0].presets=['flux'];m.devices[0].doublePresets=[];
+ target.presets=['ndrinfo',null,'sw'];target.doublePresets=[null,'flux','dl'];
+ const before=JSON.stringify(m),plan=planPresetTransfer(m,'d1',['d5'],null,{overwrite:true});
+ assert.equal(JSON.stringify(m),before);
+ assert.equal(plan.results[0].error,null);
+ assert.deepEqual(plan.results[0].cleared.map(item=>[item.token,item.movedTo]),[['double:2','single:1']]);
+ assert.equal(plan.results[0].replaced[0].sourceId,'ndrinfo');
+ const sessions=JSON.stringify(m.sessions),sourceBefore=JSON.stringify(m.devices[0]);
+ transferButtonPresets(m,'d1',['d5'],null,{overwrite:true});
+ assert.deepEqual(target.presets.slice(0,3),['flux',null,'sw']);
+ assert.deepEqual(target.doublePresets.slice(0,3),[null,null,'dl']);
+ assert.equal(JSON.stringify(m.sessions),sessions);assert.equal(JSON.stringify(m.devices[0]),sourceBefore);
+});
+test('overwrite keeps swaps intact and still rejects duplicate incoming assignments',()=>{
+ const m=fresh(),target=m.devices.find(d=>d.id==='d5');
+ m.devices[0].presets=['flux','ndr2'];m.devices[0].doublePresets=[];
+ target.presets=['ndr2','flux','dl'];target.doublePresets=[];
+ let report=transferButtonPresets(m,'d1',['d5'],null,{overwrite:true});
+ assert.equal(report.results[0].cleared.length,0);assert.deepEqual(target.presets.slice(0,3),['flux','ndr2','dl']);
+ m.devices[0].presets=['flux','flux'];target.presets=['sw','dl','flux'];
+ const before=JSON.stringify(target);report=transferButtonPresets(m,'d1',['d5'],null,{overwrite:true});
+ assert(report.results[0].error);assert.equal(report.results[0].cleared.length,0);assert.equal(JSON.stringify(target),before);
+});
+test('overwrite retains offline devices and unsupported gesture assignments',()=>{
+ const m=fresh(),target=m.devices.find(d=>d.id==='d4');
+ m.devices[0].presets=[];m.devices[0].doublePresets=['flux'];
+ target.presets=['flux'];target.doublePresets=[];
+ const before=JSON.stringify(target),report=transferButtonPresets(m,'d1',['d4'],null,{overwrite:true});
+ assert.equal(report.results[0].skipped.length,1);assert.equal(report.results[0].cleared.length,0);assert.equal(JSON.stringify(target),before);
+ target.status='offline';const offline=JSON.stringify(target);
+ assert(transferButtonPresets(m,'d1',['d4'],null,{overwrite:true}).results[0].error.includes('offline'));
+ assert.equal(JSON.stringify(target),offline);
+});

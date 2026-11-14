@@ -24,7 +24,7 @@ ST Reborn backend
 - Identify desktop updates, speaker agent software and device firmware separately.
 - Validate membership, pairing compatibility and physical session overlap.
 - Expand logical groups into the backend's physical membership contract.
-- Preserve typed preset payloads, source metadata, accounts and transfer results.
+- Preserve typed preset payloads, source metadata, accounts and transfer results. Explicit overwrite requires a reviewed relocation plan, refreshed destination state and acknowledged moves/replacements per device.
 - Reconcile saved group templates, live membership and recovery events.
 - Provide network, remote, provisioning, scheduling and maintenance operations.
 - Integrate translations, RTL layouts, keyboard focus and native window conventions.

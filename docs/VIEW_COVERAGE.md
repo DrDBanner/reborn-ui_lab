@@ -5,7 +5,7 @@ Actions operate on local JSON simulation state. The table describes the behavior
 | View | Behavior |
 |---|---|
 | Radio | Search, favorites, country/language/genre/bitrate/health/compatibility filters, sorting, pinned controls and output selection |
-| Library | Server selection, sample folders, tracks and collections |
+| Library | Server selection, manual source drafts, discovered-server visibility, sample folders and collections |
 | Recently Played | Source history, favorites and playback/output selection |
 | Spotify | Simulated connection state and source selection |
 | Player | Concurrent session selection, Play/Pause/Stop, output selection and volume |
@@ -15,7 +15,7 @@ Actions operate on local JSON simulation state. The table describes the behavior
 | Group settings | Main speaker, persistence and receiver-specific remote group templates |
 | Sound | Bass, startup volume, overall and individual levels according to item capabilities |
 | Network | Reported network state and simulated SSID change |
-| Functions | Alarm and device-function information dialogs |
+| Functions | Capability-based alarm information for devices and the physical members of pairs/groups |
 | Set up speaker | Candidate selection, configuration and simulated device creation |
 | Updates & maintenance | Availability, simulated firmware progress, diagnostics and settings export |
 | App settings | Language selection, session restoration, appearance and update preferences |

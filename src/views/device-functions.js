@@ -22,6 +22,15 @@ export function renderItemKeyFunctions(s,targetId){
 
 export function renderDeviceFunctions(s,device){
  let result='';
- if(device.capabilities?.alarms)result+=card('Alarms','Scheduled actions for this device.',action('alarms',icon('alarm')+' Manage alarms','btn-soft',`data-id="${esc(device.id)}"`));
+ if(device.capabilities?.alarms)result+=card('Alarms','',action('alarms',icon('alarm')+' Manage alarms','btn-soft',`data-id="${esc(device.id)}"`));
  return result||empty('settings','No additional functions','This device does not report additional configurable functions.');
+}
+
+export function groupFunctionDevices(s,targetId){
+ return leafDeviceIds(s.model,targetId).map(id=>entity(s.model,id)).filter(device=>device?.capabilities?.alarms);
+}
+
+export function renderGroupFunctions(s,targetId){
+ const devices=groupFunctionDevices(s,targetId);
+ return card('Alarms','Configure alarms on a member device.',`<div class="function-device-list">${devices.map(device=>`<div class="setting-line">${icon('speaker')}<div class="setting-line__body"><strong>${esc(device.name)}</strong><small>${esc([device.brand,device.model].filter(Boolean).join(' '))}</small></div>${action('alarms','Manage alarms','btn-quiet',`data-id="${esc(device.id)}" aria-label="Manage alarms on ${esc(device.name)}"`)}</div>`).join('')}</div>`);
 }

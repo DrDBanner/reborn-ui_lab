@@ -49,8 +49,8 @@ export function appMenu(s){
 }
 export function header(s){
  const views={listen:['Radio','Choose music, then choose where it plays'],library:['Library','Local media and network sources'],history:['Recently played','Resume past listening'],spotify:['Spotify','Streams and playlists'],outputs:['Outputs & playbacks','Sources, playback and available functions'],device:['Device details','Identity and available device functions'],group:['Group details','Membership and persistent grouping'],sessions:['Outputs & playbacks','Sources, playback and available functions'],updates:['Updates & maintenance','Firmware, backups and device diagnostics'],setup:['Set up speaker','Guided discovery and configuration'],settings:['App settings','General preferences and appearance'],help:['Help & info','Documentation, support and project links'],lab:['Design Lab','Scenarios, variants and visual tokens']};
- const [name,sub]=(s.uiLayout?.views||views)[s.view]||views[s.view]||['ST Reborn',''];
- return `<header class="app-header"><div class="header-left">${action('toggle-sidebar-mobile',icon('menu'),'icon-btn mobile-menu','aria-label="Open menu"')}<div class="header-title"><h1>${name}</h1><p>${sub}</p></div></div>${action('toggle-app-menu',brandMark(),'icon-btn mobile-brand','aria-label="ST Reborn menu" aria-haspopup="dialog" aria-controls="app-menu" aria-expanded="'+!!s.appMenuOpen+'"')}</header>`;
+ const [name]=(s.uiLayout?.views||views)[s.view]||views[s.view]||['ST Reborn',''];
+ return `<header class="app-header"><div class="header-left">${action('toggle-sidebar-mobile',icon('menu'),'icon-btn mobile-menu','aria-label="Open menu"')}<div class="header-title"><h1>${esc(name)}</h1></div></div>${action('toggle-app-menu',brandMark(),'icon-btn mobile-brand','aria-label="ST Reborn menu" aria-haspopup="dialog" aria-controls="app-menu" aria-expanded="'+!!s.appMenuOpen+'"')}</header>`;
 }
 export function player(s){
  const m=s.model,session=currentSession(m);

@@ -25,7 +25,7 @@ function boot(){
 const ready=()=>new Promise(resolve=>setTimeout(resolve,12));
 test('single file loads, renders and switches views/scenarios without a backend',async()=>{
  const {ctx,app}=boot();await ready();
- assert(app.innerHTML.includes('Discover stations'));
+ assert(app.innerHTML.includes('aria-label="Station search and filters"'));
  assert(!app.innerHTML.includes('Quick presets'));
  assert(app.innerHTML.includes('PLAYING'));
  await vm.runInContext("onAction('navigate',{dataset:{value:'outputs'}})",ctx);await ready();
@@ -491,4 +491,46 @@ test('scenario selection restores fixtures and older Everyday snapshots refresh 
  assert.equal(vm.runInContext('state.model.devices[0].name',ctx),'Living Room L');
  await vm.runInContext("state.model.devices[0].name='Another edit';save();onAction('load-scenario',{dataset:{id:'home'}})",ctx);
  assert.equal(vm.runInContext('state.model.devices[0].name',ctx),'Living Room L');
+});
+
+test('library settings save drafts per scenario, cancel removals and survive reload',async()=>{
+ const {ctx,app}=boot();await ready();
+ const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('library-settings',{dataset:{}})");
+ await run("onField('library-name',{value:'Office NAS'})");
+ await run("onField('library-address',{value:'192.168.0.50:8200'})");
+ await run("onAction('library-add',{dataset:{}})");
+ assert.equal(run('state.modal.servers.length'),1);
+ assert.equal(run('state.model.libraryServers?.length||0'),0);
+ await run("onAction('close-modal',{dataset:{}})");
+ await run("onAction('library-settings',{dataset:{}})");
+ assert.equal(run('state.modal.servers.length'),0);
+ await run("onField('library-name',{value:'Office NAS'})");
+ await run("onField('library-address',{value:'192.168.0.50:8200'})");
+ await run("onAction('library-add',{dataset:{}})");
+ await run("onField('library-discovered',{checked:false})");
+ await run("onAction('library-settings-save',{dataset:{}})");
+ await run("loadScenario('home')");
+ assert.equal(run('state.model.libraryServers[0].name'),'Office NAS');
+ assert.equal(run('state.model.settings.showDiscoveredLibraries'),false);
+ await run("onAction('navigate',{dataset:{value:'library'}})");
+ assert(app.innerHTML.includes('Office NAS'));assert(!app.innerHTML.includes('data-id="nas1"'));
+ await run("onAction('library-settings',{dataset:{}})");
+ await run("onAction('library-remove',{dataset:{id:'manual-library-1'}})");
+ await run("onAction('close-modal',{dataset:{}})");
+ assert.equal(run('state.model.libraryServers.length'),1);
+});
+
+test('group alarm actions keep their member binding and validate capabilities again',async()=>{
+ const {ctx,app}=boot();await ready();
+ const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('group-open',{dataset:{id:'g1'}})");
+ await run("onAction('group-tab',{dataset:{value:'functions'}})");
+ await run("onAction('alarms',{dataset:{id:'d3'}})");
+ assert.equal(run('state.modal.title'),'Alarms · Kitchen');
+ assert.equal(run('state.view'),'group');assert.equal(run('state.detailOutputId'),'g1');
+ assert(app.innerHTML.includes('not connected in this UI Lab'));
+ await run("onAction('close-modal',{dataset:{}});state.model.devices.find(d=>d.id==='d3').capabilities.alarms=false;onAction('alarms',{dataset:{id:'d3'}})");
+ assert.equal(run('state.modal'),null);
+ assert.equal(run('state.toasts.at(-1).kind'),'error');
 });

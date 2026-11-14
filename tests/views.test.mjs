@@ -119,3 +119,18 @@ test('Playing section is hidden when there is no playback',()=>{
  const active=sidebar({model,catalog,view:'outputs',designTokens:tokens});
  assert.equal((active.match(/aria-current="page"/g)||[]).length,1);
 });
+
+test('group Functions resolves supported physical members once and hides unavailable functions',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/nested-groups.json'),'utf8'));
+ const s={model,catalog,detailOutputId:'g3'};
+ model.ui.groupTab='functions';
+ const html=renderGroup(s);
+ assert(html.includes('data-value="functions"'));
+ for(const id of ['d1','d2','d3','d4','d7'])assert.equal((html.match(new RegExp('data-action="alarms" data-id="'+id+'"','g'))||[]).length,1);
+ assert(!html.includes('data-action="alarms" data-id="d5"'));
+ for(const device of model.devices)device.capabilities.alarms=false;
+ assert(!renderGroup(s).includes('data-value="functions"'));
+ s.detailOutputId='p1';model.devices[0].capabilities.alarms=true;
+ assert(renderGroup(s).includes('data-action="alarms" data-id="d1"'));
+ assert(!renderGroup(s).includes('data-action="alarms" data-id="d2"'));
+});

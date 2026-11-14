@@ -17,7 +17,7 @@ module.exports=async({page,log})=>{
   await page.setViewport({width,height:1000,deviceScaleFactor:1,isMobile:width<720,hasTouch:width<720});
   await page.evaluate(async(url,appearance)=>{const {state,loadScenario,applyDesign,notify}=await import(url);await loadScenario('home',false,true);state.designTokens.appearance=appearance;applyDesign();state.model.groups.push({id:'g2',name:'Bedroom + Terrace R',memberIds:['d4','d5','d6','d7'],leaderDeviceId:'d7',persistent:false,volume:25});state.model.groups[0].memberIds.push('g2');state.model.sessions=state.model.sessions.filter(s=>s.targetId==='g1');state.view='group';state.detailOutputId='g1';state.toasts=[];notify()},refreshedUrl,appearance);
   const tabs=[];
-  for(const tab of ['overview','sound','advanced']){
+  for(const tab of ['overview','sound','functions','advanced']){
    await click('[data-action="group-tab"][data-value="'+tab+'"]');
    const geometry=await page.evaluate(()=>{const e=document.querySelector('.item-membership'),r=e.getBoundingClientRect(),rows=[...e.querySelectorAll('.item-member')];return {width:r.width,height:r.height,rows:rows.map(e=>{const r=e.getBoundingClientRect();return {x:r.x,width:r.width,height:r.height,labelY:e.querySelector('strong').getBoundingClientRect().y-r.y}}),gutter:getComputedStyle(document.querySelector('.workspace')).scrollbarGutter,overflow:document.querySelector('.workspace').scrollWidth>document.querySelector('.workspace').clientWidth+1}});
    check(geometry.gutter==='stable'&&!geometry.overflow,'Gutter/overflow '+width);

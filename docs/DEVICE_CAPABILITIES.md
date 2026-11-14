@@ -21,6 +21,10 @@ The UI reads function availability from `capabilities`:
 
 Fixtures supply these values in the UI Lab. Backend adapters provide capability detection and device operations for integration. The Device capabilities scenario includes sample devices with six keys, two keys and a display endpoint.
 
+## Functions in groups and pairs
+
+Functions is available when a physical member reports additional functions. Alarms lists each supporting device once, including members of nested groups. Each action names and addresses that device. Alarm editing and scheduling remain an integration task. Preset controls stay above the tabs; membership settings stay under Group Members.
+
 ## Button presets
 
 Button presets appear above item configuration tabs. The compact view uses up to three keys per row. Buttons on chooses a physical member in group/pair details; Once/Twice chooses the gesture layer. The adjacent gear exposes editing, transfer and detailed source information.

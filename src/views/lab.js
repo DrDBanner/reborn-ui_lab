@@ -1,12 +1,11 @@
-import {esc,icon,action,navHeader,card} from '../components/shared.js';
+import {esc,icon,action,pageTools,card} from '../components/shared.js';
 import {currentSession,visibleOutputs,entity} from '../app/model.js';
 
 export function renderLab(s){
  const d=s.designTokens||{},m=s.model,variant=m.ui.speakerVariant||'sidebar';
  const scenario=s.scenarioIndex.find(x=>x.id===s.scenarioId);const variants=s.variants?.speakerManagement||[{id:'panel',label:'A · Contextual player panel',description:'Output control from player',icon:'vertical_split'},{id:'sidebar',label:'B · Persistent sidebar',description:'Outputs as sidebar shortcuts',icon:'dock_to_left'}];
  const compactList=visibleOutputs(m).slice(0,4);
- return `${navHeader('Design Lab','One model, alternative layouts and reproducible device states.',`${action('export-scenario',icon('download')+' Export JSON','btn-soft')}`)}
- <div class="lab-intro">${icon('experiment')}<div><strong>Make decisions in a running interface.</strong><p>Switch the presentation without replacing the speakers, groups or playback sessions underneath. Reload the scenario to return to its original state.</p></div></div>
+ return `${pageTools(`${action('export-scenario',icon('download')+' Export JSON','btn-soft')}`)}
  <div class="two-col two-col--wide">${card('A/B: speaker navigation','Only placement changes. Same model and actions.',`<div class="variant-options">${variants.map(v=>`<label class="choice-row ${variant===v.id?'choice-row--selected':''}"><input type="radio" name="speakerVariant" data-field="speaker-variant" value="${esc(v.id)}" ${variant===v.id?'checked':''}/><span>${icon(v.icon)}</span><div><strong>${esc(v.label)}</strong><small>${esc(v.description)}</small></div></label>`).join('')}</div>
  <p class="lab-hint">Try creating a group, playing a station and switching variants. The state is preserved.</p>`)}
  ${card('Scenarios','Test states without matching physical hardware',`<div class="scenario-list">${s.scenarioIndex.map(x=>`<button class="scenario-option ${s.scenarioId===x.id?'active':''}" data-action="load-scenario" data-id="${x.id}"><strong>${esc(x.name)}</strong><small>${esc(x.description)}</small>${s.scenarioId===x.id?icon('check_circle'):''}</button>`).join('')}</div>

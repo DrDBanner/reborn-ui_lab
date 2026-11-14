@@ -59,7 +59,7 @@ small{font-size:11px}
 .output-item__trail .material-symbols-rounded{color:var(--faint);font-size:14px}.output-item__trail .stream-symbol{color:var(--accent)}
 .sidebar-more{background:transparent;border:0;color:var(--accent);text-align:left;padding:7px 12px;font-size:11px}
 .app-main{min-width:0;min-height:0;position:relative;display:flex;flex-direction:column;overflow:hidden}
-.app-header{height:80px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);padding:0 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;position:sticky;top:0;z-index:3}
+.app-header{height:68px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);padding:0 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;position:sticky;top:0;z-index:3}
 .header-title h1{margin:0;font-size:20px;font-weight:650;letter-spacing:-.5px}.header-title p{font-size:11px;color:var(--faint);margin:3px 0 0}
 .header-left,.header-right{display:flex;align-items:center;gap:14px}.header-left{min-width:0}
 .header-right{flex-shrink:0}.header-status{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px;white-space:nowrap}
@@ -521,3 +521,21 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 .license-notices{margin-top:20px;font-size:12px}.license-notices summary{cursor:pointer;padding:10px 0}.license-document{border-top:1px solid var(--border)}.license-document pre{font-size:11px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;max-height:280px;overflow:auto;padding:12px;margin:0 0 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px}
 
 .item-member__leader{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.item-member__label{padding-top:3px}.item-member>.entity-type{margin-top:3px}
+
+/* The shell names the route; workspace headings identify sections and items. */
+.page-tools{display:flex;justify-content:flex-end;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.workspace>.section-wrap:first-child{margin-top:0}
+.function-device-list .setting-line{margin:0;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.function-device-list .setting-line:first-child{padding-top:0}
+.function-device-list .setting-line:last-child{padding-bottom:0;border-bottom:0}
+.function-device-list .setting-line>.material-symbols-rounded{color:var(--muted)}
+
+.library-server-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.library-empty{font-size:12px;color:var(--muted);padding:14px;margin:0}
+.library-discovery-setting{display:flex;align-items:center;gap:10px;font-size:12px;margin-bottom:24px}
+.library-manual-sources h3{font-size:14px;margin:0 0 12px}
+.library-config-list .setting-line{border-bottom:1px solid var(--border);padding:12px 0}
+.library-add-form{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:18px}
+.library-add-form label{display:grid;gap:6px;font-size:12px;flex:1 1 200px;min-width:0}
+.library-add-form input{width:100%}
+.library-manual-sources>.danger-text{font-size:12px;line-height:1.6;min-height:1em}

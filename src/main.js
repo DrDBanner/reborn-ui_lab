@@ -61,7 +61,7 @@ function render(){
 subscribe(render);
 document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();onAction(button.dataset.action,button)}});
 document.addEventListener('change',event=>{const field=event.target.closest('[data-field]');if(field)onField(field.dataset.field,field)});
-document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','composite-name','preset-search'].includes(field.dataset.field))onField(field.dataset.field,field)});
+document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','composite-name','preset-search','library-name','library-address'].includes(field.dataset.field))onField(field.dataset.field,field)});
 document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&state.modal?.kind==='rename'&&event.target.dataset?.field==='device-name'){event.preventDefault();onAction('device-rename-save',document.createElement('button'));}
  if(event.key==='Tab'&&state.appMenuOpen){

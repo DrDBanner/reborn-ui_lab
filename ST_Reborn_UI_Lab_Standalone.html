@@ -104,7 +104,7 @@ small{font-size:11px}
 .output-item__trail .material-symbols-rounded{color:var(--faint);font-size:14px}.output-item__trail .stream-symbol{color:var(--accent)}
 .sidebar-more{background:transparent;border:0;color:var(--accent);text-align:left;padding:7px 12px;font-size:11px}
 .app-main{min-width:0;min-height:0;position:relative;display:flex;flex-direction:column;overflow:hidden}
-.app-header{height:80px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);padding:0 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;position:sticky;top:0;z-index:3}
+.app-header{height:68px;flex-shrink:0;background:var(--bg);border-bottom:1px solid var(--border);padding:0 34px;display:flex;align-items:center;justify-content:space-between;gap:18px;position:sticky;top:0;z-index:3}
 .header-title h1{margin:0;font-size:20px;font-weight:650;letter-spacing:-.5px}.header-title p{font-size:11px;color:var(--faint);margin:3px 0 0}
 .header-left,.header-right{display:flex;align-items:center;gap:14px}.header-left{min-width:0}
 .header-right{flex-shrink:0}.header-status{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px;white-space:nowrap}
@@ -566,6 +566,24 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 .license-notices{margin-top:20px;font-size:12px}.license-notices summary{cursor:pointer;padding:10px 0}.license-document{border-top:1px solid var(--border)}.license-document pre{font-size:11px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;max-height:280px;overflow:auto;padding:12px;margin:0 0 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px}
 
 .item-member__leader{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.item-member__label{padding-top:3px}.item-member>.entity-type{margin-top:3px}
+
+/* The shell names the route; workspace headings identify sections and items. */
+.page-tools{display:flex;justify-content:flex-end;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.workspace>.section-wrap:first-child{margin-top:0}
+.function-device-list .setting-line{margin:0;padding:14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.function-device-list .setting-line:first-child{padding-top:0}
+.function-device-list .setting-line:last-child{padding-bottom:0;border-bottom:0}
+.function-device-list .setting-line>.material-symbols-rounded{color:var(--muted)}
+
+.library-server-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.library-empty{font-size:12px;color:var(--muted);padding:14px;margin:0}
+.library-discovery-setting{display:flex;align-items:center;gap:10px;font-size:12px;margin-bottom:24px}
+.library-manual-sources h3{font-size:14px;margin:0 0 12px}
+.library-config-list .setting-line{border-bottom:1px solid var(--border);padding:12px 0}
+.library-add-form{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:18px}
+.library-add-form label{display:grid;gap:6px;font-size:12px;flex:1 1 200px;min-width:0}
+.library-add-form input{width:100%}
+.library-manual-sources>.danger-text{font-size:12px;line-height:1.6;min-height:1em}
 
 /* Local Google Material Symbols Rounded chevron; see docs/MATERIAL_ICONS.md. */
 :root{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23a4aab5%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
@@ -1102,6 +1120,27 @@ function validateScenario(m) {
   return errors;
 }
 
+// ===== src/app/library.js =====
+// Manual sources belong to the saved scenario; discovered sources come from the catalog.
+function libraryServers(model,catalog){
+ return [...(model.settings?.showDiscoveredLibraries===false?[]:catalog.servers||[]),...(model.libraryServers||[])];
+}
+function normalizeLibraryAddress(value){
+ const raw=String(value||'').trim();
+ if(!raw||/\s/.test(raw))throw new Error('Enter a server address, for example http://192.168.0.20:8200');
+ let url;try{url=new URL(raw.includes('://')?raw:'http://'+raw)}catch{throw new Error('Enter a valid server address')}
+ if(!['http:','https:'].includes(url.protocol)||!url.hostname||url.username||url.password||url.hash)throw new Error('Use an HTTP or HTTPS address without login details or a fragment');
+ return url.href;
+}
+function addLibraryServer(servers,discovered,name,address){
+ const label=String(name||'').trim();
+ if(!label||label.length>120)throw new Error('Enter a source name of up to 120 characters');
+ const normalized=normalizeLibraryAddress(address);
+ if([...servers,...discovered].some(server=>normalizeLibraryAddress(server.address)===normalized))throw new Error('This server is already listed');
+ let number=1;while([...servers,...discovered].some(server=>server.id==='manual-library-'+number))number++;
+ return {id:'manual-library-'+number,name:label,address:normalized,folders:[],manual:true};
+}
+
 // ===== src/app/store.js =====
 
 const listeners=new Set();
@@ -1244,6 +1283,7 @@ function card(title,subtitle,body,extra=''){
 const empty=(symbol,title,description,button='')=>`<div class="empty-state">${icon(symbol,'empty-state__icon')}<h2>${title}</h2><p>${description}</p>${button}</div>`;
 const tab=(id,label,selected,actionName='switch-tab')=>action(actionName,esc(label),`tab-control ${selected?'active':''}`,`data-value="${esc(id)}"`);
 const field=(name,content,help='')=>`<div class="form-row"><label>${name}${help?`<small>${help}</small>`:''}</label><div class="form-row__control">${content}</div></div>`;
+const pageTools=tools=>`<div class="page-tools">${tools}</div>`;
 const navHeader=(title,subtitle,tools='')=>`<div class="page-heading"><div><h1>${title}</h1><p>${subtitle||''}</p></div>${tools?`<div class="page-heading__tools">${tools}</div>`:''}</div>`;
 
 function notificationStack(s){
@@ -1329,8 +1369,8 @@ function appMenu(s){
 }
 function header(s){
  const views={listen:['Radio','Choose music, then choose where it plays'],library:['Library','Local media and network sources'],history:['Recently played','Resume past listening'],spotify:['Spotify','Streams and playlists'],outputs:['Outputs & playbacks','Sources, playback and available functions'],device:['Device details','Identity and available device functions'],group:['Group details','Membership and persistent grouping'],sessions:['Outputs & playbacks','Sources, playback and available functions'],updates:['Updates & maintenance','Firmware, backups and device diagnostics'],setup:['Set up speaker','Guided discovery and configuration'],settings:['App settings','General preferences and appearance'],help:['Help & info','Documentation, support and project links'],lab:['Design Lab','Scenarios, variants and visual tokens']};
- const [name,sub]=(s.uiLayout?.views||views)[s.view]||views[s.view]||['ST Reborn',''];
- return `<header class="app-header"><div class="header-left">${action('toggle-sidebar-mobile',icon('menu'),'icon-btn mobile-menu','aria-label="Open menu"')}<div class="header-title"><h1>${name}</h1><p>${sub}</p></div></div>${action('toggle-app-menu',brandMark(),'icon-btn mobile-brand','aria-label="ST Reborn menu" aria-haspopup="dialog" aria-controls="app-menu" aria-expanded="'+!!s.appMenuOpen+'"')}</header>`;
+ const [name]=(s.uiLayout?.views||views)[s.view]||views[s.view]||['ST Reborn',''];
+ return `<header class="app-header"><div class="header-left">${action('toggle-sidebar-mobile',icon('menu'),'icon-btn mobile-menu','aria-label="Open menu"')}<div class="header-title"><h1>${esc(name)}</h1></div></div>${action('toggle-app-menu',brandMark(),'icon-btn mobile-brand','aria-label="ST Reborn menu" aria-haspopup="dialog" aria-controls="app-menu" aria-expanded="'+!!s.appMenuOpen+'"')}</header>`;
 }
 function player(s){
  const m=s.model,session=currentSession(m);
@@ -1401,6 +1441,17 @@ function renderPresetEditor(s){
  <div class="preset-source-results" aria-label="Available sources">${sources.length?sources.map(item=>action('preset-source-choose',`${icon(sourceTypeIcon(item))}<span><strong>${esc(item.name)}</strong><small>${esc(sourceTypeLabel(item))}${item.subtitle?` · ${esc(item.subtitle)}`:''}</small></span>${icon(item.id===selected?'check_circle':'add')}`,`preset-source-option ${item.id===selected?'is-selected':''}`,`data-id="${esc(item.id)}" aria-pressed="${item.id===selected}" aria-label="Assign ${esc(item.name)}, ${esc(sourceTypeLabel(item))}, to key ${key+1}"`)).join(''):empty('search_off','No matching sources','Try another source type or search.')}</div>
  <p class="preset-draft-status" role="status">Key ${key+1}: ${esc(source(s.catalog,selected)?.name||'Unassigned')}${hasChanges?' · Unsaved changes':''}</p></section></div>
  <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('preset-save','Save assignments','primary-btn',hasChanges?'':'disabled')}</div>`;
+}
+
+// ===== src/components/library-settings.js =====
+
+function renderLibrarySettings(s){
+ const draft=s.modal;
+ return `<div class="modal-heading"><h2>Music server settings</h2><p>Manual sources are saved in this scenario. Network discovery is simulated.</p></div>
+ <label class="library-discovery-setting"><input type="checkbox" data-field="library-discovered" ${draft.showDiscovered?'checked':''}/><span>Show discovered servers</span></label>
+ <section class="library-manual-sources" aria-label="Manual sources"><h3>Manual sources</h3>${draft.servers.length?`<div class="library-config-list">${draft.servers.map(server=>`<div class="setting-line"><div class="setting-line__body"><strong>${esc(server.name)}</strong><small>${esc(server.address)}</small></div>${action('library-remove',icon('delete_outline'),'icon-btn',`data-id="${esc(server.id)}" aria-label="Remove ${esc(server.name)}"`)}</div>`).join('')}</div>`:'<p class="muted">No manual sources added.</p>'}
+ <div class="library-add-form"><label for="library-name">Name<input id="library-name" class="text-input" data-field="library-name" value="${esc(draft.name)}" maxlength="120" autocomplete="off"/></label><label for="library-address">Server address<input id="library-address" class="text-input" type="url" data-field="library-address" value="${esc(draft.address)}" placeholder="http://192.168.0.20:8200" autocomplete="off" aria-describedby="library-source-error"/></label>${action('library-add',icon('add')+' Add source','btn-soft')}</div><p id="library-source-error" class="danger-text" role="status">${esc(draft.error||'')}</p></section>
+ <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('library-settings-save','Save settings','primary-btn')}</div>`;
 }
 
 // ===== src/components/dialog.js =====
@@ -1499,7 +1550,7 @@ function renameDialog(s){
 }
 function genericDialog(s){const t=s.modal||{};return `<div class="modal-heading"><h2>${esc(t.title||'Information')}</h2><p>${esc(t.description||'')}</p></div>${t.body?`<div class="modal-generic">${t.body}</div>`:''}<div class="modal-footer">${action('close-modal','Close','primary-btn')}</div>`}
 function renderDialog(s){if(!s.modal)return '';
- const inner=s.modal.kind==='membership'?renderMembershipDialog(s):s.modal.kind==='group-settings'?renderGroupSettings(s):s.modal.kind==='button-transfer'?renderPresetTransfer(s):s.modal.kind==='button-transfer-result'?renderPresetTransferResult(s):s.modal.kind==='rename'?renameDialog(s):s.modal.kind==='picker'?outputPicker(s):s.modal.kind==='create'?renderCompositeDialog(s):s.modal.kind==='volume'?volumeDialog(s):s.modal.kind==='preset'?renderPresetEditor(s):s.modal.kind==='wifi'?wifiDialog(s):s.modal.kind==='maintenance'?deviceMaintenance(s):genericDialog(s);
+ const inner=s.modal.kind==='library-settings'?renderLibrarySettings(s):s.modal.kind==='membership'?renderMembershipDialog(s):s.modal.kind==='group-settings'?renderGroupSettings(s):s.modal.kind==='button-transfer'?renderPresetTransfer(s):s.modal.kind==='button-transfer-result'?renderPresetTransferResult(s):s.modal.kind==='rename'?renameDialog(s):s.modal.kind==='picker'?outputPicker(s):s.modal.kind==='create'?renderCompositeDialog(s):s.modal.kind==='volume'?volumeDialog(s):s.modal.kind==='preset'?renderPresetEditor(s):s.modal.kind==='wifi'?wifiDialog(s):s.modal.kind==='maintenance'?deviceMaintenance(s):genericDialog(s);
  return `<div class="overlay" role="presentation"><div class="modal-window ${s.modal.kind==='membership'?'modal-window--membership':s.modal.kind==='group-settings'?'modal-window--group-settings':s.modal.kind==='button-transfer'?'modal-window--transfer':s.modal.kind==='create'?'modal-window--create':s.modal.kind==='preset'?'modal-window--preset':s.modal.kind==='volume'?'modal-window--volume':''}" role="dialog" aria-modal="true" aria-label="${esc(s.modal.title||s.modal.kind||'Dialog')}"><div class="modal-window__close">${action('close-modal',icon('close'),'icon-btn','aria-label="Close dialog"')}</div>${inner}</div><button class="overlay-backdrop" data-action="close-modal" aria-label="Close dialog"></button></div>`;
 }
 
@@ -1528,8 +1579,17 @@ function renderItemKeyFunctions(s,targetId){
 
 function renderDeviceFunctions(s,device){
  let result='';
- if(device.capabilities?.alarms)result+=card('Alarms','Scheduled actions for this device.',action('alarms',icon('alarm')+' Manage alarms','btn-soft',`data-id="${esc(device.id)}"`));
+ if(device.capabilities?.alarms)result+=card('Alarms','',action('alarms',icon('alarm')+' Manage alarms','btn-soft',`data-id="${esc(device.id)}"`));
  return result||empty('settings','No additional functions','This device does not report additional configurable functions.');
+}
+
+function groupFunctionDevices(s,targetId){
+ return leafDeviceIds(s.model,targetId).map(id=>entity(s.model,id)).filter(device=>device?.capabilities?.alarms);
+}
+
+function renderGroupFunctions(s,targetId){
+ const devices=groupFunctionDevices(s,targetId);
+ return card('Alarms','Configure alarms on a member device.',`<div class="function-device-list">${devices.map(device=>`<div class="setting-line">${icon('speaker')}<div class="setting-line__body"><strong>${esc(device.name)}</strong><small>${esc([device.brand,device.model].filter(Boolean).join(' '))}</small></div>${action('alarms','Manage alarms','btn-quiet',`data-id="${esc(device.id)}" aria-label="Manage alarms on ${esc(device.name)}"`)}</div>`).join('')}</div>`);
 }
 
 // ===== src/views/item-detail.js =====
@@ -1571,35 +1631,34 @@ function renderSessions(s){return renderOutputs(s)}
 
 
 
+
 function rowPlayback(s){
  const id=currentSession(s.model)?.targetId,playTarget=entity(s.model,id);
  return {playTarget,playable:!!playTarget&&['online','partial'].includes(targetStatus(s.model,id))};
 }
 function radio(s){
- const result=filterRadioSources(s.model,s.catalog,s.filter),favorites=s.model.ui.radioTab==='favorites';
- return `<section class="section-wrap radio-stations"><div class="section-heading"><div><h2>${favorites?'Favorite stations':'Discover stations'}</h2><p>Find, preview and assign a source to any output.</p></div></div>
+ const result=filterRadioSources(s.model,s.catalog,s.filter);
+ return `<section class="radio-stations" aria-label="Radio stations">
  ${radioControls(s)}
  <div class="source-list">${result.length?result.map(item=>sourceRow(item,{favorite:s.model.favorites.includes(item.id),...rowPlayback(s)})).join(''):empty('search_off','No matching stations','Try another search or adjust filters.',action('reset-radio-filters','Reset filters','btn-soft'))}</div></section>`;
 }
 function library(s){
- const servers=s.catalog.servers,chosen=s.model.ui.libraryServer||servers[0].id,server=servers.find(x=>x.id===chosen)||servers[0],sources=s.catalog.sources.filter(x=>x.type==='library');
- return `${navHeader('Media library','Browse network media without repeating player or output controls.')}
- <div class="two-col"><section class="panel"><header class="panel-head"><h2>Music servers</h2><p>Available network libraries</p></header><div class="server-list">${servers.map(x=>action('library-server',icon('dns')+`<span><strong>${esc(x.name)}</strong><small>${esc(x.address)}</small></span>`,'list-card '+(x.id===chosen?'active':''),`data-id="${x.id}"`)).join('')}</div></section>
- <section class="panel"><header class="panel-head"><h2>${esc(server.name)}</h2><p>Folders and saved queues</p></header><div class="folder-list">${server.folders.map(name=>action('library-folder',icon('folder')+`<span>${esc(name)}</span>`+icon('chevron_right'),'folder-row',`data-value="${esc(name)}"`)).join('')}</div></section></div>
- <section class="section-wrap"><div class="section-heading"><div><h2>Collections</h2><p>Sample titles from the selected server</p></div></div><div class="tile-grid">${sources.map(x=>sourceTile(x)).join('')}</div></section>`;
+ const servers=libraryServers(s.model,s.catalog),chosen=s.model.ui.libraryServer||servers[0]?.id,server=servers.find(x=>x.id===chosen)||servers[0],sources=s.catalog.sources.filter(x=>x.type==='library');
+ return ` <div class="two-col"><section class="panel"><header class="panel-head library-server-heading"><h2>Music servers</h2>${action('library-settings',icon('settings'),'icon-btn', 'title="Music server settings" aria-label="Music server settings"')}</header><div class="server-list">${servers.map(x=>action('library-server',icon('dns')+`<span><strong>${esc(x.name)}</strong><small>${esc(x.address)}</small></span>`,'list-card '+(x.id===server?.id?'active':''),`data-id="${esc(x.id)}"`)).join('')||'<p class="library-empty">Add a source in Music server settings.</p>'}</div></section>
+ <section class="panel"><header class="panel-head"><h2>${esc(server?.name||'Library contents')}</h2></header><div class="folder-list">${server?.folders?.length?server.folders.map(name=>action('library-folder',icon('folder')+`<span>${esc(name)}</span>`+icon('chevron_right'),'folder-row',`data-value="${esc(name)}"`)).join(''):`<p class="library-empty">${server?'No contents loaded for this source.':'Select a music server.'}</p>`}</div></section></div>
+ <section class="section-wrap"><div class="section-heading"><div><h2>Collections</h2></div></div><div class="tile-grid">${sources.map(x=>sourceTile(x)).join('')}</div></section>`;
 }
 function history(s){const sources=(s.model.history||[]).map(id=>source(s.catalog,id)).filter(Boolean);
- return `${navHeader('Recently played','Resume a source or play it somewhere else.')}
- <section class="panel panel--flush">${sources.length?sources.map(x=>sourceRow(x,{favorite:s.model.favorites.includes(x.id),...rowPlayback(s)})).join(''):empty('history','Nothing played yet','Sources you start will appear here.')}</section>`;
+ return ` <section class="panel panel--flush">${sources.length?sources.map(x=>sourceRow(x,{favorite:s.model.favorites.includes(x.id),...rowPlayback(s)})).join(''):empty('history','Nothing played yet','Sources you start will appear here.')}</section>`;
 }
 function spotify(s){const connected=s.model.spotifyConnected,sources=s.catalog.sources.filter(x=>x.type==='spotify');
- return `${navHeader('Spotify','Playback and playlists use the same output selection as radio and library.')}
- <section class="panel spotify-header"><span class="spotify-symbol">${icon('music_cast')}</span><div><h2>${connected?'Spotify connected':'Spotify is not connected'}</h2><p>${connected?'Sample connected account · Prototyped state':'Connect an account to access playlists and playback.'}</p></div>${action('spotify-connect',connected?'Disconnect':'Connect (simulate)','primary-btn')}</section>
- ${connected?`<section class="section-wrap"><div class="section-heading"><h2>Playlists</h2></div><div class="tile-grid">${sources.map(x=>sourceTile(x)).join('')}</div></section>`:card('How this works','A simulated sign-in state',`<p>Real authorization is deliberately not implemented here. The frontend can still exercise navigation, linked-state UI and source assignment.</p>${action('spotify-connect','Simulate connection','btn-soft mt-3')}`)}`;
+ return ` <section class="panel spotify-header"><span class="spotify-symbol">${icon('music_cast')}</span><div><h2>${connected?'Spotify connected':'Spotify is not connected'}</h2><p>${connected?'Sample account':'Connect an account to access playlists and playback.'}</p></div>${action('spotify-connect',connected?'Disconnect':'Connect (simulate)','primary-btn')}</section>
+ ${connected?`<section class="section-wrap"><div class="section-heading"><h2>Playlists</h2></div><div class="tile-grid">${sources.map(x=>sourceTile(x)).join('')}</div></section>`:''}`;
 }
 function renderListen(s){if(s.view==='library')return library(s);if(s.view==='history')return history(s);if(s.view==='spotify')return spotify(s);return radio(s)}
 
 // ===== src/views/outputs.js =====
+
 
 
 
@@ -1625,17 +1684,18 @@ function renderOutputs(s){
 }
 function renderGroup(s){const m=s.model,group=entity(m,s.detailOutputId),type=kind(m,s.detailOutputId);
  if(!group||type==='device')return empty('speaker_group','Group not found','Choose a group from Outputs & groups.',action('navigate','All outputs','btn-soft','data-value="outputs"'));
- const session=effectiveSessionFor(m,group.id),tabs=[['overview','Overview'],['sound','Sound'],['advanced','Advanced']];
+ const session=effectiveSessionFor(m,group.id),tabs=[['overview','Overview'],['sound','Sound'],...(groupFunctionDevices(s,group.id).length?[['functions','Functions']]:[]),['advanced','Advanced']];
  const tabId=tabs.some(([id])=>id===m.ui.groupTab)?m.ui.groupTab:'overview';
  const title=type==='pair'?'Stereo pair':'Speaker group',now=source(s.catalog,session?.sourceId);
  let body='';
- if(tabId==='overview')body=`<div class="two-col two-col--wide">${card('Output identity','Information about this playback target',`<div class="key-values"><div><span>Status</span>${statusBadge(targetStatus(m,group.id))}</div><div><span>Type</span><strong>${title}</strong></div><div><span>Member devices</span><strong>${leafDeviceIds(m,group.id).length}</strong></div>${type==='pair'?'<div><span>Channels</span><strong>Left / Right</strong></div>':''}</div>`)}
- ${card('Current playback','Source assigned to this output',`<div class="setting-line"><span class="setting-line__icon">${icon('music_cast')}</span><div class="setting-line__body"><strong>${esc(now?.name||'Nothing playing')}</strong><small>${session?esc(session.status==='playing'?'Playing':session.status==='paused'?'Paused':'Stopped'):'Choose a source to start playback'}${session&&session.targetId!==group.id?' · via '+esc(entity(m,session.targetId)?.name):''}</small></div></div>${action('navigate','Browse sources','btn-soft mt-4','data-value="listen"')}`)}</div>`;
+ if(tabId==='overview')body=`<div class="two-col two-col--wide">${card('Output identity','',`<div class="key-values"><div><span>Status</span>${statusBadge(targetStatus(m,group.id))}</div><div><span>Type</span><strong>${title}</strong></div><div><span>Member devices</span><strong>${leafDeviceIds(m,group.id).length}</strong></div>${type==='pair'?'<div><span>Channels</span><strong>Left / Right</strong></div>':''}</div>`)}
+ ${card('Current playback','',`<div class="setting-line"><span class="setting-line__icon">${icon('music_cast')}</span><div class="setting-line__body"><strong>${esc(now?.name||'Nothing playing')}</strong><small>${session?esc(session.status==='playing'?'Playing':session.status==='paused'?'Paused':'Stopped'):'Choose a source to start playback'}${session&&session.targetId!==group.id?' · via '+esc(entity(m,session.targetId)?.name):''}</small></div></div>${action('navigate','Browse sources','btn-soft mt-4','data-value="listen"')}`)}</div>`;
  if(tabId==='sound'){
   const ids=leafDeviceIds(m,group.id),overall=group.volume??25;
   const row=(id,name,value,field,status='')=>`<div class="volume-level"><label for="${field==='composite-volume'?'group-volume':'level-'+esc(id)}">${esc(name)}${status?`<small>${esc(status)}</small>`:''}</label><input id="${field==='composite-volume'?'group-volume':'level-'+esc(id)}" class="volume-slider" style="--range-fill:${value}%" type="range" min="0" max="100" value="${value}" data-field="${field}" data-id="${esc(id)}" aria-valuetext="${value} percent" aria-label="Volume for ${esc(name)}" ${status&&status!=='online'?'disabled':''}/><output for="${field==='composite-volume'?'group-volume':'level-'+esc(id)}">${value} %</output></div>`;
   body=card('Volume','Adjust this output together or set individual speaker levels.',`<div class="volume-settings">${row(group.id,'Overall volume',overall,'composite-volume')}${ids.map(id=>{const d=entity(m,id);return row(id,d.name,d.volume??25,'member-volume',d.status)}).join('')}</div>`);
  }
+ if(tabId==='functions')body=renderGroupFunctions(s,group.id);
  if(tabId==='advanced')body=card('Membership','Dissolving this output keeps the physical speakers configured.',action('dissolve-group',icon('delete_outline')+` Dissolve ${type==='pair'?'pair':'group'}`,'danger-btn'));
  return renderItemDetail(s,{item:group,subtitle:`${leafDeviceIds(m,group.id).length} speakers · ${type==='pair'?'Stereo':group.persistent?'Persistent':'Temporary'}`,tabs,tabId,tabAction:'group-tab',body});
 }
@@ -1653,16 +1713,16 @@ function renderDevice(s){
  const tabId=tabs.some(([id])=>id===m.ui.deviceTab)?m.ui.deviceTab:'overview';
  let contents='';
  if(tabId==='overview')contents=`<div class="two-col two-col--wide">
- ${card('Device identity','Information reported by this device',`<div class="key-values"><div><span>Status</span>${statusBadge(d.status)}</div><div><span>Brand</span><strong>${esc(d.brand||'Not reported')}</strong></div><div><span>Model</span><strong>${esc(d.model||'Not reported')}</strong></div><div><span>Hardware revision</span><strong>${esc(d.hardwareRevision||'Not reported')}</strong></div><div><span>IP address</span><strong>${esc(d.ip)}</strong></div><div><span>Firmware</span><strong>${esc(d.firmware||'Not reported')}</strong></div>${d.agentName?`<div><span>${esc(d.agentName)} agent</span><strong>${esc(d.agentVersion||'Not reported')}</strong></div>`:''}<div><span>Last seen</span><strong>${d.status==='offline'?'Unavailable':'Just now · simulated'}</strong></div></div>${action('device-info',icon('info')+' More details','btn-soft mt-4')}`)}
- ${d.capabilities?.remote?card('Remote & quick actions','The phone remote is a related function, not the primary way to manage the device.',`<div class="remote-box">${icon('phone_iphone')}<div><strong>Phone remote</strong><p>Open the speaker's remote-control endpoint or show a QR code.</p></div></div><div class="button-row">${action('remote-preview','Remote preview','btn-soft')}${action('remote-qr','Show QR code','btn-quiet')}</div>`):card('Available functions','Functions reported by this device.',`<div class="button-row">${tabs.filter(([id])=>!['overview','advanced'].includes(id)).map(([id,label])=>action('device-tab',esc(label),'btn-soft',`data-value="${id}"`)).join('')||'<p>No optional functions reported.</p>'}</div>`)}
+ ${card('Device identity','',`<div class="key-values"><div><span>Status</span>${statusBadge(d.status)}</div><div><span>Brand</span><strong>${esc(d.brand||'Not reported')}</strong></div><div><span>Model</span><strong>${esc(d.model||'Not reported')}</strong></div><div><span>Hardware revision</span><strong>${esc(d.hardwareRevision||'Not reported')}</strong></div><div><span>IP address</span><strong>${esc(d.ip)}</strong></div><div><span>Firmware</span><strong>${esc(d.firmware||'Not reported')}</strong></div>${d.agentName?`<div><span>${esc(d.agentName)} agent</span><strong>${esc(d.agentVersion||'Not reported')}</strong></div>`:''}<div><span>Last seen</span><strong>${d.status==='offline'?'Unavailable':'Just now · simulated'}</strong></div></div>${action('device-info',icon('info')+' More details','btn-soft mt-4')}`)}
+ ${d.capabilities?.remote?card('Remote & quick actions','',`<div class="remote-box">${icon('phone_iphone')}<div><strong>Phone remote</strong><p>Open the speaker's remote-control endpoint or show a QR code.</p></div></div><div class="button-row">${action('remote-preview','Remote preview','btn-soft')}${action('remote-qr','Show QR code','btn-quiet')}</div>`):card('Available functions','',`<div class="button-row">${tabs.filter(([id])=>!['overview','advanced'].includes(id)).map(([id,label])=>action('device-tab',esc(label),'btn-soft',`data-value="${id}"`)).join('')||'<p>No optional functions reported.</p>'}</div>`)}
  </div>`;
- if(tabId==='sound')contents=`${card('Sound','Settings that persist on the speaker; current volume stays in the player.',
+ if(tabId==='sound')contents=`${card('Sound','',
  `${field('Bass',`<div class="range-row"><span>Less</span><input type="range" min="-10" max="10" value="${d.bass??0}" data-field="bass"/><span>More</span><strong>${d.bass??0}</strong></div>`, 'Device dependent')}
  ${field('Fixed startup volume',`<label class="switch-row"><input type="checkbox" data-field="start-volume-enabled" ${d.startVolumeEnabled?'checked':''} /><span>${d.startVolumeEnabled?'On':'Off'}</span></label>`, 'Otherwise the speaker uses its normal startup behavior.')}
  ${d.startVolumeEnabled?field('Startup volume',`<div class="range-row"><input type="range" min="0" max="100" value="${d.startVolume}" data-field="start-volume"/><strong>${d.startVolume}</strong></div>`):''}`)}
- ${card('Additional audio channels','Balance and surround controls are only available when the selected output reports them.',`<div class="subtle-alert">${icon('info')} Not available for this speaker model in the sample data.</div>`)}`;
- if(tabId==='network')contents=`<div class="two-col two-col--wide">${card('Current connection','Read-only network information',`<div class="key-values"><div><span>SSID</span><strong>${esc(d.network)}</strong></div><div><span>IP address</span><strong>${esc(d.ip)}</strong></div><div><span>Connectivity</span>${statusBadge(d.status)}</div></div>${action('wifi-change',icon('wifi')+' Change Wi-Fi…','btn-soft mt-4')}`)}
- ${card('Connectivity','Actions should confirm asynchronous device responses.',`<p>Changing the network may temporarily disconnect the speaker. Success should only be reported after the device can be rediscovered.</p>${action('device-ping',icon('network_check')+' Check connection','btn-soft mt-4')}`)}</div>`;
+ `;
+ if(tabId==='network')contents=`<div class="two-col two-col--wide">${card('Current connection','',`<div class="key-values"><div><span>SSID</span><strong>${esc(d.network)}</strong></div><div><span>IP address</span><strong>${esc(d.ip)}</strong></div><div><span>Connectivity</span>${statusBadge(d.status)}</div></div>${action('wifi-change',icon('wifi')+' Change Wi-Fi…','btn-soft mt-4')}`)}
+ ${card('Connectivity','',`${action('device-ping',icon('network_check')+' Check connection','btn-soft mt-4')}`)}</div>`;
  if(tabId==='functions')contents=renderDeviceFunctions(s,d);
  if(tabId==='advanced')contents=` <section class="section-wrap"><div class="section-heading"><h2>Maintenance</h2></div><div class="panel panel--flush">${action('navigate',icon('system_update')+'<span>Software on speaker</span><span class="row-trailing">'+esc(d.firmware)+' '+icon('chevron_right')+'</span>','menu-row','data-value="updates"')}${action('backup',icon('settings_backup_restore')+'<span>Backup and restore</span><span class="row-trailing">Presets & favorites '+icon('chevron_right')+'</span>','menu-row')}${action('device-maintenance',icon('build')+'<span>Other maintenance actions</span><span class="row-trailing">Restart, remove, reset '+icon('chevron_right')+'</span>','menu-row')}</div></section>`;
  return renderItemDetail(s,{item:d,subtitle:`${esc(d.brand||'')} ${esc(d.model)} · ${esc(d.ip)} · ${d.status==='offline'?'Offline':'Device settings'}`,tabs,tabId,tabAction:'device-tab',body:contents});
@@ -1670,40 +1730,38 @@ function renderDevice(s){
 
 function renderUpdates(s){
  const m=s.model,updating=m.devices.filter(d=>d.status==='updating');
- return `${navHeader('Updates & maintenance','Application and speaker software are separate update targets.',`${s.updateChecked?'<span class="muted" role="status">Checked just now</span>':''}${action('check-updates',icon('sync')+' Check updates','btn-soft')}`)}
+ return `${pageTools(`${s.updateChecked?'<span class="muted" role="status">Checked just now</span>':''}${action('check-updates',icon('sync')+' Check updates','btn-soft')}`)}
  ${card('Application updates','ST Reborn desktop application',`<div class="setting-line"><span class="setting-line__icon">${icon('desktop_windows')}</span><div class="setting-line__body"><strong>ST Reborn · ${esc(m.appUpdate?.currentVersion||'UI Lab')}</strong><small>No actual update service is connected in this prototype.</small></div>${m.appUpdate?.available?`<span class="device-status device-status--update"><i></i>Update available${m.appUpdate.version?' · '+esc(m.appUpdate.version):''}</span>`:'<span class="device-status device-status--online"><i></i>Demo</span>'}</div>`)}
  <section class="section-wrap"><div class="section-heading"><div><h2>Speaker firmware</h2><p>Check and install updates on individual devices.</p></div>${updating.length?action('advance-updates',icon('fast_forward')+' Advance simulation','btn-soft'):''}</div>
  <div class="panel panel--flush">${m.devices.length?m.devices.map(d=>`<div class="firmware-row"><span class="firmware-row__icon">${icon('speaker')}</span><span class="firmware-row__label"><strong>${esc(d.name)}</strong><small>${esc(d.model||'Not reported')} · ${esc(d.firmware||'Not reported')}</small></span>
   <div class="firmware-row__progress">${d.status==='updating'?`<div class="progress-track"><span style="width:${d.updateProgress||0}%"></span></div><small>${d.updateProgress||0}% · Updating</small>`:d.status==='offline'?statusBadge('offline'):d.status==='needs_setup'?statusBadge('needs_setup'):d.firmwareAvailable?`<span class="device-status device-status--update"><i></i>Update available</span>`:statusBadge('online')}</div>
   <div>${d.status==='online'&&d.firmwareAvailable?action('update-start','Install update','btn-soft',`data-id="${d.id}"`):action('device-open',icon('chevron_right'),'icon-btn',`data-id="${d.id}"`)}</div></div>`).join(''):empty('system_update','No configured devices','Set up a speaker to check for updates.')}</div></section>
- ${card('Diagnostics & backups','Rare actions remain available without dominating everyday listening.',`<div class="button-row">${action('diagnostics',icon('bug_report')+' Open diagnostics','btn-soft')}${action('backup',icon('backup')+' Backup settings','btn-soft')}${action('restore',icon('settings_backup_restore')+' Restore settings','btn-quiet')}</div>`)}`;
+ ${card('Diagnostics & backups','',`<div class="button-row">${action('diagnostics',icon('bug_report')+' Open diagnostics','btn-soft')}${action('backup',icon('backup')+' Backup settings','btn-soft')}${action('restore',icon('settings_backup_restore')+' Restore settings','btn-quiet')}</div>`)}`;
 }
 
 function renderSetup(s){const m=s.model,step=s.setupStep;
  const steps=['Find','Configure','Finish'];
  const choices=m.setupCandidates||[];const candidate=choices.find(x=>x.id===s.setupSelection);
- return `${navHeader('Set up speaker','A guided workflow; device discovery and provisioning are simulated.',action('navigate',icon('close')+' Close','btn-quiet','data-value="outputs"'))}
+ return `${pageTools(action('navigate',icon('close')+' Close','btn-quiet','data-value="outputs"'))}
  <div class="wizard"><div class="wizard-steps">${steps.map((name,i)=>`<div class="wizard-step ${i===step?'active':''} ${i<step?'done':''}"><span>${i+1}</span>${name}</div>`).join('')}</div>
- ${step===0?`<div class="wizard-content"><h2>Find speakers on your network</h2><p>Choose a discovered device. Existing speakers can also be managed from Outputs & groups.</p>
+ ${step===0?`<div class="wizard-content"><h2>Find speakers on your network</h2>
    ${choices.map(c=>`<label class="choice-row"><input type="radio" name="setupCandidate" data-field="setup-candidate" value="${c.id}" ${s.setupSelection===c.id?'checked':''}/>${icon('speaker')}<span><strong>${esc(c.name)}</strong><small>${esc(c.ip)} · Ready to configure</small></span></label>`).join('')}
    ${choices.length?'':empty('search_off','No speakers found','Try discovery again or select another scenario.')}
-  </div>`:step===1?`<div class="wizard-content"><h2>Configure the speaker</h2><p>${esc(candidate?.name||'Speaker')} · ${esc(candidate?.ip||'')}</p><div class="form-row"><label>Device name</label><input id="setup-name" class="text-input" value="${esc(candidate?.name||'New Speaker')}" /></div><div class="form-row"><label>Wi-Fi network</label><select id="setup-network" class="small-select"><option>Home Network</option><option>Guest Network</option></select></div><div class="subtle-alert">${icon('info')} No actual provisioning takes place in the UI Lab.</div></div>`:`<div class="wizard-content wizard-content--done">${icon('task_alt')}<h2>Speaker ready</h2><p>The simulated device has been added to the device model. It is now accessible from Outputs & groups.</p></div>`}
+  </div>`:step===1?`<div class="wizard-content"><h2>Configure the speaker</h2><p>${esc(candidate?.name||'Speaker')} · ${esc(candidate?.ip||'')}</p><div class="form-row"><label>Device name</label><input id="setup-name" class="text-input" value="${esc(candidate?.name||'New Speaker')}" /></div><div class="form-row"><label>Wi-Fi network</label><select id="setup-network" class="small-select"><option>Home Network</option><option>Guest Network</option></select></div><div class="subtle-alert">${icon('info')} No actual provisioning takes place in the UI Lab.</div></div>`:`<div class="wizard-content wizard-content--done">${icon('task_alt')}<h2>Speaker ready</h2><p>Added to Outputs & groups.</p></div>`}
  <footer class="wizard-footer">${step>0&&step<2?action('setup-back','Back','btn-quiet'):''}${step<2?action('setup-next',step===0?'Continue':'Complete setup','primary-btn',`${step===0&&!candidate?'disabled':''}`):action('navigate','View outputs','primary-btn','data-value="outputs"')}</footer></div>`;
 }
 function renderSettings(s){
  const m=s.model,tabId=m.ui.settingsTab||'general',tabs=[['general','General'],['appearance','Appearance'],['advanced','Advanced']];
  let body='';
- if(tabId==='general')body=card('Application','Common preferences',`${field('Language',`<select data-field="language" class="small-select">${s.catalog.languages.map(l=>`<option ${m.settings.language===l?'selected':''}>${esc(l)}</option>`).join('')}</select>`)}
+ if(tabId==='general')body=card('Application','',`${field('Language',`<select data-field="language" class="small-select">${s.catalog.languages.map(l=>`<option ${m.settings.language===l?'selected':''}>${esc(l)}</option>`).join('')}</select>`)}
  ${field('Restore last session',`<input type="checkbox" role="switch" data-field="restore-session" ${m.settings.restoreSession?'checked':''}/>`)}
  ${field('Check app updates automatically',`<input type="checkbox" role="switch" data-field="auto-update" ${m.settings.autoUpdate?'checked':''}/>`)}
  ${field('Anonymous telemetry',`<input type="checkbox" role="switch" data-field="telemetry" ${m.settings.telemetry?'checked':''}/>`,'Disabled by default in this demo.')}`);
- if(tabId==='appearance')body=card('Appearance','Shared theme properties for the entire interface',`${field('Theme',`<select class="small-select" data-field="appearance"><option value="dark" ${s.designTokens.appearance==='dark'?'selected':''}>Dark</option><option value="light" ${s.designTokens.appearance==='light'?'selected':''}>Light</option></select>`)}${field('Density',`<select class="small-select" data-field="density"><option value="standard" ${s.designTokens.density==='standard'?'selected':''}>Standard</option><option value="compact" ${s.designTokens.density==='compact'?'selected':''}>Compact</option><option value="comfortable" ${s.designTokens.density==='comfortable'?'selected':''}>Comfortable</option></select>`)}${action('navigate','Open complete Design Lab','btn-soft','data-value="lab"')}`);
- if(tabId==='advanced')body=card('Advanced','Developer-focused controls',`${action('navigate',icon('science')+' Design Lab & A/B variants','btn-soft','data-value="lab"')}<p class="mt-4">The real application would retain existing language resources, native menus and Wails bindings. This prototype uses JSON fixtures and does not contact speakers.</p>`);
- return `${navHeader('App settings','A clear distinction between application preferences and per-speaker configuration.')}
- <div class="detail-tabs">${tabs.map(([id,name])=>tab(id,name,tabId===id,'settings-tab')).join('')}</div>${body}`;
+ if(tabId==='appearance')body=card('Appearance','',`${field('Theme',`<select class="small-select" data-field="appearance"><option value="dark" ${s.designTokens.appearance==='dark'?'selected':''}>Dark</option><option value="light" ${s.designTokens.appearance==='light'?'selected':''}>Light</option></select>`)}${field('Density',`<select class="small-select" data-field="density"><option value="standard" ${s.designTokens.density==='standard'?'selected':''}>Standard</option><option value="compact" ${s.designTokens.density==='compact'?'selected':''}>Compact</option><option value="comfortable" ${s.designTokens.density==='comfortable'?'selected':''}>Comfortable</option></select>`)}${action('navigate','Open complete Design Lab','btn-soft','data-value="lab"')}`);
+ if(tabId==='advanced')body=card('Advanced','',`${action('navigate',icon('science')+' Design Lab & A/B variants','btn-soft','data-value="lab"')}`);
+ return ` <div class="detail-tabs">${tabs.map(([id,name])=>tab(id,name,tabId===id,'settings-tab')).join('')}</div>${body}`;
 }
-function renderHelp(s){return `${navHeader('Help & info','Support, documentation and maintenance resources.')}
- <div class="two-col">${card('Get help','Common entry points',`${action('help-open',icon('help')+' User guide','menu-row',`data-value="guide"`)}${action('help-open',icon('bug_report')+' Report a problem','menu-row',`data-value="feedback"`)}${action('help-open',icon('lightbulb')+' Wishes & voting','menu-row',`data-value="ideas"`)}`)}${card('About ST Reborn','Open source application',`<p>UI design and interaction prototype for ST Reborn. Licensed under Apache-2.0.</p><p class="mt-4">UI concept and implementation: <a href="https://github.com/DrDBanner" target="_blank" rel="noopener">Dr. D. Banner</a>.</p><p class="mt-4">This product includes software developed as STR (SoundTouch Reborn) by Jens Roggenfelder.</p><p class="mt-4">Source project: <a href="https://github.com/JRpersonal/streborn" target="_blank" rel="noopener">JRpersonal/streborn</a></p><details class="license-notices"><summary>Licenses and attribution</summary>${licenseDocuments.map(document=>`<details class="license-document"><summary>${esc(document.path)}</summary><pre tabindex="0" aria-label="${esc(document.path)}">${esc(document.text.replace(/^[ \t]+/gm,''))}</pre></details>`).join('')}</details>`)}</div>`}
+function renderHelp(s){return ` <div class="two-col">${card('Get help','',`${action('help-open',icon('help')+' User guide','menu-row',`data-value="guide"`)}${action('help-open',icon('bug_report')+' Report a problem','menu-row',`data-value="feedback"`)}${action('help-open',icon('lightbulb')+' Wishes & voting','menu-row',`data-value="ideas"`)}`)}${card('About ST Reborn','Open source application',`<p>UI design and interaction prototype for ST Reborn. Licensed under Apache-2.0.</p><p class="mt-4">UI concept and implementation: <a href="https://github.com/DrDBanner" target="_blank" rel="noopener">Dr. D. Banner</a>.</p><p class="mt-4">This product includes software developed as STR (SoundTouch Reborn) by Jens Roggenfelder.</p><p class="mt-4">Source project: <a href="https://github.com/JRpersonal/streborn" target="_blank" rel="noopener">JRpersonal/streborn</a></p><details class="license-notices"><summary>Licenses and attribution</summary>${licenseDocuments.map(document=>`<details class="license-document"><summary>${esc(document.path)}</summary><pre tabindex="0" aria-label="${esc(document.path)}">${esc(document.text.replace(/^[ \t]+/gm,''))}</pre></details>`).join('')}</details>`)}</div>`}
 
 // ===== src/views/lab.js =====
 
@@ -1712,8 +1770,7 @@ function renderLab(s){
  const d=s.designTokens||{},m=s.model,variant=m.ui.speakerVariant||'sidebar';
  const scenario=s.scenarioIndex.find(x=>x.id===s.scenarioId);const variants=s.variants?.speakerManagement||[{id:'panel',label:'A · Contextual player panel',description:'Output control from player',icon:'vertical_split'},{id:'sidebar',label:'B · Persistent sidebar',description:'Outputs as sidebar shortcuts',icon:'dock_to_left'}];
  const compactList=visibleOutputs(m).slice(0,4);
- return `${navHeader('Design Lab','One model, alternative layouts and reproducible device states.',`${action('export-scenario',icon('download')+' Export JSON','btn-soft')}`)}
- <div class="lab-intro">${icon('experiment')}<div><strong>Make decisions in a running interface.</strong><p>Switch the presentation without replacing the speakers, groups or playback sessions underneath. Reload the scenario to return to its original state.</p></div></div>
+ return `${pageTools(`${action('export-scenario',icon('download')+' Export JSON','btn-soft')}`)}
  <div class="two-col two-col--wide">${card('A/B: speaker navigation','Only placement changes. Same model and actions.',`<div class="variant-options">${variants.map(v=>`<label class="choice-row ${variant===v.id?'choice-row--selected':''}"><input type="radio" name="speakerVariant" data-field="speaker-variant" value="${esc(v.id)}" ${variant===v.id?'checked':''}/><span>${icon(v.icon)}</span><div><strong>${esc(v.label)}</strong><small>${esc(v.description)}</small></div></label>`).join('')}</div>
  <p class="lab-hint">Try creating a group, playing a station and switching variants. The state is preserved.</p>`)}
  ${card('Scenarios','Test states without matching physical hardware',`<div class="scenario-list">${s.scenarioIndex.map(x=>`<button class="scenario-option ${s.scenarioId===x.id?'active':''}" data-action="load-scenario" data-id="${x.id}"><strong>${esc(x.name)}</strong><small>${esc(x.description)}</small>${s.scenarioId===x.id?icon('check_circle'):''}</button>`).join('')}</div>
@@ -1730,6 +1787,7 @@ function renderLab(s){
 }
 
 // ===== src/app/controller.js =====
+
 
 
 
@@ -1818,6 +1876,12 @@ async function onAction(action,element){
   mutate(s=>{values.forEach((value,index)=>setButtonPreset(s.model,deviceId,index+1,gesture,value));s.modal=null});toast('Button assignments saved (mock data)');break;
  }
  case 'library-server':mutate(s=>s.model.ui.libraryServer=id);break;
+ case 'library-settings':openModal('library-settings',{servers:structuredClone(m.libraryServers||[]),showDiscovered:m.settings.showDiscoveredLibraries!==false,name:'',address:'',error:''});break;
+ case 'library-add':if(state.modal?.kind==='library-settings'){
+  try{const server=addLibraryServer(state.modal.servers,state.catalog.servers,state.modal.name,state.modal.address);mutate(s=>{s.modal.servers.push(server);s.modal.name='';s.modal.address='';s.modal.error=''},false)}catch(error){mutate(s=>s.modal.error=error.message,false)}break;
+ }
+ case 'library-remove':if(state.modal?.kind==='library-settings')mutate(s=>s.modal.servers=s.modal.servers.filter(server=>server.id!==id),false);break;
+ case 'library-settings-save':if(state.modal?.kind==='library-settings'){mutate(s=>{s.model.libraryServers=structuredClone(s.modal.servers);s.model.settings.showDiscoveredLibraries=s.modal.showDiscovered;const servers=libraryServers(s.model,s.catalog);if(!servers.some(server=>server.id===s.model.ui.libraryServer))s.model.ui.libraryServer=servers[0]?.id||null;s.modal=null});toast('Music server settings saved');}break;
  case 'library-folder':generic(val,'Folder contents (simulated)',`<p>In the production application this view will request folders and tracks from the current music server. No playback engine is reimplemented here.</p>`);break;
  case 'spotify-connect':mutate(s=>s.model.spotifyConnected=!s.model.spotifyConnected);break;
  case 'output-view':if(['outputs','devices'].includes(val))mutate(s=>{s.model.ui.outputView=val;s.model.ui.outputFilter='all'});break;
@@ -1861,7 +1925,7 @@ async function onAction(action,element){
  case 'device-restart':{const d=currentDevice();confirmAction('Restart device?',`This simulates restarting ${d?.name}.`,()=>{closeModal();toast('Restart simulated')});break}
  case 'device-remove':{const d=currentDevice();confirmAction('Remove device?',`Remove ${d?.name} from the local scenario?`,()=>mutate(s=>{removeDevice(s.model,d.id);s.view='outputs';s.modal=null}));break}
  case 'device-reset':confirmAction('Factory reset?',`This is a simulation only. No command will be sent.`,()=>{closeModal();toast('Reset simulation completed')});break;
- case 'alarms':generic('Alarms','View and configure device alarms.','<p>The scenario includes the alarm collection. Real scheduling and confirmation are backend responsibilities.</p>');break;
+ case 'alarms':{const device=entity(m,id);if(!device?.capabilities?.alarms)throw new Error('Alarm functions are no longer available on this device');generic('Alarms · '+device.name,'Device function',`<p>${device.alarms?.length||0} saved alarms.</p><p>Alarm editing and scheduling are not connected in this UI Lab.</p>`);break;}
  case 'button-actions':mutate(s=>s.model.ui.deviceTab='functions');break;
  case 'check-updates':mutate(s=>s.updateChecked=true,false);break;
  case 'update-start':mutate(s=>{const d=entity(s.model,id);if(d&&d.status==='online'){d.status='updating';d.updateProgress=5}});break;
@@ -1888,6 +1952,8 @@ async function onAction(action,element){
 async function onField(field,target){
  const m=state.model,val=target.value;
  try{switch(field){
+ case 'library-name':case 'library-address':if(state.modal?.kind==='library-settings')mutate(s=>s.modal[field==='library-name'?'name':'address']=val,false);break;
+ case 'library-discovered':if(state.modal?.kind==='library-settings')mutate(s=>s.modal.showDiscovered=target.checked,false);break;
  case 'scenario':await loadScenario(val,false,true);break;
  case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
  case 'button-transfer-overwrite':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.overwrite=target.checked,false);break;
@@ -2000,7 +2066,7 @@ function render(){
 subscribe(render);
 document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();onAction(button.dataset.action,button)}});
 document.addEventListener('change',event=>{const field=event.target.closest('[data-field]');if(field)onField(field.dataset.field,field)});
-document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','composite-name','preset-search'].includes(field.dataset.field))onField(field.dataset.field,field)});
+document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','composite-name','preset-search','library-name','library-address'].includes(field.dataset.field))onField(field.dataset.field,field)});
 document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&state.modal?.kind==='rename'&&event.target.dataset?.field==='device-name'){event.preventDefault();onAction('device-rename-save',document.createElement('button'));}
  if(event.key==='Tab'&&state.appMenuOpen){

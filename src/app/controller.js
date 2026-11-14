@@ -1,6 +1,7 @@
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast} from './store.js';
 import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,membershipPlan,addToGroup,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback} from './model.js';
 import {esc,icon} from '../components/shared.js';
+import {addLibraryServer,libraryServers} from './library.js';
 
 function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
 function openModal(kind,extras={}){mutate(s=>s.modal={kind,...extras},false)}
@@ -87,6 +88,12 @@ export async function onAction(action,element){
   mutate(s=>{values.forEach((value,index)=>setButtonPreset(s.model,deviceId,index+1,gesture,value));s.modal=null});toast('Button assignments saved (mock data)');break;
  }
  case 'library-server':mutate(s=>s.model.ui.libraryServer=id);break;
+ case 'library-settings':openModal('library-settings',{servers:structuredClone(m.libraryServers||[]),showDiscovered:m.settings.showDiscoveredLibraries!==false,name:'',address:'',error:''});break;
+ case 'library-add':if(state.modal?.kind==='library-settings'){
+  try{const server=addLibraryServer(state.modal.servers,state.catalog.servers,state.modal.name,state.modal.address);mutate(s=>{s.modal.servers.push(server);s.modal.name='';s.modal.address='';s.modal.error=''},false)}catch(error){mutate(s=>s.modal.error=error.message,false)}break;
+ }
+ case 'library-remove':if(state.modal?.kind==='library-settings')mutate(s=>s.modal.servers=s.modal.servers.filter(server=>server.id!==id),false);break;
+ case 'library-settings-save':if(state.modal?.kind==='library-settings'){mutate(s=>{s.model.libraryServers=structuredClone(s.modal.servers);s.model.settings.showDiscoveredLibraries=s.modal.showDiscovered;const servers=libraryServers(s.model,s.catalog);if(!servers.some(server=>server.id===s.model.ui.libraryServer))s.model.ui.libraryServer=servers[0]?.id||null;s.modal=null});toast('Music server settings saved');}break;
  case 'library-folder':generic(val,'Folder contents (simulated)',`<p>In the production application this view will request folders and tracks from the current music server. No playback engine is reimplemented here.</p>`);break;
  case 'spotify-connect':mutate(s=>s.model.spotifyConnected=!s.model.spotifyConnected);break;
  case 'output-view':if(['outputs','devices'].includes(val))mutate(s=>{s.model.ui.outputView=val;s.model.ui.outputFilter='all'});break;
@@ -130,7 +137,7 @@ export async function onAction(action,element){
  case 'device-restart':{const d=currentDevice();confirmAction('Restart device?',`This simulates restarting ${d?.name}.`,()=>{closeModal();toast('Restart simulated')});break}
  case 'device-remove':{const d=currentDevice();confirmAction('Remove device?',`Remove ${d?.name} from the local scenario?`,()=>mutate(s=>{removeDevice(s.model,d.id);s.view='outputs';s.modal=null}));break}
  case 'device-reset':confirmAction('Factory reset?',`This is a simulation only. No command will be sent.`,()=>{closeModal();toast('Reset simulation completed')});break;
- case 'alarms':generic('Alarms','View and configure device alarms.','<p>The scenario includes the alarm collection. Real scheduling and confirmation are backend responsibilities.</p>');break;
+ case 'alarms':{const device=entity(m,id);if(!device?.capabilities?.alarms)throw new Error('Alarm functions are no longer available on this device');generic('Alarms · '+device.name,'Device function',`<p>${device.alarms?.length||0} saved alarms.</p><p>Alarm editing and scheduling are not connected in this UI Lab.</p>`);break;}
  case 'button-actions':mutate(s=>s.model.ui.deviceTab='functions');break;
  case 'check-updates':mutate(s=>s.updateChecked=true,false);break;
  case 'update-start':mutate(s=>{const d=entity(s.model,id);if(d&&d.status==='online'){d.status='updating';d.updateProgress=5}});break;
@@ -157,6 +164,8 @@ export async function onAction(action,element){
 export async function onField(field,target){
  const m=state.model,val=target.value;
  try{switch(field){
+ case 'library-name':case 'library-address':if(state.modal?.kind==='library-settings')mutate(s=>s.modal[field==='library-name'?'name':'address']=val,false);break;
+ case 'library-discovered':if(state.modal?.kind==='library-settings')mutate(s=>s.modal.showDiscovered=target.checked,false);break;
  case 'scenario':await loadScenario(val,false,true);break;
  case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
  case 'button-transfer-overwrite':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.overwrite=target.checked,false);break;

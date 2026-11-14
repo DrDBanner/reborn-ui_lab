@@ -1,4 +1,5 @@
 import {renderItemDetail} from './item-detail.js';
+import {groupFunctionDevices,renderGroupFunctions} from './device-functions.js';
 import {esc,icon,action,card,empty,statusBadge,typeIcon} from '../components/shared.js';
 import {kind,entity,parentIds,targetStatus,leafDeviceIds,effectiveSessionFor,source,visibleOutputs,buttonProfile} from '../app/model.js';
 
@@ -24,17 +25,18 @@ export function renderOutputs(s){
 }
 export function renderGroup(s){const m=s.model,group=entity(m,s.detailOutputId),type=kind(m,s.detailOutputId);
  if(!group||type==='device')return empty('speaker_group','Group not found','Choose a group from Outputs & groups.',action('navigate','All outputs','btn-soft','data-value="outputs"'));
- const session=effectiveSessionFor(m,group.id),tabs=[['overview','Overview'],['sound','Sound'],['advanced','Advanced']];
+ const session=effectiveSessionFor(m,group.id),tabs=[['overview','Overview'],['sound','Sound'],...(groupFunctionDevices(s,group.id).length?[['functions','Functions']]:[]),['advanced','Advanced']];
  const tabId=tabs.some(([id])=>id===m.ui.groupTab)?m.ui.groupTab:'overview';
  const title=type==='pair'?'Stereo pair':'Speaker group',now=source(s.catalog,session?.sourceId);
  let body='';
- if(tabId==='overview')body=`<div class="two-col two-col--wide">${card('Output identity','Information about this playback target',`<div class="key-values"><div><span>Status</span>${statusBadge(targetStatus(m,group.id))}</div><div><span>Type</span><strong>${title}</strong></div><div><span>Member devices</span><strong>${leafDeviceIds(m,group.id).length}</strong></div>${type==='pair'?'<div><span>Channels</span><strong>Left / Right</strong></div>':''}</div>`)}
- ${card('Current playback','Source assigned to this output',`<div class="setting-line"><span class="setting-line__icon">${icon('music_cast')}</span><div class="setting-line__body"><strong>${esc(now?.name||'Nothing playing')}</strong><small>${session?esc(session.status==='playing'?'Playing':session.status==='paused'?'Paused':'Stopped'):'Choose a source to start playback'}${session&&session.targetId!==group.id?' · via '+esc(entity(m,session.targetId)?.name):''}</small></div></div>${action('navigate','Browse sources','btn-soft mt-4','data-value="listen"')}`)}</div>`;
+ if(tabId==='overview')body=`<div class="two-col two-col--wide">${card('Output identity','',`<div class="key-values"><div><span>Status</span>${statusBadge(targetStatus(m,group.id))}</div><div><span>Type</span><strong>${title}</strong></div><div><span>Member devices</span><strong>${leafDeviceIds(m,group.id).length}</strong></div>${type==='pair'?'<div><span>Channels</span><strong>Left / Right</strong></div>':''}</div>`)}
+ ${card('Current playback','',`<div class="setting-line"><span class="setting-line__icon">${icon('music_cast')}</span><div class="setting-line__body"><strong>${esc(now?.name||'Nothing playing')}</strong><small>${session?esc(session.status==='playing'?'Playing':session.status==='paused'?'Paused':'Stopped'):'Choose a source to start playback'}${session&&session.targetId!==group.id?' · via '+esc(entity(m,session.targetId)?.name):''}</small></div></div>${action('navigate','Browse sources','btn-soft mt-4','data-value="listen"')}`)}</div>`;
  if(tabId==='sound'){
   const ids=leafDeviceIds(m,group.id),overall=group.volume??25;
   const row=(id,name,value,field,status='')=>`<div class="volume-level"><label for="${field==='composite-volume'?'group-volume':'level-'+esc(id)}">${esc(name)}${status?`<small>${esc(status)}</small>`:''}</label><input id="${field==='composite-volume'?'group-volume':'level-'+esc(id)}" class="volume-slider" style="--range-fill:${value}%" type="range" min="0" max="100" value="${value}" data-field="${field}" data-id="${esc(id)}" aria-valuetext="${value} percent" aria-label="Volume for ${esc(name)}" ${status&&status!=='online'?'disabled':''}/><output for="${field==='composite-volume'?'group-volume':'level-'+esc(id)}">${value} %</output></div>`;
   body=card('Volume','Adjust this output together or set individual speaker levels.',`<div class="volume-settings">${row(group.id,'Overall volume',overall,'composite-volume')}${ids.map(id=>{const d=entity(m,id);return row(id,d.name,d.volume??25,'member-volume',d.status)}).join('')}</div>`);
  }
+ if(tabId==='functions')body=renderGroupFunctions(s,group.id);
  if(tabId==='advanced')body=card('Membership','Dissolving this output keeps the physical speakers configured.',action('dissolve-group',icon('delete_outline')+` Dissolve ${type==='pair'?'pair':'group'}`,'danger-btn'));
  return renderItemDetail(s,{item:group,subtitle:`${leafDeviceIds(m,group.id).length} speakers · ${type==='pair'?'Stereo':group.persistent?'Persistent':'Temporary'}`,tabs,tabId,tabAction:'group-tab',body});
 }

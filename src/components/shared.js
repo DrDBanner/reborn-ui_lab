@@ -69,6 +69,7 @@ export function card(title,subtitle,body,extra=''){
 export const empty=(symbol,title,description,button='')=>`<div class="empty-state">${icon(symbol,'empty-state__icon')}<h2>${title}</h2><p>${description}</p>${button}</div>`;
 export const tab=(id,label,selected,actionName='switch-tab')=>action(actionName,esc(label),`tab-control ${selected?'active':''}`,`data-value="${esc(id)}"`);
 export const field=(name,content,help='')=>`<div class="form-row"><label>${name}${help?`<small>${help}</small>`:''}</label><div class="form-row__control">${content}</div></div>`;
+export const pageTools=tools=>`<div class="page-tools">${tools}</div>`;
 export const navHeader=(title,subtitle,tools='')=>`<div class="page-heading"><div><h1>${title}</h1><p>${subtitle||''}</p></div>${tools?`<div class="page-heading__tools">${tools}</div>`:''}</div>`;
 
 export function notificationStack(s){

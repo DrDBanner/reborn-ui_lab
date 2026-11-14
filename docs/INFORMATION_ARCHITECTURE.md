@@ -23,6 +23,8 @@ Playing and the bottom bar render while a running or paused session exists. The 
 
 Variant A accesses outputs through the player panel. Variant B adds sidebar output shortcuts. Both variants share model and playback state.
 
+The app header names each route once. Workspace headings identify concrete items and separate content sections. Page actions use a toolbar without repeating the route title.
+
 ## Media
 
 Station artwork starts the source on the target named in the bottom player. Hover/focus reveals `play_circle`; touch exposes the action directly. The accessible label and tooltip identify source and target. Availability and the bound player context are checked at activation.
@@ -30,6 +32,8 @@ Station artwork starts the source on the target named in the bottom player. Hove
 The `music_cast` action opens output selection. Independent playback is the default. As member joins a free device or pair to the bound session, extending its group or creating a temporary group. The review identifies any replaced source. Selecting a different source applies it to the whole joined target. Confirmation revalidates session, source and destination.
 
 Radio and Recently Played share this picker. Source-change notifications name both values, for example: Playing FluxFM on Downstairs.
+
+Music servers → gear manages manual server addresses and the visibility of discovered servers. Draft changes apply on Save; Cancel discards them. Manual sources persist with the scenario. Discovered entries come from the sample catalog; manually added sources have no fetched contents until an adapter supplies them.
 
 ## Output workspace
 

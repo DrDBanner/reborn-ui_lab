@@ -7,7 +7,7 @@ module.exports=async({page,log})=>{
   await page.setViewport({width,height:700,deviceScaleFactor:1,isMobile:width<720,hasTouch:width<720});
   await page.evaluate(async(url,appearance,view)=>{const {state,loadScenario,applyDesign,notify}=await import(url);await loadScenario('home',false,true);state.designTokens.appearance=appearance;applyDesign();state.view=view;state.detailOutputId='g1';state.detailDeviceId='d1';state.model.ui.groupTab='overview';state.model.ui.deviceTab='overview';state.toasts=[];notify()},url,appearance,view);
   const action=view==='group'?'group-tab':'device-tab',positions=[];
-  for(const tab of ['sound','advanced','overview','advanced']){
+  for(const tab of ['sound','functions','advanced','overview','advanced']){
    await page.$eval('[data-action="'+action+'"][data-value="'+tab+'"]',e=>e.click());
    const before=await page.$eval('.workspace',e=>{e.scrollTop=e.scrollHeight;return e.scrollTop});
    const next=tab==='advanced'?'sound':'advanced';
@@ -23,5 +23,5 @@ module.exports=async({page,log})=>{
   check(await page.$eval('.workspace',e=>e.scrollTop===0),'New item kept old scroll offset');
   results.push({appearance,width,view,positions,newItemAtTop:true});
  }
- await fs.writeFile(path.join(out,'scroll-browser.json'),JSON.stringify({passed:true,results},null,2)+'\n');log(JSON.stringify({passed:true,cases:results.length,transitions:results.length*4}));
+ await fs.writeFile(path.join(out,'scroll-browser.json'),JSON.stringify({passed:true,results},null,2)+'\n');log(JSON.stringify({passed:true,cases:results.length,transitions:results.length*5}));
 };

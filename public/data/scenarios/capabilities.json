@@ -29,6 +29,9 @@
             "single",
             "double"
           ]
+        },
+        "grouping": {
+          "stereoFamily": "soundtouch-10"
         }
       },
       "doublePresets": [

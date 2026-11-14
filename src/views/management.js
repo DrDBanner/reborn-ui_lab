@@ -1,6 +1,7 @@
-import {renderDeviceFunctions,renderItemKeyFunctions} from './device-functions.js';
+import {renderItemDetail} from './item-detail.js';
+import {renderDeviceFunctions} from './device-functions.js';
 import {esc,icon,action,card,empty,navHeader,field,statusBadge,tab,typeIcon} from '../components/shared.js';
-import {entity,kind,source,leafDeviceIds,targetStatus,buttonProfile} from '../app/model.js';
+import {entity,kind} from '../app/model.js';
 
 export function renderDevice(s){
  const m=s.model,d=entity(m,s.detailDeviceId||m.selectedDeviceId);
@@ -21,9 +22,7 @@ export function renderDevice(s){
  ${card('Connectivity','Actions should confirm asynchronous device responses.',`<p>Changing the network may temporarily disconnect the speaker. Success should only be reported after the device can be rediscovered.</p>${action('device-ping',icon('network_check')+' Check connection','btn-soft mt-4')}`)}</div>`;
  if(tabId==='functions')contents=renderDeviceFunctions(s,d);
  if(tabId==='advanced')contents=` <section class="section-wrap"><div class="section-heading"><h2>Maintenance</h2></div><div class="panel panel--flush">${action('navigate',icon('system_update')+'<span>Software on speaker</span><span class="row-trailing">'+esc(d.firmware)+' '+icon('chevron_right')+'</span>','menu-row','data-value="updates"')}${action('backup',icon('settings_backup_restore')+'<span>Backup and restore</span><span class="row-trailing">Presets & favorites '+icon('chevron_right')+'</span>','menu-row')}${action('device-maintenance',icon('build')+'<span>Other maintenance actions</span><span class="row-trailing">Restart, remove, reset '+icon('chevron_right')+'</span>','menu-row')}</div></section>`;
- return `${navHeader(typeIcon('device')+`<span class="device-detail-name">${esc(d.name)}</span>`+action('device-rename',icon('edit'),'icon-btn title-edit',`data-id="${esc(d.id)}" title="Rename device" aria-label="Rename ${esc(d.name)}"`),`${esc(d.brand||'')} ${esc(d.model)} · ${esc(d.ip)} · ${d.status==='offline'?'Offline':'Device settings'}`,action('navigate',icon('arrow_back')+' All outputs','btn-quiet','data-value="outputs"'))}
- ${renderItemKeyFunctions(s,d.id)}
- <div class="detail-tabs">${tabs.map(([id,name])=>tab(id,name,tabId===id,'device-tab')).join('')}</div><div class="detail-body">${contents}</div>`;
+ return renderItemDetail(s,{item:d,subtitle:`${esc(d.brand||'')} ${esc(d.model)} · ${esc(d.ip)} · ${d.status==='offline'?'Offline':'Device settings'}`,tabs,tabId,tabAction:'device-tab',body:contents});
 }
 
 export function renderUpdates(s){

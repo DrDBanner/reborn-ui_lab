@@ -4,7 +4,7 @@ module.exports=async({page,log})=>{
  const check=(ok,msg)=>{if(!ok)throw new Error(msg)};
  await page.waitForSelector('.workspace');
  const storeUrl=await page.evaluate(async()=>{const js=await fetch('/src/main.js').then(r=>r.text());return js.match(/from\s*['"]([^'"]*\/app\/store\.js[^'"]*)['"]/)?.[1]||'/src/app/store.js';});
- const route=async(view,id)=>page.evaluate(async(view,id,storeUrl)=>{const {state,notify}=await import(storeUrl);state.view=view;state.detailDeviceId=id;state.detailOutputId=id;state.modal=null;state.toasts=[];state.model.ui.deviceTab='overview';notify();document.querySelector('.workspace').scrollTop=0;},view,id,storeUrl);
+ const route=async(view,id)=>page.evaluate(async(view,id,storeUrl)=>{const {state,notify}=await import(storeUrl);state.view=view;state.detailDeviceId=id;state.detailOutputId=id;state.modal=null;state.toasts=[];state.expandedPresetTargetId=id;state.model.ui.deviceTab='overview';notify();document.querySelector('.workspace').scrollTop=0;},view,id,storeUrl);
  const inspect=async()=>page.evaluate(()=>{
   const panel=document.querySelector('.item-key-functions'),tabs=document.querySelector('.detail-tabs'),workspace=document.querySelector('.workspace');
   const cards=[...panel.querySelectorAll('.key-preset')].map(el=>el.getBoundingClientRect());

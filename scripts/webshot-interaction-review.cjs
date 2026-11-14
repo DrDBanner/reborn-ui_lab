@@ -10,7 +10,7 @@ module.exports=async({page,log})=>{
  for(const width of [1440,834,390,320]){
   await page.setViewport({width,height:width<720?844:1000,deviceScaleFactor:1});
   await page.evaluate(async storeUrl=>{const {loadScenario,state,notify,clearToast}=await import(storeUrl);await loadScenario('home',false,true);state.view='device';state.detailDeviceId='d1';state.model.ui.deviceTab='overview';clearToast(false);notify();},storeUrl);
-  await page.click('[data-action="preset-edit"]');await page.waitForSelector('.preset-workbench');
+  if(!await page.$('[data-action="preset-edit"]'))await page.click('[data-action="toggle-preset-details"]');await page.click('[data-action="preset-edit"]');await page.waitForSelector('.preset-workbench');
   await page.click('[data-action="preset-source-type"][data-value="library"]');
   check(await page.$$eval('.preset-source-option',els=>els.length>=3&&els.every(el=>el.textContent.includes('Library'))),'Library source types missing');
   await page.screenshot({path:path.join(out,`preset-editor-library-${width}.png`)});
@@ -25,7 +25,7 @@ module.exports=async({page,log})=>{
   await page.click('[data-action="preset-save"]');
   const saved=(await snapshot()).devices[0];
   check(saved.presets.slice(0,4).join(',')==='track-demo,spotify-album-demo,native-demo,flux'&&saved.doublePresets[0]==='album1','Typed source save affected wrong bank: '+JSON.stringify(saved.presets)+' / '+JSON.stringify(saved.doublePresets));
-  await page.click('[data-action="preset-edit"]');await page.click('[data-action="preset-clear"][data-index="0"]');await page.keyboard.press('Escape');
+  if(!await page.$('[data-action="preset-edit"]'))await page.click('[data-action="toggle-preset-details"]');await page.click('[data-action="preset-edit"]');await page.click('[data-action="preset-clear"][data-index="0"]');await page.keyboard.press('Escape');
   check((await snapshot()).devices[0].presets[0]==='track-demo','Cancel must discard draft');
   await page.evaluate(async storeUrl=>{const {state,notify,clearToast}=await import(storeUrl);state.view='listen';clearToast(false);notify()},storeUrl);
   await page.click('[data-action="open-volume-controls"]');await page.waitForSelector('.volume-master');

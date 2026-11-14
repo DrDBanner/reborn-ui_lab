@@ -124,6 +124,7 @@ module.exports = async ({page, log}) => {
  await page.waitForSelector('[role="dialog"]');
  await page.keyboard.press('Escape');
  await route('group');
+ await page.click('[data-action="group-tab"][data-value="sound"]');
  const scroll=await page.evaluate(()=>{const workspace=document.querySelector('.workspace');workspace.scrollTop=workspace.scrollHeight;return workspace.scrollTop;});
  await page.$eval('[data-field="member-volume"][data-id="d2"]',element=>{
   element.focus();element.value='42';element.dispatchEvent(new Event('change',{bubbles:true}));
@@ -133,7 +134,7 @@ module.exports = async ({page, log}) => {
  // Device-bound double-press editing must preserve the other bank and stream.
  await page.setViewport({width:390,height:844,deviceScaleFactor:1});
  await route('device',{deviceId:'d1',tab:'functions',gesture:'double'});
- await page.click('[data-action="preset-edit"]');
+ if(!await page.$('[data-action="preset-edit"]'))await page.click('[data-action="toggle-preset-details"]');await page.click('[data-action="preset-edit"]');
  await page.click('[data-action="preset-source-choose"][data-id="ndr2"]');
  await page.click('[data-action="preset-save"]');
  await page.click('[data-action="preset-play"][data-key="1"]');

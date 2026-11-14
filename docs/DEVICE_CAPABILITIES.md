@@ -40,7 +40,7 @@ The lab previews the plan, then applies local mock assignments with per-device r
 
 ## Reference app gaps
 
-The screenshot audit of ST Reborn v1.6.2 records additional capabilities and their intended contexts in [project/feature-coverage/coverage.md](../../project/feature-coverage/coverage.md). In particular, the global simulated Spotify connection and unrestricted generic pairing are known mock limitations; production needs per-device account/source state and explicit pairing-compatibility contracts.
+The screenshot audit of ST Reborn v1.6.2 records additional capabilities and their intended contexts in [project/feature-coverage/coverage.md](../../project/feature-coverage/coverage.md). In particular, the global simulated Spotify connection and actual pairing discovery/acknowledgement are known mock limitations; production needs per-device account/source state and explicit pairing-compatibility contracts.
 
 
 ## Primary functions on composite outputs
@@ -54,6 +54,12 @@ Assignments remain stored per physical device. A common group surface does not i
 
 Edit assignments uses a draft per physical device and gesture bank. A key overview stays separate from the searchable source browser. Radio, Library, Spotify and Services are explicit filters; rows and primary preset cards show the source kind, including library tracks/folders/queues and Spotify albums/playlists. Selecting or clearing changes the draft; Save commits that bank and Cancel discards it. Existing unmodified references are preserved even if a source is no longer in the catalog.
 
-Use current source reads the bound device's effective playback output, including its group. It never captures an unrelated session merely because that session is selected in the bottom player. Unknown/unavailable source details cannot be captured by this catalog-based simulator. Optional `capabilities.buttonPresets.sourceTypes` limits selectable domains when explicitly reported; missing restrictions preserve legacy catalog behavior rather than assuming a brand-specific limit.
+The playback source picker initially selects the bound device's effective output, including its group. With simultaneous sessions, each option names source and output; the user may explicitly choose another playback. It never silently uses an unrelated session merely because that session is selected in the bottom player. Capture names the chosen source and destination key, changes only the draft and rejects stale source/session actions. Unknown/unavailable source details cannot be captured by this catalog-based simulator. Optional `capabilities.buttonPresets.sourceTypes` limits selectable domains when explicitly reported; missing restrictions preserve legacy catalog behavior rather than assuming a brand-specific limit.
 
 Actual STR preset payloads are richer than radio: [`app_presets.go`](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/desktop-app/app_presets.go) includes SaveLibraryPreset (single stream/title), SaveFolderPreset / SaveQueuePreset (folder/queue references and ordered items), SaveSpotifyPreset (playlist/album URI and account), SaveNativePreset (native service ContentItem) and SavePlayingPreset. The lab stores source IDs, not these actual hardware payloads. The future adapter must preserve typed metadata, accounts, tracks, repeat/shuffle and opaque native objects through editing, backup and transfer. Whole-set STR copying also attempts credential transfer for Spotify presets; production review/results must make that effect visible rather than imply independent preset copying alone.
+
+## Stereo eligibility
+
+Optional `capabilities.grouping.stereoFamily` is an adapter-reported compatibility key. Stereo selection requires equal non-empty keys on two free online physical devices. Known SoundTouch 10 fixtures report `soundtouch-10`; other fixtures without a report cannot be selected for stereo. This fixture metadata is not manufacturer discovery or a real pairing guarantee. Normal groups may contain an existing stereo pair. Existing memberships require deliberate management before regrouping; the form never dissolves them implicitly.
+
+Transfer destinations use one hierarchy: top-level group/pair headings and each physical device once. Group selection expands to eligible physical targets; individual unchecking supports partial group selection. The source is excluded and named as such. Once/Twice keys and destination devices are adjacent on wide screens, stacked responsively; preview and confirmation remain explicit.

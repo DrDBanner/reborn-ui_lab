@@ -15,18 +15,20 @@ let renderedViewKey='';
 let renderedMenuOpen=false;
 let renderedRenameId=null;
 let renderedVolumeId=null;
+let renderedCreateOpen=false;
 function render(){
  if(!state.model)return;
  const view=views[state.view]||renderListen;
  const playerContent=player(state);
  // Preserve typing position across updates from search or form controls.
- const viewKey=[state.view,state.detailDeviceId,state.detailOutputId,state.model.ui.deviceTab,state.model.ui.settingsTab].join(':');
- const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
+ const viewKey=[state.view,state.detailDeviceId,state.detailOutputId,state.model.ui.deviceTab,state.model.ui.groupTab,state.model.ui.settingsTab].join(':');
+ const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-source-results'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
  const active=document.activeElement;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;
  app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
  for(const {selector,top} of scrollPositions){const element=app.querySelector?.(selector);if(element&&(selector!=='.workspace'||viewKey===renderedViewKey))element.scrollTop=top;}
  renderedViewKey=viewKey;
+ for(const checkbox of app.querySelectorAll?.('.transfer-target-heading input[aria-checked="mixed"]')||[])checkbox.indeterminate=true;
  const renameId=state.modal?.kind==='rename'?state.modal.deviceId:null;
  if(renameId&&renameId!==renderedRenameId){const input=app.querySelector?.('#device-name');input?.focus();input?.select();}
  if(!renameId&&renderedRenameId&&state.view==='device')app.querySelector?.('.title-edit')?.focus({preventScroll:true});
@@ -35,6 +37,9 @@ function render(){
  if(volumeId&&volumeId!==renderedVolumeId)app.querySelector?.('#dialog-overall-volume')?.focus({preventScroll:true});
  if(!volumeId&&renderedVolumeId)app.querySelector?.('.volume-details-trigger')?.focus({preventScroll:true});
  renderedVolumeId=volumeId;
+ const createOpen=state.modal?.kind==='create';
+ if(createOpen&&!renderedCreateOpen)app.querySelector?.('#composite-name')?.focus({preventScroll:true});
+ renderedCreateOpen=createOpen;
  if(state.appMenuOpen&&!renderedMenuOpen)app.querySelector?.('.app-menu .icon-btn')?.focus({preventScroll:true});
  if(!state.appMenuOpen&&renderedMenuOpen)app.querySelector?.(state.sidebarOpen||globalThis.innerWidth>720?'.brand-trigger':'.mobile-brand')?.focus({preventScroll:true});
  renderedMenuOpen=state.appMenuOpen;
@@ -45,7 +50,7 @@ function render(){
 subscribe(render);
 document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();onAction(button.dataset.action,button)}});
 document.addEventListener('change',event=>{const field=event.target.closest('[data-field]');if(field)onField(field.dataset.field,field)});
-document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','preset-search'].includes(field.dataset.field))onField(field.dataset.field,field)});
+document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','composite-name','preset-search'].includes(field.dataset.field))onField(field.dataset.field,field)});
 document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&state.modal?.kind==='rename'&&event.target.dataset?.field==='device-name'){event.preventDefault();onAction('device-rename-save',document.createElement('button'));}
  if(event.key==='Tab'&&state.appMenuOpen){

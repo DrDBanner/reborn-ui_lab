@@ -43,8 +43,8 @@ test('item identity and capabilities are independent of device brand',()=>{
  assert(noButtons.includes('Hardware revision'));
  s.detailDeviceId='d12';model.ui.deviceTab='functions';
  const compact=renderDevice(s);
- assert(compact.includes('Key 2'));
- assert(!compact.includes('Key 3'));
+ assert(compact.includes('data-key="2"'));
+ assert(!compact.includes('data-key="3"'));
  assert(!compact.includes('data-value="double"'));
  s.detailDeviceId='d1';
  assert(renderDevice(s).includes('data-value="double"'));
@@ -80,21 +80,21 @@ test('sidebar marks only the current route, never the unrelated player or stale 
 
 test('button presets remain above device tabs across all configuration sections',()=>{
  const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
- const s={model,catalog,detailDeviceId:'d1',presetGesture:'double'};
+ const s={model,catalog,detailDeviceId:'d1',presetGesture:'double',expandedPresetTargetId:'d1'};
  for(const tab of ['overview','sound','network','functions','advanced']){
   model.ui.deviceTab=tab;const html=renderDevice(s);
   assert(html.indexOf('item-key-functions')<html.indexOf('class="detail-tabs"'));
   assert.equal((html.match(/<h2>Button presets<\/h2>/g)||[]).length,1);
   assert(html.includes('data-action="preset-edit" data-id="d1" data-gesture="double"'));
  }
- s.detailOutputId='g1';s.presetDeviceId='d3';
+ s.detailOutputId='g1';s.presetDeviceId='d3';s.expandedPresetTargetId='g1';
  const group=renderGroup(s);
  assert(group.indexOf('item-key-functions')<group.indexOf('<h2>Members</h2>'));
  assert(group.includes('data-field="preset-device" data-id="g1"'));
- assert(group.includes('Assignments on Kitchen. Playback uses Downstairs.'));
- s.detailOutputId='p1';s.presetDeviceId='d4';
+ assert(group.includes('value="d3" selected'));
+ s.detailOutputId='p1';s.presetDeviceId='d4';s.expandedPresetTargetId='p1';
  const pair=renderGroup(s);
- assert(pair.includes('Assignments on Living Room L. Playback uses Downstairs.'));
+ assert(pair.includes('Living Room L')&&pair.includes('Plays on Downstairs'));
  assert(!pair.includes('Assignments on Office.'));
 });
 

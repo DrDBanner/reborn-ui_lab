@@ -159,3 +159,16 @@ test('overall volume preserves member offsets and unrelated outputs; device trim
  assert.throws(()=>setDeviceVolume(m,'d3',50));assert.throws(()=>setOutputVolume(m,'g1',101));
  setDeviceVolume(m,'d4',12);assert.equal(m.sessions.find(s=>s.targetId==='d4').volume,12);
 });
+
+test('stereo creation preserves explicit L/R and rejects unknown, incompatible or unavailable devices',()=>{
+ const m=fresh();m.sessions=[];
+ const id=createComposite(m,'pair','Desk',['d5','d4']);
+ const pair=m.pairs.find(item=>item.id===id);
+ assert.deepEqual(pair.memberIds,['d5','d4']);assert.equal(pair.leftDeviceId,'d5');assert.equal(pair.rightDeviceId,'d4');
+ const unknown=fresh();delete unknown.devices.find(d=>d.id==='d4').capabilities.grouping;
+ assert.throws(()=>createComposite(unknown,'pair','Bad',['d4','d5']),/compatible/);
+ assert.throws(()=>createComposite(fresh(),'pair','Bad',['d4','d6']),/compatible/);
+ const offline=fresh();offline.devices.find(d=>d.id==='d5').status='offline';
+ assert.throws(()=>createComposite(offline,'group','Bad',['d4','d5']),/online/);
+ assert.equal(offline.groups.length,1);
+});

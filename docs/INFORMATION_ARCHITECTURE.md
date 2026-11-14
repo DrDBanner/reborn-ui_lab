@@ -14,7 +14,7 @@ The sidebar provides **fast access**, not an exhaustive N-device management inte
 
 1. Category titles open a corresponding full workspace (e.g. OUTPUTS → Outputs & playbacks).
 2. Chevrons on the right independently collapse the contents of a category. Outputs and Playbacks have an always-visible overview icon immediately before the chevron; the separate overview text rows and duplicate Connections & devices menu entry are removed.
-3. A bounded list shows independent playing and paused sessions in both variants. Selecting a session changes the player context; it does not start, stop or regroup outputs. All sessions are available through the active projection in the shared Outputs & playbacks workspace.
+3. A bounded list shows independent playing and paused sessions in both variants. Selecting a Playing entry chooses that player session and opens its target’s device/group/pair details, marking only the corresponding Outputs item current. It does not start, stop or regroup outputs. The bottom session selector changes only player context. All sessions are available through the active projection in the shared Outputs & playbacks workspace.
 4. Stereo pairs and groups are shown as **one output item**, not repeated speaker rows.
 5. An optional limit keeps the sidebar short. Full search, filters and group creation operate in the content workspace.
 6. Speaker settings, firmware, network and diagnostics belong in the main workspace.
@@ -81,3 +81,17 @@ The player shows its source once and its playback target once. Its music-cast ac
 ## Visual restraint
 
 Light appearance uses neutral whites and greys. Source placeholders use a shared neutral treatment; selection/action states retain the accent and status colors retain semantic meaning. Surfaces do not use drop shadows. The radio toolbar and station rows share the same responsive horizontal inset, with no nested filter card. Volume uses ordinary rows, percentage values and separators; no decorative hero tile, duplicate single-device slider or oversized count badges.
+
+## One grouping workflow
+
+Create group opens one form for selecting speakers/pairs, a name and persistence. Stereo is an optional mode with exactly two physical speakers and explicit Left/Right selectors. Only free online devices reporting the same non-empty `capabilities.grouping.stereoFamily` can form a stereo pair. Missing capability data does not imply stereo support. Assignment order is persisted as `leftDeviceId`, `rightDeviceId` and ordered `memberIds`; legacy pairs use their existing member order for display. Grouping and stereo remain different model/adapter operations under this shared entry.
+
+Device details expose Members directly below the presets and above the configuration tabs on every tab. Add members opens this form with the device selected. Existing members link to their pair/group instead of silently detaching. Group details use the same Add members wording. Drafts persist across mode changes and Cancel makes no model change. No live hardware pairing or cross-brand synchronization is claimed.
+
+## Consistent item detail and progressive preset controls
+
+Devices, stereo pairs and groups use one item detail renderer: title → presets → Members → configuration tabs → content. Members uses the same surface, spacing and actions. Group/pair configuration now uses Overview, Sound and Advanced tabs; hardware-only tabs remain device capabilities. Group master and member levels are under Sound; dissolve is under Advanced. A pair remains a logical member with an explicit physical speaker count, so two group members can correctly represent three speakers.
+
+Presets initially show compact keys with at most three columns, reducing to two/one as the available width shrinks. Once/Twice stays available immediately. In a group/pair, Buttons on always exposes which physical device owns the shown bank; this context selector is never hidden behind management. The settings gear immediately after Buttons on reveals editing, transfer and detailed source metadata; there is no separate Manage presets dropdown. Collapsing preserves the chosen bank/device without changing playback. No common group-owned preset bank or implicit synchronization is invented.
+
+Member rows and their names have no navigation action. Open details is a separate local Material `open_in_new` icon, revealed on hover/keyboard focus and always visible on touch. Removal has its own independent control.

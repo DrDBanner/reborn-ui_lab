@@ -184,6 +184,7 @@ export function normalizeScenario(model,fixture=null) {
     for(const key of ['brand','hardwareRevision','agentName','agentVersion','capabilities']){
       if(device[key]===undefined)device[key]=original?.[key]===undefined?(key==='capabilities'?{}:null):structuredClone(original[key]);
     }
+    if(device.capabilities&&device.capabilities.grouping===undefined&&original?.capabilities?.grouping)device.capabilities.grouping=structuredClone(original.capabilities.grouping);
     if(device.doublePresets===undefined)device.doublePresets=[];
   }
   return model;
@@ -245,13 +246,20 @@ export function assignSource(model, sourceId, targetId) {
   return id;
 }
 
+// Reported compatibility family; never inferred from brand/model strings.
+export function stereoFamily(device){return device?.capabilities?.grouping?.stereoFamily||null;}
+
 export function validateGroupMembers(model, memberIds, type = 'group') {
+  if(type==='pair'&&memberIds.some(id=>!id))return 'Choose a left and a right speaker';
   const unique = [...new Set(memberIds)];
   if (unique.length !== memberIds.length) return 'Duplicate group members';
   if (type === 'pair' && unique.length !== 2) return 'A stereo pair requires exactly two speakers';
+  if (!['group','pair'].includes(type)) return 'Unknown grouping mode';
+  if (type === 'pair' && (!stereoFamily(entity(model,unique[0])) || stereoFamily(entity(model,unique[0])) !== stereoFamily(entity(model,unique[1])))) return 'Select two speakers with compatible stereo capabilities';
   if (type === 'group' && unique.length < 2) return 'Select at least two outputs';
   for (const id of unique) {
     if (!entity(model, id)) return `Output ${id} does not exist`;
+    if (targetStatus(model,id)!=='online') return `${entity(model,id).name} is not online`;
     if (type === 'pair' && kind(model,id) !== 'device') return 'Stereo pairs can contain speakers only';
     if (type === 'group' && kind(model,id) === 'group') return 'Nested groups are reserved for a separate topology concept';
     if (parentIds(model,id).length) return `${entity(model,id).name} already belongs to a pair or group`;
@@ -264,6 +272,7 @@ export function createComposite(model, type, name, memberIds, persistent = true)
   if (error) throw new Error(error);
   const id = `${type === 'pair' ? 'p' : 'g'}${Date.now()}`;
   const record = {id,name: name.trim() || (type==='pair' ? 'Stereo Pair' : 'New Group'),memberIds:[...memberIds],persistent,volume:25};
+  if(type==='pair'){record.leftDeviceId=memberIds[0];record.rightDeviceId=memberIds[1];}
   (type==='pair' ? model.pairs : model.groups).push(record);
   model.selectedOutputId=id;
   return id;
@@ -320,6 +329,8 @@ export function validateScenario(m) {
   }
   for(const s of m.sessions) if(!ids.includes(s.targetId))errors.push(`${s.id}: missing output ${s.targetId}`);
   for(const d of m.devices){
+    const family=d.capabilities?.grouping?.stereoFamily;
+    if(family!==undefined&&(typeof family!=='string'||!family.trim()))errors.push(`${d.id}: invalid stereo family`);
     const profile=d.capabilities?.buttonPresets;
     if(profile&&(!Number.isInteger(profile.keyCount)||profile.keyCount<1||profile.keyCount>64||!Array.isArray(profile.gestures)||!profile.gestures.includes('single')||profile.gestures.some(g=>!['single','double'].includes(g))))errors.push(`${d.id}: invalid button capabilities`);
     for(const key of ['presets','doublePresets'])if(d[key]!==undefined&&!Array.isArray(d[key]))errors.push(`${d.id}: ${key} must be an array`);

@@ -51,20 +51,33 @@ test('source selection opens an output picker then preserves independent streams
  assert.equal(vm.runInContext("state.model.sessions.some(s=>s.targetId==='d7'&&s.sourceId==='ndr2')",ctx),true);
 });
 
-test('session selection leaves streams and configuration selection unchanged',async()=>{
+test('Playing opens the matching output detail without changing streams',async()=>{
  const {ctx,app}=boot();await ready();
  const before=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);
- const selectedDevice=vm.runInContext('state.model.selectedDeviceId',ctx);
  await vm.runInContext("onAction('select-session',{dataset:{id:'s2'}})",ctx);
  assert.equal(vm.runInContext('state.model.selectedSessionId',ctx),'s2');
+ assert.equal(vm.runInContext('state.model.selectedOutputId',ctx),'d4');
+ assert.equal(vm.runInContext('state.detailDeviceId',ctx),'d4');
+ assert.equal(vm.runInContext('state.view',ctx),'device');
+ assert(app.innerHTML.includes('output-item is-selected')||app.innerHTML.includes('aria-current="page"'));
+ await vm.runInContext("onAction('select-session',{dataset:{id:'s1'}})",ctx);
+ assert.equal(vm.runInContext('state.detailOutputId',ctx),'g1');
+ assert.equal(vm.runInContext('state.view',ctx),'group');
  assert.equal(vm.runInContext('JSON.stringify(state.model.sessions)',ctx),before);
- assert.equal(vm.runInContext('state.model.selectedDeviceId',ctx),selectedDevice);
+ await vm.runInContext("state.model.sessions.push({id:'pair-test',targetId:'p1',sourceId:'flux',status:'paused'});onAction('select-session',{dataset:{id:'pair-test'}})",ctx);
+ assert.equal(vm.runInContext('state.detailOutputId',ctx),'p1');
+ assert.equal(vm.runInContext('state.view',ctx),'group');
+ await vm.runInContext("onField('session',{value:'s2'})",ctx);
+ assert.equal(vm.runInContext('state.detailOutputId',ctx),'p1');
+ await vm.runInContext("onAction('select-session',{dataset:{id:'missing'}})",ctx);
+ assert.equal(vm.runInContext('state.detailOutputId',ctx),'p1');
+ assert.equal(vm.runInContext('state.toasts.at(-1).kind',ctx),'error');
 });
 test('device functions expose the second preset layer and save to its bound device',async()=>{
  const {ctx,app}=boot();await ready();
  await vm.runInContext("onAction('device-open',{dataset:{id:'d1'}});onAction('device-tab',{dataset:{value:'functions'}});onAction('preset-gesture',{dataset:{value:'double'}})",ctx);
  assert(app.innerHTML.includes('Button presets'));
- assert(app.innerHTML.includes('2×'));
+ assert(app.innerHTML.includes('data-value="double" aria-pressed="true"'));
  await vm.runInContext("onAction('preset-edit',{dataset:{id:'d1',gesture:'double'}})",ctx);
  const original=vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx);
  const other=vm.runInContext('JSON.stringify(state.model.devices[1].doublePresets)',ctx);
@@ -130,7 +143,7 @@ test('rename dialog supports cancel, validation and safely rendered names',async
 
 test('station artwork plays immediately on the player output and preserves independent streams',async()=>{
  const {ctx,app}=boot();await ready();
- await vm.runInContext("onAction('select-session',{dataset:{id:'s2'}})",ctx);
+ await vm.runInContext("onField('session',{value:'s2'})",ctx);
  const other=vm.runInContext("JSON.stringify(state.model.sessions.find(item=>item.targetId==='g1'))",ctx);
  assert(app.innerHTML.includes('aria-label="Play 1LIVE on Office"'));
  await vm.runInContext("onAction('source-play',{dataset:{id:'1live',target:'d4'}})",ctx);
@@ -174,7 +187,7 @@ test('transfer dialog previews, applies chosen keys and reports per-device resul
 test('group button selector binds gesture, edits and recall to the chosen physical member',async()=>{
  const {ctx,app}=boot();await ready();
  await vm.runInContext("onAction('group-open',{dataset:{id:'g1'}});onField('preset-device',{value:'d3',dataset:{id:'g1'}});onAction('preset-gesture',{dataset:{id:'d3',value:'double'}})",ctx);
- assert(app.innerHTML.includes('Assignments on Kitchen. Playback uses Downstairs.'));
+ assert(app.innerHTML.includes('value="d3" selected'));
  assert.equal(vm.runInContext('state.presetGesture',ctx),'double');
  await vm.runInContext("onField('preset-device',{value:'d4',dataset:{id:'g1'}})",ctx);
  assert.equal(vm.runInContext('state.presetDeviceId',ctx),'d3');
@@ -197,7 +210,7 @@ test('typed preset chooser saves drafts, discards cancellation and captures the 
  assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx),original);
  await vm.runInContext("onAction('close-modal',{dataset:{}})",ctx);
  assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx),original);
- await vm.runInContext("onAction('preset-edit',{dataset:{id:'d1',gesture:'single'}});onAction('preset-source-choose',{dataset:{id:'track-demo'}});onAction('preset-slot',{dataset:{index:'1'}});onAction('preset-source-choose',{dataset:{id:'spotify-album-demo'}});onAction('preset-slot',{dataset:{index:'2'}});onAction('preset-source-choose',{dataset:{id:'native-demo'}});onAction('preset-slot',{dataset:{index:'3'}});onAction('select-session',{dataset:{id:'s2'}});onAction('preset-use-current',{dataset:{}});onAction('preset-clear',{dataset:{index:'4'}})",ctx);
+ await vm.runInContext("onAction('preset-edit',{dataset:{id:'d1',gesture:'single'}});onAction('preset-source-choose',{dataset:{id:'track-demo'}});onAction('preset-slot',{dataset:{index:'1'}});onAction('preset-source-choose',{dataset:{id:'spotify-album-demo'}});onAction('preset-slot',{dataset:{index:'2'}});onAction('preset-source-choose',{dataset:{id:'native-demo'}});onAction('preset-slot',{dataset:{index:'3'}});onField('session',{value:'s2'});onAction('preset-use-current',{dataset:{}});onAction('preset-clear',{dataset:{index:'4'}})",ctx);
  assert.equal(vm.runInContext('state.modal.draft[3]',ctx),'flux');
  await vm.runInContext("onAction('preset-save',{dataset:{}})",ctx);
  assert.equal(vm.runInContext('state.model.devices[0].presets[0]',ctx),'track-demo');
@@ -217,7 +230,7 @@ test('volume lightbox stays bound to its output and separates individual trims f
  assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s1').volume",ctx),25);
  await vm.runInContext("onField('dialog-device-volume',{value:'99',dataset:{id:'d4'}})",ctx);
  assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d4').volume",ctx),office);
- await vm.runInContext("onAction('select-session',{dataset:{id:'s2'}});onField('dialog-volume',{value:'30',dataset:{id:'s1'}})",ctx);
+ await vm.runInContext("onField('session',{value:'s2'});onField('dialog-volume',{value:'30',dataset:{id:'s1'}})",ctx);
  assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d2').volume",ctx),52);
  assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s1').volume",ctx),30);
  assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s2').volume",ctx),28);
@@ -256,4 +269,93 @@ test('player casting uses its actual source after cancelling another source choi
  await vm.runInContext("onAction('source-select',{dataset:{id:'ndr2'}});onAction('close-modal',{dataset:{}});onAction('open-output-picker',{dataset:{}})",ctx);
  assert(app.innerHTML.includes('Play FluxFM on'));
  assert.equal(vm.runInContext('state.speakerPickerFor',ctx),'flux');
+});
+
+test('one grouping dialog seeds the device and keeps name and membership drafts across stereo mode',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('device-open',{dataset:{id:'d4'}})",ctx);
+ assert(app.innerHTML.indexOf('item-key-functions')<app.innerHTML.indexOf('item-membership'));
+ assert(app.innerHTML.indexOf('item-membership')<app.innerHTML.indexOf('detail-tabs'));
+ await vm.runInContext("onAction('device-tab',{dataset:{value:'network'}})",ctx);
+ assert(app.innerHTML.includes('Add members…'));
+ const before=vm.runInContext('JSON.stringify([state.model.groups,state.model.pairs,state.model.sessions])',ctx);
+ await vm.runInContext("onAction('start-group-create',{dataset:{id:'d4'}});onField('composite-name',{value:'Office stereo'});onField('member-select',{value:'d5',checked:true});onField('composite-stereo',{checked:true})",ctx);
+ assert.equal(vm.runInContext('state.modal.nameDraft',ctx),'Office stereo');
+ assert.equal(vm.runInContext('state.modal.leftId',ctx),'d4');
+ assert.equal(vm.runInContext('state.modal.rightId',ctx),'d5');
+ assert(app.innerHTML.includes('Left · L'));
+ await vm.runInContext("onField('composite-stereo',{checked:false});onAction('close-modal',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('JSON.stringify([state.model.groups,state.model.pairs,state.model.sessions])',ctx),before);
+ await vm.runInContext("onAction('start-group-create',{dataset:{id:'d4'}});onField('composite-name',{value:'Office stereo'});onField('composite-stereo',{checked:true});onField('composite-left',{value:'d5'});onField('composite-right',{value:'d4'});onAction('composite-create',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.model.pairs.at(-1).name',ctx),'Office stereo');
+ assert.equal(vm.runInContext('state.model.pairs.at(-1).leftDeviceId',ctx),'d5');
+ assert.equal(vm.runInContext('state.model.pairs.at(-1).rightDeviceId',ctx),'d4');
+ assert.equal(vm.runInContext('state.view',ctx),'group');
+ assert(app.innerHTML.includes('Left · L'));
+});
+test('group mode supports existing pairs and rejects a stale membership before any mutation',async()=>{
+ const {ctx}=boot();await ready();
+ await vm.runInContext("dissolveComposite(state.model,'g1');onAction('start-group-create',{dataset:{}});onField('composite-name',{value:'New room'});onField('member-select',{value:'p1',checked:true});onField('member-select',{value:'d3',checked:true});onField('composite-persistent',{checked:false});onAction('composite-create',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.model.groups.at(-1).persistent',ctx),false);
+ assert.equal(vm.runInContext('state.model.groups.at(-1).name',ctx),'New room');
+ assert.equal(vm.runInContext("state.model.groups.at(-1).memberIds.join(',')",ctx),'p1,d3');
+ await vm.runInContext("onAction('start-group-create',{dataset:{id:'d4'}});onField('member-select',{value:'d5',checked:true});state.model.devices.find(d=>d.id==='d5').status='offline';onAction('composite-create',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.model.groups.length',ctx),1);
+ assert.equal(vm.runInContext('state.modal.kind',ctx),'create');
+ assert.equal(vm.runInContext('state.toasts.at(-1).kind',ctx),'error');
+});
+
+test('presets start compact with direct Once/Twice and reveal configuration only on request',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('device-open',{dataset:{id:'d1'}})",ctx);
+ assert(app.innerHTML.includes('preset-compact-grid'));
+ assert(!app.innerHTML.includes('data-action="preset-edit"'));
+ assert(!app.innerHTML.includes('data-action="button-transfer-open"'));
+ const before=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);
+ await vm.runInContext("onAction('preset-gesture',{dataset:{id:'d1',value:'double'}})",ctx);
+ assert(app.innerHTML.includes('preset-key-name">Evening Jazz'));
+ assert.equal(vm.runInContext('JSON.stringify(state.model.sessions)',ctx),before);
+ await vm.runInContext("onAction('toggle-preset-details',{dataset:{id:'d1'}})",ctx);
+ assert(app.innerHTML.includes('data-action="preset-edit"'));
+ assert(app.innerHTML.includes('data-action="button-transfer-open"'));
+ await vm.runInContext("onAction('toggle-preset-details',{dataset:{id:'d1'}});onAction('group-open',{dataset:{id:'g1'}})",ctx);
+ assert(app.innerHTML.includes('id="preset-device"'));
+ await vm.runInContext("onAction('toggle-preset-details',{dataset:{id:'g1'}})",ctx);
+ assert(app.innerHTML.includes('id="preset-device"'));
+ await vm.runInContext("onAction('group-tab',{dataset:{value:'sound'}})",ctx);
+ assert(app.innerHTML.includes('id="group-volume"'));
+ assert(app.innerHTML.includes('Volume for Kitchen'));
+ assert(app.innerHTML.indexOf('item-key-functions')<app.innerHTML.indexOf('item-membership'));
+ await vm.runInContext("onAction('group-tab',{dataset:{value:'advanced'}})",ctx);
+ assert(app.innerHTML.includes('data-action="dissolve-group"'));
+});
+
+test('capture explicitly selects among simultaneous outputs without redirecting playback',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('preset-edit',{dataset:{id:'d1',gesture:'single'}});onAction('preset-slot',{dataset:{index:'2'}})",ctx);
+ assert(app.innerHTML.includes('From playing outputs'));
+ assert(app.innerHTML.includes('FluxFM · Downstairs'));
+ assert(app.innerHTML.includes('NDR Info · Office'));
+ assert(app.innerHTML.includes('Assign FluxFM to key 3'));
+ const before=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);
+ const player=vm.runInContext('state.model.selectedSessionId',ctx);
+ await vm.runInContext("onField('preset-playback',{value:'s2'});onAction('preset-use-current',{dataset:{session:'s2',source:'ndrinfo'}})",ctx);
+ assert.equal(vm.runInContext('state.modal.draft[2]',ctx),'ndrinfo');
+ assert.equal(vm.runInContext('JSON.stringify(state.model.sessions)',ctx),before);
+ assert.equal(vm.runInContext('state.model.selectedSessionId',ctx),player);
+ await vm.runInContext("onAction('preset-use-current',{dataset:{session:'s2',source:'flux'}})",ctx);
+ assert.equal(vm.runInContext('state.toasts.at(-1).kind',ctx),'error');
+ assert.equal(vm.runInContext('state.modal.draft[2]',ctx),'ndrinfo');
+});
+test('transfer destination tree de-duplicates groups and allows deselecting one member',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('button-transfer-open',{dataset:{id:'d1'}});onField('button-transfer-target',{value:'g1',checked:true})",ctx);
+ assert.equal(vm.runInContext("state.modal.targetIds.slice().sort().join(',')",ctx),'d2,d3');
+ assert.equal((app.innerHTML.match(/data-field="button-transfer-target" value="d2"/g)||[]).length,1);
+ assert(!app.innerHTML.includes('data-field="button-transfer-target" value="d1"'));
+ await vm.runInContext("onField('button-transfer-target',{value:'d2',checked:false})",ctx);
+ assert.equal(vm.runInContext("state.modal.targetIds.join(',')",ctx),'d3');
+ assert(app.innerHTML.includes('aria-checked="mixed"'));
+ await vm.runInContext("onField('button-transfer-target',{value:'g1',checked:true});onField('button-transfer-target',{value:'d4',checked:true})",ctx);
+ assert.equal(vm.runInContext('state.modal.targetIds.length',ctx),3);
 });

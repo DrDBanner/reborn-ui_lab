@@ -24,8 +24,10 @@ module.exports=async({page,log})=>{
   await page.keyboard.press('Escape');
   await page.evaluate(async storeUrl=>{const {state,notify}=await import(storeUrl);state.view='device';state.detailDeviceId='d1';state.model.ui.deviceTab='functions';state.toasts=[];notify();},storeUrl);
   check(!!await page.$('[data-action="button-transfer-open"] [data-icon="add_link"]'),'Transfer action should use add_link');
+  if(!await page.$('[data-action="button-transfer-open"]'))await page.click('[data-action="toggle-preset-details"]');
   await page.click('[data-action="button-transfer-open"]');await page.waitForSelector('.transfer-key-grid');
   await page.click('[data-field="button-transfer-target"][value="g1"]');
+  await page.click('[data-field="button-transfer-target"][value="d2"]');
   await page.click('[data-field="button-transfer-target"][value="d2"]');
   await page.click('[data-field="button-transfer-target"][value="d4"]');
   check(await page.$$eval('.transfer-result',items=>items.length===3),'Composite transfer must de-duplicate physical targets');

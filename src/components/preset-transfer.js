@@ -1,5 +1,5 @@
 import {esc,icon,action,typeIcon} from './shared.js';
-import {entity,kind,getTargets,leafDeviceIds,buttonProfile,presetAssignments,planPresetTransfer,source} from '../app/model.js';
+import {entity,kind,visibleOutputs,parentIds,leafDeviceIds,buttonProfile,presetAssignments,planPresetTransfer,source} from '../app/model.js';
 const keyName=item=>`Key ${item.key} · ${item.gesture==='double'?'Twice':'Once'}`;
 export function transferResults(report){
  return `<div class="transfer-results">${report.results.map(result=>`<section class="transfer-result"><strong>${esc(result.name)}</strong><p>${result.error?esc(result.error):`${result.copied.length} ${result.copied.length===1?'assignment':'assignments'} ${report.applied?'copied':'to copy'}`}</p>${result.skipped.length?`<ul>${result.skipped.map(item=>`<li>${esc(keyName(item))}: ${esc(item.reason)}</li>`).join('')}</ul>`:''}</section>`).join('')}</div>`;
@@ -9,15 +9,23 @@ export function renderPresetTransfer(s){
  let report=null,error='';
  if(targets.length&&selected.length)try{report=planPresetTransfer(m,device.id,targets,selected)}catch(problem){error=problem.message}
  const copyCount=report?.results.reduce((total,result)=>total+result.copied.length,0)||0;
- return `<div class="modal-heading"><h2>Transfer button assignments</h2><p>From ${esc(device?.name)} to devices, pairs or group members.</p></div>
- <fieldset class="transfer-keys"><legend>Choose assigned keys</legend><div class="transfer-key-tools">${action('button-transfer-all','All','text-action','data-value="all"')}${action('button-transfer-all','None','text-action','data-value="none"')}</div><div class="transfer-key-grid">${keys.map(item=>`<label><input type="checkbox" data-field="button-transfer-key" value="${esc(item.token)}" ${selected.includes(item.token)?'checked':''}/><span><strong>${esc(keyName(item))}</strong><small>${esc(source(s.catalog,item.sourceId)?.name||item.sourceId)}</small></span></label>`).join('')}</div></fieldset>
- <p class="transfer-scope">${selected.length===keys.length?'All assigned keys are transferred.':'Only selected keys are transferred.'} Other target keys stay unchanged. Each physical device is processed once.</p>
- <div class="modal-list transfer-targets">${getTargets(m).filter(target=>target.id!==device?.id).map(target=>{
-  const ids=leafDeviceIds(m,target.id).filter(id=>id!==device.id),eligible=ids.some(id=>buttonProfile(entity(m,id)));
-  return `<label class="choice-row"><input type="checkbox" data-field="button-transfer-target" value="${esc(target.id)}" ${targets.includes(target.id)?'checked':''} ${!eligible?'disabled':''}/>${typeIcon(kind(m,target.id))}<span><strong>${esc(target.name)}</strong><small>${ids.length} ${ids.length===1?'device':'devices'}${!eligible?' · No transferable button presets':''}</small></span></label>`;
- }).join('')}</div>
- ${report?transferResults(report):`<p class="transfer-scope">${esc(error||'Select keys and target outputs to review the transfer.')}</p>`}
- <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('button-transfer-save',icon('add_link')+` Transfer ${copyCount} assignments`,'primary-btn',!copyCount?'disabled':'')}</div>`;
+ const selectedIds=new Set(targets.flatMap(id=>leafDeviceIds(m,id)));
+ const destinationRow=id=>{
+  const target=entity(m,id),supported=!!buttonProfile(target),enabled=supported&&target.status==='online',parent=parentIds(m,id).map(id=>entity(m,id)).find(item=>kind(m,item.id)==='pair');
+  return `<label class="transfer-device"><input type="checkbox" data-field="button-transfer-target" value="${esc(id)}" ${selectedIds.has(id)?'checked':''} ${!enabled?'disabled':''}/>${typeIcon('device')}<span><strong>${esc(target.name)}</strong><small>${!supported?'No button presets':target.status!=='online'?esc(target.status):parent?esc(parent.name):esc(target.model||'')}</small></span></label>`;
+ };
+ const destinations=visibleOutputs(m).map(output=>{
+  const ids=leafDeviceIds(m,output.id).filter(id=>id!==device.id);if(!ids.length)return '';
+  if(kind(m,output.id)==='device')return destinationRow(output.id);
+  const eligible=ids.filter(id=>buttonProfile(entity(m,id))&&entity(m,id).status==='online'),all=eligible.length>0&&eligible.every(id=>selectedIds.has(id)),some=eligible.some(id=>selectedIds.has(id));
+  return `<section class="transfer-target-group"><label class="transfer-target-heading"><input type="checkbox" data-field="button-transfer-target" value="${esc(output.id)}" ${all?'checked':''} aria-checked="${some&&!all?'mixed':all}" ${!eligible.length?'disabled':''}/>${typeIcon(kind(m,output.id))}<span><strong>${esc(output.name)}</strong><small>${ids.length} ${ids.length===1?'destination':'destinations'}${leafDeviceIds(m,output.id).includes(device.id)?' · Source device excluded':''}</small></span></label><div>${ids.map(destinationRow).join('')}</div></section>`;
+ }).join('');
+ return `<div class="modal-heading"><h2>Transfer button assignments</h2><p>Copy from ${esc(device?.name)}. The source device is excluded from destinations.</p></div>
+ <div class="transfer-body"><div class="transfer-workbench"><section class="transfer-keys" aria-label="Choose assigned keys"><header class="transfer-section-heading"><h3>Which assignments?</h3><div class="transfer-key-tools">${action('button-transfer-all','All','text-action','data-value="all"')}${action('button-transfer-all','None','text-action','data-value="none"')}</div></header>${['single','double'].map(gesture=>{const bank=keys.filter(item=>item.gesture===gesture);return bank.length?`<section class="transfer-key-bank"><h4>${gesture==='double'?'Twice':'Once'}</h4><div class="transfer-key-grid">${bank.map(item=>`<label><input type="checkbox" data-field="button-transfer-key" value="${esc(item.token)}" ${selected.includes(item.token)?'checked':''}/><span class="transfer-key-number">${item.key}</span><span><strong>${esc(source(s.catalog,item.sourceId)?.name||item.sourceId)}</strong></span></label>`).join('')}</div></section>`:''}).join('')}<p class="transfer-scope">Unselected and empty keys do not erase target assignments.</p></section>
+ <section class="transfer-destinations" aria-label="Choose destination devices"><header class="transfer-section-heading"><h3>Copy to</h3></header><div class="transfer-targets">${destinations||'<p class="transfer-scope">No other devices available.</p>'}</div></section></div>
+ <section class="transfer-review" aria-label="Transfer preview"><h3>Review</h3>${report?transferResults(report):`<p class="transfer-scope">${esc(error||'Choose assignments and destinations to preview the changes.')}</p>`}</section></div>
+ <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('button-transfer-save',icon('add_link')+(copyCount?` Transfer ${copyCount} assignments`:' Transfer'),'primary-btn',!copyCount?'disabled':'')}</div>`;
+
 }
 export function renderPresetTransferResult(s){
  const report={...s.modal.report,applied:true};

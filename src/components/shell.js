@@ -20,7 +20,9 @@ export function sidebar(s){
  const sessions=m.sessions.filter(session=>session.status!=='stopped'),outputs=visibleOutputs(m);
  const limit=s.expandingOutputs?999:Number(m.ui.sidebarLimit||6),count=outputs.length;
  const detailId=s.view==='device'?(s.detailDeviceId||m.selectedDeviceId):s.view==='group'?s.detailOutputId:null;
- const detailVisible=m.ui.speakerVariant!=='panel'&&!collapsed.outputs&&outputs.slice(0,limit).some(output=>output.id===detailId);
+ const shortcuts=outputs.slice(0,limit),currentOutput=outputs.find(output=>output.id===detailId);
+ if(currentOutput&&!shortcuts.some(output=>output.id===detailId))shortcuts.splice(Math.max(0,shortcuts.length-1),1,currentOutput);
+ const detailVisible=m.ui.speakerVariant!=='panel'&&!collapsed.outputs&&shortcuts.some(output=>output.id===detailId);
  const sectionCurrent=id=>id==='playbacks'?(sessions.length>0&&(s.view==='outputs'||s.view==='sessions')&&m.ui.outputScope==='active'):id==='outputs'?((s.view==='outputs'||s.view==='sessions')&&(m.ui.outputScope!=='active'||!sessions.length)||['device','group'].includes(s.view)&&!detailVisible):!!collapsed[id]&&(sections.find(section=>section.id===id)?.items||[]).some(item=>(Array.isArray(item)?item[0]:item.view)===s.view);
  const appContext=['settings','help','lab'].includes(s.view);
  return `<aside class="sidebar ${s.sidebarOpen?'sidebar--open':''}" aria-label="Main navigation">
@@ -30,8 +32,8 @@ export function sidebar(s){
    ${sections.map(sec=>`<section class="nav-section" data-section="${sec.id}">
     ${sectionHeading(sec.id,sec.name,sec.landing,!!collapsed[sec.id],null,sectionCurrent(sec.id))}
     ${!collapsed[sec.id]?`<div class="nav-section__content">${sec.items.map(item=>{const [v,name,i]=Array.isArray(item)?item:[item.view,item.label,item.icon];return action('navigate',icon(i)+`<span>${esc(name)}</span>`,`nav-item ${s.view===v?'active':''}`,`data-value="${v}" ${s.view===v?'aria-current="page"':''}`)}).join('')}
-     ${sec.id==='outputs'&&m.ui.speakerVariant!=='panel'?`${outputs.slice(0,limit).map(t=>`<div class="sidebar-output-line">${outputItem(m,t.id,{compact:true,selected:detailId===t.id})}${action('target-actions',icon('more_horiz'),'sidebar-output-menu',`data-id="${t.id}" aria-label="Actions for ${esc(t.name)}"`)}</div>`).join('')}${count>limit?action('expand-outputs',`+ ${count-limit} more outputs`,'sidebar-more'):''}`:''}
-     ${sec.id==='outputs'?`${action('navigate',icon('add_circle_outline')+'<span>Create group or pair</span>','nav-item nav-item--outline','data-value="outputs"')}`:''}
+     ${sec.id==='outputs'&&m.ui.speakerVariant!=='panel'?`${shortcuts.map(t=>`<div class="sidebar-output-line">${outputItem(m,t.id,{compact:true,selected:detailId===t.id})}${action('target-actions',icon('more_horiz'),'sidebar-output-menu',`data-id="${t.id}" aria-label="Actions for ${esc(t.name)}"`)}</div>`).join('')}${count>limit?action('expand-outputs',`+ ${count-limit} more outputs`,'sidebar-more'):''}`:''}
+     ${sec.id==='outputs'?`${action('start-group-create',icon('add_circle_outline')+'<span>Create group</span>','nav-item nav-item--outline')}`:''}
     </div>`:''}</section>`).join('')}
   </div>
  </aside>`;

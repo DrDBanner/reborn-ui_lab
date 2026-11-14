@@ -15,3 +15,5 @@ Playback symbols are reserved for immediate playback actions: `play_circle` / `p
 Music casting and stream indicators use `music_cast` instead of an equalizer or generic casting glyph.
 
 Button assignment transfer uses `add_link`, paired with an explicit Transfer label. It denotes propagating assignments; it does not promise persistent profile synchronization.
+
+Member names and rows are not navigation targets. An explicit `open_in_new` details action appears on hover or keyboard focus and stays visible on touch devices. Removing a member remains a separate action.

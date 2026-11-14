@@ -26,8 +26,8 @@ module.exports=async({page,log})=>{
  await page.keyboard.press('Escape');
  await page.click('[data-action="device-tab"][data-value="functions"]');
  await page.click('[data-action="preset-gesture"][data-value="double"]');
- await page.waitForSelector('.key-preset');
- await page.click('[data-action="preset-edit"]');await page.waitForSelector('.preset-workbench');
+ await page.waitForSelector('.preset-key-compact,.key-preset');
+ if(!await page.$('[data-action="preset-edit"]'))await page.click('[data-action="toggle-preset-details"]');await page.click('[data-action="preset-edit"]');await page.waitForSelector('.preset-workbench');
  await page.click('[data-action="preset-source-type"][data-value="library"]');
  if(!await page.$('[data-action="preset-source-choose"][data-id="track-demo"]'))throw new Error('Typed library source missing');
  await page.keyboard.press('Escape');

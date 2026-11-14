@@ -21,7 +21,8 @@ function render(){
  const view=views[state.view]||renderListen;
  const playerContent=player(state);
  // Preserve typing position across updates from search or form controls.
- const viewKey=[state.view,state.detailDeviceId,state.detailOutputId,state.model.ui.deviceTab,state.model.ui.groupTab,state.model.ui.settingsTab].join(':');
+ // Tab changes keep the current item's workspace position. A different item/route resets it.
+ const viewKey=[state.view,state.detailDeviceId,state.detailOutputId].join(':');
  const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-source-results','.group-settings-body'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
  const active=document.activeElement;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;

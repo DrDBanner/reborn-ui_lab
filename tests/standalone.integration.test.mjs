@@ -31,7 +31,7 @@ test('single file loads, renders and switches views/scenarios without a backend'
  await vm.runInContext("onAction('navigate',{dataset:{value:'outputs'}})",ctx);await ready();
  assert(app.innerHTML.includes('Outputs &amp; playbacks') || app.innerHTML.includes('Outputs & playbacks'));
  await vm.runInContext("onAction('load-scenario',{dataset:{id:'many'}})",ctx);await ready();
- assert(app.innerHTML.includes('30'));
+ assert.equal(vm.runInContext('state.model.devices.length',ctx),50);
  await vm.runInContext("onAction('navigate',{dataset:{value:'lab'}})",ctx);await ready();
  assert(app.innerHTML.includes('Design Lab'));
  await vm.runInContext("onField('speaker-variant',{value:'panel'})",ctx);await ready();
@@ -445,4 +445,16 @@ test('update events create one linked toast per availability/version and never i
  await vm.runInContext("clearToast();onAction('check-updates',{dataset:{}})",ctx);assert.equal(vm.runInContext('state.toasts.length',ctx),0);
  await vm.runInContext("mutate(s=>s.model.appUpdate.available=false);mutate(s=>s.model.appUpdate.available=true)",ctx);assert.equal(vm.runInContext('state.toasts.length',ctx),1);
  await vm.runInContext("loadScenario('update-notifications',false,true)",ctx);assert.equal(vm.runInContext("state.toasts.filter(t=>t.kind==='update').length",ctx),1);
+});
+
+test('Add to existing group reviews playback, cancels safely and binds the selected item',async()=>{
+ const {ctx,app}=boot();await ready();await vm.runInContext("onAction('device-open',{dataset:{id:'d4'}})",ctx);
+ assert(app.innerHTML.includes('Add to existing group'));const before=vm.runInContext('JSON.stringify(state.model)',ctx);
+ await vm.runInContext("onAction('add-to-group',{dataset:{id:'d4'}});onAction('membership-choice',{dataset:{id:'g1'}})",ctx);
+ assert(app.innerHTML.includes('Replaces NDR Info'));assert.equal(vm.runInContext('JSON.stringify(state.model)',ctx),before);
+ await vm.runInContext("onAction('close-modal',{dataset:{}})",ctx);assert.equal(vm.runInContext('JSON.stringify(state.model)',ctx),before);
+ await vm.runInContext("onAction('add-to-group',{dataset:{id:'d4'}});onAction('membership-choice',{dataset:{id:'g1'}});state.detailDeviceId='d7';onAction('membership-save',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.view',ctx),'group');assert.equal(vm.runInContext('state.detailOutputId',ctx),'g1');assert(vm.runInContext("entity(state.model,'g1').memberIds.includes('d4')",ctx));assert(!vm.runInContext("entity(state.model,'g1').memberIds.includes('d7')",ctx));
+ await vm.runInContext("onAction('add-member',{dataset:{id:'g1'}});onAction('membership-choice',{dataset:{id:'d7'}});onAction('membership-save',{dataset:{}})",ctx);
+ assert(vm.runInContext("entity(state.model,'g1').memberIds.includes('d7')",ctx));assert.equal(vm.runInContext('state.model.sessions.length',ctx),1);
 });

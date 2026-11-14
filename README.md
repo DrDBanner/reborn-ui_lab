@@ -23,7 +23,7 @@ The normal Vite version compiles Tailwind and daisyUI. `preview.html` omits thes
 
 ## What can I try?
 
-- **The problem of N:** use the `30 speakers` scenario. Sidebar shows selected/top-level shortcuts; the shared workspace offers **Playback targets** for logical outputs and **All devices** for the complete hardware inventory.
+- **The problem of N:** use the `50 devices` scenario. Sidebar shows selected/top-level shortcuts; the shared workspace offers **Playback targets** for logical outputs and **All devices** for the complete hardware inventory.
 - **Speaker placement A/B:** open **Design Lab** and switch between *A — Player panel* and *B — Sidebar*. Shared playback and group state does not reset.
 - **App menu:** click the ST Reborn logo for connection status, appearance, app settings, scenarios and Design Lab.
 - **Radio filters:** country, language, sorting, minimum bitrate, station health, output compatibility and genre chips all filter the sample catalog. Use the pin button to keep the controls visible while scrolling; its state is remembered.
@@ -34,7 +34,7 @@ The normal Vite version compiles Tailwind and daisyUI. `preview.html` omits thes
 - **Device functions:** open a device for its supported button presets above the tabs; alarms remain under **Functions**. Groups and pairs expose the same panel with a device selector. Switch **Once / Twice** to configure or recall either button layer. Presets start as compact keys (at most three per row); Once/Twice and the group’s physical device selector stay directly accessible. The gear beside **Buttons on** reveals Edit assignments and Transfer buttons. The assignment editor separates keys from searchable, typed Radio / Library / Spotify / Services sources and can capture a source from an explicitly chosen playing output; the device’s own playback is preselected. **Device capabilities** demonstrates items without buttons and items with only two single-press keys.
 - **Playing / Media:** the sidebar uses these names for playback sessions and source browsing. Playing and the bottom bar hide when no session is running or paused; paused sessions are explicit.
 - **Independent streams:** choose `Several streams`, select a playback in the sidebar to open its output details, or open the shared Outputs workspace with Active only, or use the session selector in the bottom player; select another source and assign it to another output.
-- **Groups and pairs:** use **Create group** on **Outputs & playbacks**, or **Members → Add members…** above a device’s tabs. Select outputs or enable **Stereo** and assign left/right speakers. Manage or dissolve each as one output.
+- **Groups and pairs:** use **Create group** on **Outputs & playbacks**, or **Members → Add members…** above a device’s tabs. Select outputs or enable **Stereo** and assign left/right speakers. Manage or dissolve each as one output. **Add to existing group** provides the reverse membership action, including logical subgroups; review the common playback and any replaced sources before saving. STR hardware still requires a flat physical group through a future adapter.
 - **Maintenance states:** select `Maintenance & errors` and advance firmware progress in **Updates & maintenance**.
 - **First run:** select `First run` to exercise empty states and the setup wizard.
 - **Live design adjustments:** edit accent, radius, density and sidebar width in **Design Lab**, then export design tokens.
@@ -57,7 +57,7 @@ The prototype stores per-scenario changes and visual tokens in browser `localSto
 | `src/app/model.js` | Pure selectors and rules for speakers, groups and playback sessions |
 | `src/app/controller.js` | UI actions and state updates (mock boundary) |
 | `src/app/store.js` | Shared state, scenario loading, persistence |
-| `public/data/scenarios/*.json` | Complete editable scenarios, including 30-speaker case |
+| `public/data/scenarios/*.json` | Complete editable scenarios, including 50-device case |
 | `public/data/catalog.json` | Example radio stations, playlists and music servers |
 | `public/data/design-tokens.json` | Default visual tokens |
 | `public/data/ui-layout.json` | Sidebar navigation, category titles and route metadata |

@@ -32,6 +32,54 @@ export function parentIds(model, targetId) {
   return [...model.pairs, ...model.groups].filter(x => x.memberIds?.includes(targetId)).map(x => x.id);
 }
 
+export function rootOutputId(model,id){
+ const seen=new Set();let current=id;
+ while(!seen.has(current)){seen.add(current);const parent=parentIds(model,current)[0];if(!parent)return current;current=parent;}
+ return null;
+}
+function containsItem(model,root,id,seen=new Set()){
+ if(root===id)return true;if(seen.has(root))return false;seen.add(root);
+ return (entity(model,root)?.memberIds||[]).some(child=>containsItem(model,child,id,seen));
+}
+export function membershipError(model,groupId,memberId){
+ const group=model.groups.find(item=>item.id===groupId),member=entity(model,memberId);
+ if(!group||!member)return 'Group or item no longer available';
+ if(containsItem(model,memberId,groupId))return 'A group cannot contain itself or one of its parents';
+ if(parentIds(model,memberId).length)return 'This item already belongs to a group or stereo pair';
+ const root=rootOutputId(model,groupId),ids=new Set(leafDeviceIds(model,root));
+ if(leafDeviceIds(model,memberId).some(id=>ids.has(id)))return 'These speakers are already members';
+ if(targetStatus(model,memberId)!=='online')return 'All added speakers must be online';
+ if(!['online','partial'].includes(targetStatus(model,root)))return 'The destination group is unavailable';
+ return null;
+}
+
+export function membershipPlan(model,groupId,memberId){
+ const error=membershipError(model,groupId,memberId);if(error)return {error};
+ const rootId=rootOutputId(model,groupId),active=session=>session&&['playing','paused'].includes(session.status);
+ const rootDevices=leafDeviceIds(model,rootId),memberDevices=leafDeviceIds(model,memberId);
+ const overlaps=(session,devices)=>leafDeviceIds(model,session.targetId).some(id=>devices.includes(id));
+ const targetSession=model.sessions.find(session=>active(session)&&overlaps(session,rootDevices))||sessionFor(model,rootId),memberSession=model.sessions.find(session=>active(session)&&overlaps(session,memberDevices));
+ const playback=active(targetSession)?targetSession:active(memberSession)?memberSession:targetSession||null;
+ const replaced=model.sessions.filter(session=>active(session)&&session.id!==playback?.id&&(overlaps(session,rootDevices)||overlaps(session,memberDevices)));
+ return {error:null,rootId,rootDevices,memberDevices,playback:playback?structuredClone(playback):null,replaced:replaced[0]?structuredClone(replaced[0]):null,replacedPlaybacks:structuredClone(replaced)};
+}
+
+export function addToGroup(model,groupId,memberId,expectedPlan=null){
+ const plan=membershipPlan(model,groupId,memberId);if(plan.error)throw new Error(plan.error);
+ if(expectedPlan&&JSON.stringify(plan)!==JSON.stringify(expectedPlan))throw new Error('Playback changed; review this membership again');
+ const group=entity(model,groupId),root=entity(model,plan.rootId),affected=new Set([...leafDeviceIds(model,root.id),...leafDeviceIds(model,memberId)]);
+ const conflicts=new Set(model.sessions.filter(session=>leafDeviceIds(model,session.targetId).some(id=>affected.has(id))).map(session=>session.id));
+ group.memberIds.push(memberId);
+ model.sessions=model.sessions.filter(session=>!conflicts.has(session.id));
+ if(plan.playback){
+  const playback={...plan.playback,targetId:root.id};model.sessions.push(playback);root.volume=playback.volume;
+  if(conflicts.has(model.selectedSessionId))model.selectedSessionId=playback.id;
+ }
+ if(!model.sessions.some(session=>session.id===model.selectedSessionId))model.selectedSessionId=null;
+ model.selectedOutputId=root.id;
+ return plan;
+}
+
 export function visibleOutputs(model) {
   // A speaker within a pair, or a pair/speaker within a group, is represented by its parent.
   return getTargets(model).filter(t => !parentIds(model, t.id).length);
@@ -108,11 +156,13 @@ export function renameItem(model,itemId,name){
 }
 
 // A stereo follower cannot independently lead its containing multiroom group.
-export function groupLeaderCandidates(model,group){
+export function groupLeaderCandidates(model,group,seen=new Set()){
+ if(!group||seen.has(group.id))return [];seen.add(group.id);
  return (group?.memberIds||[]).flatMap(id=>{
   const item=entity(model,id),type=kind(model,id);
+  if(type==='group')return groupLeaderCandidates(model,item,seen);
   const leader=type==='pair'?(item.leaderDeviceId||item.leftDeviceId||item.memberIds[0]):id;
-  return type==='group'?[]:[entity(model,leader)].filter(Boolean);
+  return [entity(model,leader)].filter(Boolean);
  });
 }
 export function remoteGroupKeyDevices(model){
@@ -299,6 +349,7 @@ export function conflictingSessionIds(model, targetId) {
 
 export function assignSource(model, sourceId, targetId) {
   if (!entity(model, targetId)) throw new Error('Output not found');
+  targetId=rootOutputId(model,targetId)||targetId;
   if (targetStatus(model, targetId) === 'offline') throw new Error('Output is offline');
   if (targetStatus(model, targetId) === 'needs_setup') throw new Error('Complete setup first');
   if (targetStatus(model, targetId) === 'updating') throw new Error('Wait for the firmware update');
@@ -324,7 +375,7 @@ export function playbackJoinError(model,context,destinationId=null){
  if(!destination)return 'Destination no longer available.';
  const members=new Set(leafDeviceIds(model,origin.id));
  if(leafDeviceIds(model,destinationId).some(id=>members.has(id)))return 'Already part of this playback.';
- if(kind(model,destinationId)==='group')return 'Choose a speaker or stereo pair; groups cannot be nested.';
+ if(kind(model,destinationId)==='group')return 'For nested groups, use Add to existing group in its details.';
  if(parentIds(model,destinationId).length)return 'This output already belongs to a group or pair.';
  if(targetStatus(model,destinationId)!=='online')return 'Destination must be online.';
  return null;
@@ -363,7 +414,7 @@ export function validateGroupMembers(model, memberIds, type = 'group') {
     if (!entity(model, id)) return `Output ${id} does not exist`;
     if (targetStatus(model,id)!=='online') return `${entity(model,id).name} is not online`;
     if (type === 'pair' && kind(model,id) !== 'device') return 'Stereo pairs can contain speakers only';
-    if (type === 'group' && kind(model,id) === 'group') return 'Nested groups are reserved for a separate topology concept';
+    if (type === 'group' && kind(model,id) === 'group') return 'Use Add to existing group to keep an existing group as a subgroup';
     if (parentIds(model,id).length) return `${entity(model,id).name} already belongs to a pair or group`;
   }
   return null;
@@ -387,6 +438,7 @@ export function dissolveComposite(model,id) {
   if (type==='group') model.groups=model.groups.filter(x=>x.id!==id);
   model.sessions=model.sessions.filter(x=>x.targetId!==id);
   model.groups.forEach(g=>g.memberIds=g.memberIds.filter(x=>x!==id));
+  model.groups.forEach(g=>{if(!leafDeviceIds(model,g.id).includes(g.leaderDeviceId))g.leaderDeviceId=null});
   if(model.selectedOutputId===id) model.selectedOutputId=null;
 }
 
@@ -397,7 +449,8 @@ export function removeDevice(model, deviceId) {
   model.pairs=model.pairs.filter(p=>!destroyedPairs.has(p.id));
   model.groups.forEach(g=>{g.memberIds=g.memberIds.filter(x=>x!==deviceId&&!destroyedPairs.has(x))});
   model.groups.forEach(g=>{if(!leafDeviceIds(model,g.id).includes(g.leaderDeviceId))g.leaderDeviceId=null});
-  model.groups=model.groups.filter(g=>g.memberIds.length>=2);
+  let undersized=model.groups.filter(g=>g.memberIds.length<2);
+  while(undersized.length){const deleted=new Set(undersized.map(g=>g.id));model.groups=model.groups.filter(g=>!deleted.has(g.id));model.groups.forEach(g=>g.memberIds=g.memberIds.filter(id=>!deleted.has(id)));undersized=model.groups.filter(g=>g.memberIds.length<2);}
   const remainingIds=new Set([...model.devices,...model.pairs,...model.groups].map(x=>x.id));
   model.sessions=model.sessions.filter(x=>remainingIds.has(x.targetId));
   if(!model.sessions.some(x=>x.id===model.selectedSessionId))model.selectedSessionId=model.sessions[0]?.id||null;
@@ -409,10 +462,7 @@ export function updateMembership(model,groupId,memberId,shouldAdd) {
   const group=model.groups.find(x=>x.id===groupId);
   if(!group) throw new Error('Group not found');
   if(shouldAdd) {
-    if(parentIds(model,memberId).length) throw new Error('Output already belongs to a group');
-    if(!entity(model,memberId)) throw new Error('Output not found');
-    if(groupId===memberId||leafDeviceIds(model,memberId).some(id=>leafDeviceIds(model,groupId).includes(id))) throw new Error('Invalid or duplicate members');
-    group.memberIds.push(memberId);
+    addToGroup(model,groupId,memberId);
   } else {
     group.memberIds=group.memberIds.filter(x=>x!==memberId);
     if(!leafDeviceIds(model,groupId).includes(group.leaderDeviceId))group.leaderDeviceId=null;
@@ -430,6 +480,10 @@ export function validateScenario(m) {
   for(const comp of [...m.pairs,...m.groups]) {
     if(!Array.isArray(comp.memberIds)) {errors.push(`${comp.id}: memberIds must be an array`);continue}
     for(const id of comp.memberIds) if(!ids.includes(id))errors.push(`${comp.id}: missing member ${id}`);
+    if(new Set(comp.memberIds).size!==comp.memberIds.length)errors.push(`${comp.id}: duplicate members`);
+    if(comp.memberIds.some(id=>containsItem(m,id,comp.id)))errors.push(`${comp.id}: cyclic membership`);
+    if(comp.memberIds.some(id=>parentIds(m,id).length>1))errors.push(`${comp.id}: member has multiple parents`);
+    if(m.pairs.includes(comp)&&comp.memberIds.some(id=>kind(m,id)!=='device'))errors.push(`${comp.id}: stereo pairs require physical devices`);
     if(leafDeviceIds(m,comp.id).length === 0) errors.push(`${comp.id}: no physical devices`);
   }
   for(const s of m.sessions) if(!ids.includes(s.targetId))errors.push(`${s.id}: missing output ${s.targetId}`);

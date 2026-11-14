@@ -1,7 +1,22 @@
 import {renderPresetEditor} from './preset-editor.js';
 import {renderPresetTransfer,renderPresetTransferResult} from './preset-transfer.js';
 import {esc,icon,action,statusBadge,targetIcon,subline,typeIcon} from './shared.js';
-import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets,leafDeviceIds,stereoFamily,validateGroupMembers,playbackJoinError,effectiveSessionFor,groupLeaderCandidates,remoteGroupKeyDevices} from '../app/model.js';
+import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets,leafDeviceIds,stereoFamily,validateGroupMembers,playbackJoinError,effectiveSessionFor,groupLeaderCandidates,remoteGroupKeyDevices,membershipPlan,membershipError} from '../app/model.js';
+
+function renderMembershipDialog(s){
+ const modal=s.modal,m=s.model,item=entity(m,modal.anchorId),toParent=modal.direction==='parent';
+ if(!item)return '<div class="modal-heading"><h2>Item no longer available</h2></div>';
+ const candidates=(toParent?m.groups:visibleOutputs(m)).filter(candidate=>candidate.id!==item.id);
+ const selected=entity(m,modal.selectedId),groupId=toParent?selected?.id:item.id,memberId=toParent?item.id:selected?.id;
+ const plan=selected?membershipPlan(m,groupId,memberId):null,now=source(s.catalog,plan?.playback?.sourceId)||(plan?.playback?.sourceId?{name:plan.playback.sourceId}:null),replacements=(plan?.replacedPlaybacks||[]).map(playback=>`${source(s.catalog,playback.sourceId)?.name||playback.sourceId} on ${entity(m,playback.targetId)?.name||playback.targetId}`);
+ return `<div class="modal-heading"><h2>${toParent?'Add to existing group':'Add members'}</h2><p>${esc(item.name)} · ${toParent?'Choose the group to join.':'Choose a speaker, stereo pair or group.'}</p></div>
+ <div class="membership-dialog-body"><div class="modal-list membership-options">${candidates.length?candidates.map(candidate=>{
+  const error=membershipError(m,toParent?candidate.id:item.id,toParent?item.id:candidate.id);
+  return action('membership-choice',`${typeIcon(kind(m,candidate.id))}<span><strong>${esc(candidate.name)}</strong><small>${error?esc(error):`${leafDeviceIds(m,candidate.id).length} speakers`}</small></span>${icon(modal.selectedId===candidate.id?'check_circle':'add')}`,`modal-output ${modal.selectedId===candidate.id?'is-current':''}`,`data-id="${esc(candidate.id)}" aria-pressed="${modal.selectedId===candidate.id}" ${error?'disabled':''}`);
+ }).join(''):'<p class="empty-line">No existing groups available.</p>'}</div>
+ ${selected?`<div class="membership-review" role="status"><strong>${esc(entity(m,memberId)?.name)} → ${esc(entity(m,groupId)?.name)}</strong><p>${plan?.error?esc(plan.error):now?`${esc(now.name)} will be ${plan.playback.status==='playing'?'playing':'paused'} on ${esc(entity(m,plan.rootId)?.name)}.${replacements.length?` Replaces ${esc(replacements.join(', '))}.`:''}`:'No playback will start.'}</p>${kind(m,memberId)==='group'?'<p>The added group keeps its name and members. While joined, all speakers share the parent playback.</p>':''}</div>`:''}</div>
+ <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('membership-save',toParent?'Add to group':'Add member','primary-btn',!selected||plan?.error?'disabled':'')}</div>`;
+}
 
 function renderGroupSettings(s){
  const draft=s.modal.draft,group=entity(s.model,draft.groupId),candidates=groupLeaderCandidates(s.model,group),receivers=remoteGroupKeyDevices(s.model),receiver=entity(s.model,draft.receiverId);
@@ -79,6 +94,6 @@ function renameDialog(s){
 }
 function genericDialog(s){const t=s.modal||{};return `<div class="modal-heading"><h2>${esc(t.title||'Information')}</h2><p>${esc(t.description||'')}</p></div>${t.body?`<div class="modal-generic">${t.body}</div>`:''}<div class="modal-footer">${action('close-modal','Close','primary-btn')}</div>`}
 export function renderDialog(s){if(!s.modal)return '';
- const inner=s.modal.kind==='group-settings'?renderGroupSettings(s):s.modal.kind==='button-transfer'?renderPresetTransfer(s):s.modal.kind==='button-transfer-result'?renderPresetTransferResult(s):s.modal.kind==='rename'?renameDialog(s):s.modal.kind==='picker'?outputPicker(s):s.modal.kind==='create'?renderCompositeDialog(s):s.modal.kind==='volume'?volumeDialog(s):s.modal.kind==='preset'?renderPresetEditor(s):s.modal.kind==='wifi'?wifiDialog(s):s.modal.kind==='maintenance'?deviceMaintenance(s):genericDialog(s);
- return `<div class="overlay" role="presentation"><div class="modal-window ${s.modal.kind==='group-settings'?'modal-window--group-settings':s.modal.kind==='button-transfer'?'modal-window--transfer':s.modal.kind==='create'?'modal-window--create':s.modal.kind==='preset'?'modal-window--preset':s.modal.kind==='volume'?'modal-window--volume':''}" role="dialog" aria-modal="true" aria-label="${esc(s.modal.title||s.modal.kind||'Dialog')}"><div class="modal-window__close">${action('close-modal',icon('close'),'icon-btn','aria-label="Close dialog"')}</div>${inner}</div><button class="overlay-backdrop" data-action="close-modal" aria-label="Close dialog"></button></div>`;
+ const inner=s.modal.kind==='membership'?renderMembershipDialog(s):s.modal.kind==='group-settings'?renderGroupSettings(s):s.modal.kind==='button-transfer'?renderPresetTransfer(s):s.modal.kind==='button-transfer-result'?renderPresetTransferResult(s):s.modal.kind==='rename'?renameDialog(s):s.modal.kind==='picker'?outputPicker(s):s.modal.kind==='create'?renderCompositeDialog(s):s.modal.kind==='volume'?volumeDialog(s):s.modal.kind==='preset'?renderPresetEditor(s):s.modal.kind==='wifi'?wifiDialog(s):s.modal.kind==='maintenance'?deviceMaintenance(s):genericDialog(s);
+ return `<div class="overlay" role="presentation"><div class="modal-window ${s.modal.kind==='membership'?'modal-window--membership':s.modal.kind==='group-settings'?'modal-window--group-settings':s.modal.kind==='button-transfer'?'modal-window--transfer':s.modal.kind==='create'?'modal-window--create':s.modal.kind==='preset'?'modal-window--preset':s.modal.kind==='volume'?'modal-window--volume':''}" role="dialog" aria-modal="true" aria-label="${esc(s.modal.title||s.modal.kind||'Dialog')}"><div class="modal-window__close">${action('close-modal',icon('close'),'icon-btn','aria-label="Close dialog"')}</div>${inner}</div><button class="overlay-backdrop" data-action="close-modal" aria-label="Close dialog"></button></div>`;
 }

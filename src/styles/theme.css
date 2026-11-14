@@ -18,6 +18,7 @@
   --ok: #68ce9a;
   --warn: #efbd6e;
   --bad: #e8818b;
+  --favorite: #e68aa2;
   --card-gap: 14px;
 }
 [data-appearance="light"] {
@@ -29,6 +30,7 @@
   --text: #202124;
   --muted: #5c5e63;
   --faint: #6e7075;
+  --favorite: #b44363;
   --border: #dedee1;
 }
 [data-density="compact"] { --density: .8; --control-height: 34px; --card-gap: 10px; }

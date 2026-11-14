@@ -9,6 +9,12 @@ module.exports=async({page,log})=>{
  page.on('pageerror',error=>errors.push(error.message));
  await page.waitForSelector('.workspace');
  await page.evaluate(()=>document.fonts.ready);
+ const titleBefore=await page.$eval('[data-action="player-toggle"]',e=>e.title);
+ if(!['Play','Pause'].includes(titleBefore)||await page.$eval('[data-action="player-stop"]',e=>e.title)!=='Stop')throw new Error('Transport tooltips missing');
+ await page.click('[data-action="player-toggle"]');
+ if(await page.$eval('[data-action="player-toggle"]',e=>e.title)==titleBefore)throw new Error('Play/pause tooltip did not follow state');
+ await page.click('[data-action="player-toggle"]');
+
  if(await page.$eval('.mobile-menu',element=>getComputedStyle(element).display!=='none'))await page.click('.mobile-menu');
  await page.click('[data-section="outputs"] .section-workspace-link');
  await page.waitForSelector('.target-card');

@@ -1,5 +1,5 @@
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast} from './store.js';
-import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback} from './model.js';
+import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,membershipPlan,addToGroup,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback} from './model.js';
 import {esc,icon} from '../components/shared.js';
 
 function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
@@ -104,11 +104,13 @@ export async function onAction(action,element){
  }
  case 'group-settings':openModal('group-settings',{draft:groupSettingsDraft(m,id||state.detailOutputId)});break;
  case 'group-settings-save':if(state.modal?.kind==='group-settings'){mutate(s=>{saveGroupSettings(s.model,s.modal.draft);s.modal=null});toast('Group settings saved (mock data)')}break;
- case 'add-member':{
-  const group=entity(m,state.detailOutputId),candidates=visibleOutputs(m).filter(t=>t.id!==group.id&&kind(m,t.id)!=='group');
-  generic('Add members',`Add an ungrouped speaker or pair to ${group.name}.`, `<div class="modal-list">${candidates.map(t=>`<button class="modal-output" data-action="group-add-item" data-id="${t.id}">${icon(t.memberIds?'speaker_group':'speaker')}<span>${esc(t.name)}</span>${icon('add')}</button>`).join('')}</div>`);break;
+ case 'add-member':case 'add-to-group':openModal('membership',{direction:action==='add-to-group'?'parent':'members',anchorId:id||state.detailOutputId,selectedId:null,plan:null});break;
+ case 'membership-choice':if(state.modal?.kind==='membership')mutate(s=>{const modal=s.modal,groupId=modal.direction==='parent'?id:modal.anchorId,memberId=modal.direction==='parent'?modal.anchorId:id;const plan=membershipPlan(m,groupId,memberId);if(plan.error)throw new Error(plan.error);modal.selectedId=id;modal.plan=plan},false);break;
+ case 'membership-save':{
+  const modal=state.modal;if(modal?.kind!=='membership'||!modal.selectedId||!modal.plan)throw new Error('Choose a group member first');
+  const groupId=modal.direction==='parent'?modal.selectedId:modal.anchorId,memberId=modal.direction==='parent'?modal.anchorId:modal.selectedId;
+  mutate(s=>{addToGroup(s.model,groupId,memberId,modal.plan);s.detailOutputId=groupId;s.model.selectedOutputId=groupId;s.view='group';s.model.ui.groupTab='overview';s.modal=null});toast(`${entity(m,memberId)?.name} added to ${entity(m,groupId)?.name}`);break;
  }
- case 'group-add-item':mutate(s=>{updateMembership(s.model,s.detailOutputId,id,true);s.modal=null});break;
  case 'remove-member':confirmAction('Remove member','The speaker will become available as an individual output.',()=>mutate(s=>updateMembership(s.model,s.detailOutputId,id,false)));break;
  case 'dissolve-group':confirmAction('Dissolve this output?','The member speakers will remain configured and available.',()=>mutate(s=>{dissolveComposite(s.model,s.detailOutputId);s.detailOutputId=null;s.view='outputs'}));break;
  case 'toggle-output-playback':mutate(s=>{const session=s.model.sessions.find(item=>item.id===id);if(session)session.status=session.status==='playing'?'paused':'playing'});break;

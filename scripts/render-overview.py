@@ -82,10 +82,10 @@ def radio():
  finish('ST_Reborn_UI_Lab_Radio_Preview')
 
 def many():
- start('ST Reborn · Problem of N — 30 speakers','SCHEMATIC / OUTPUTS & GROUPS')
+ start('ST Reborn · Problem of N — 50 devices','SCHEMATIC / OUTPUTS & GROUPS')
  draw_base_sidebar('outputs')
  T(345,125,'Outputs & groups',19,bold=True)
- T(345,178,'30 speakers',25,bold=True);T(585,178,'4 stereo pairs',25,bold=True);T(827,178,'3 groups',25,bold=True);T(1056,178,'4 streams',25,bold=True)
+ T(345,178,'50 devices',25,bold=True);T(585,178,'4 stereo pairs',25,bold=True);T(827,178,'3 groups',25,bold=True);T(1056,178,'4 streams',25,bold=True)
  T(345,226,'All outputs    Speakers    Stereo pairs    Groups',13,col['primary'])
  R(1080,199,323,39,col['panel'],7,stroke=col['line']);T(1095,224,'⌕  Find any output',11,col['muted'])
  big=S['many'];d=big['devices'];

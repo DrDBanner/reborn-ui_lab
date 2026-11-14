@@ -29,6 +29,6 @@
 | Z01 States and errors | **Interactive** first-run, offline, updating, needs-setup, 30-device stress cases |
 | SYS/MAP/BASIS | **Documented** architecture, tests and design tokens |
 
-**Added for the current discussion:** 30-speaker stress scenario, independent streams, player-vs-sidebar A/B variant, collapsible categories, source-first output selection, JSON scenario editing, design token editor, overlap constraints and single-row composites.
+**Added for the current discussion:** 50-device stress scenario, independent streams, player-vs-sidebar A/B variant, collapsible categories, source-first output selection, JSON scenario editing, design token editor, overlap constraints and single-row composites.
 
 These are testable UI behaviors, not claims of live hardware compatibility. All original 34 document pages and 51 detail SVGs are preserved in `reference/original/`.

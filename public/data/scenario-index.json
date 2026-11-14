@@ -6,8 +6,8 @@
   },
   {
     "id": "many",
-    "name": "Problem of N · 30 speakers",
-    "description": "30 devices, multiple pairs and groups: sidebar scalability"
+    "name": "Problem of N · 50 devices",
+    "description": "50 physical devices, 38 playback targets, multiple pairs and groups"
   },
   {
     "id": "multistream",

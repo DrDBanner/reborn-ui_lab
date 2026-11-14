@@ -2003,6 +2003,1366 @@
       ],
       "alarms": [],
       "buttonActions": []
+    },
+    {
+      "id": "d31",
+      "name": "Studio East",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.131",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 26,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d32",
+      "name": "Studio West",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.132",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 27,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d33",
+      "name": "Meeting Room A",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.133",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 28,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d34",
+      "name": "Meeting Room B",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.134",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 29,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d35",
+      "name": "Reception",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.135",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 30,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d36",
+      "name": "Workshop",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.136",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 31,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d37",
+      "name": "Showroom",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.137",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 32,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d38",
+      "name": "Warehouse",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.138",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 33,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d39",
+      "name": "Break Room",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.139",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 34,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d40",
+      "name": "Garden House",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.140",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 15,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d41",
+      "name": "Dining Room East",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.141",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 16,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d42",
+      "name": "Dining Room West",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.142",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 17,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d43",
+      "name": "Guest Room A",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.143",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 18,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d44",
+      "name": "Guest Room B",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.144",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 19,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d45",
+      "name": "Corridor Upstairs",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.145",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 20,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d46",
+      "name": "Corridor Downstairs",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.146",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 21,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d47",
+      "name": "Fitness Room",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.147",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 22,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d48",
+      "name": "Pool House",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.148",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 23,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d49",
+      "name": "Garage East",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.149",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 24,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d50",
+      "name": "Garage West",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.150",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 25,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "flux",
+        "ndr2",
+        null,
+        "dl",
+        null,
+        null
+      ],
+      "alarms": [],
+      "buttonActions": []
     }
   ],
   "pairs": [

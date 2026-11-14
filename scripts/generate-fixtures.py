@@ -65,7 +65,7 @@ scenarios={}
 base=sample()
 scenarios['home']=base
 
-big=sample('outputs');big['devices']=[device(i, (['Living Room L','Living Room R','Kitchen','Office','Terrace L','Terrace R','Bedroom','Hallway','Guest room','Study','Dining Room','Workshop','Basement','Sauna','Garage','Front Desk','Lobby','Corridor','Conference A','Conference B','Studio','Meeting Room','Warehouse','Patio','Pool','Entrance','Music Room','Reading Room','Server Room','Attic'][i-1])) for i in range(1,31)]
+big=sample('outputs');big['devices']=[device(i, (['Living Room L','Living Room R','Kitchen','Office','Terrace L','Terrace R','Bedroom','Hallway','Guest room','Study','Dining Room','Workshop','Basement','Sauna','Garage','Front Desk','Lobby','Corridor','Conference A','Conference B','Studio','Meeting Room','Warehouse','Patio','Pool','Entrance','Music Room','Reading Room','Server Room','Attic']+[f'Additional speaker {j}' for j in range(31,51)])[i-1]) for i in range(1,51)]
 big['pairs']=[{'id':f'p{i}','name':n,'memberIds':[f'd{2*i-1}',f'd{2*i}'],'persistent':True,'volume':25} for i,n in enumerate(['Living Room','Terrace','Bedroom','Guest Room'],1)]
 big['groups']=[{'id':'g1','name':'Ground Floor','memberIds':['p1','d9','d11','d12'],'persistent':True,'volume':26}, {'id':'g2','name':'Upper Floor','memberIds':['p3','p4','d10'],'persistent':True,'volume':24}, {'id':'g3','name':'Office Wing','memberIds':['d16','d17','d19','d20'],'persistent':False,'volume':30}]
 big['sessions']=[{'id':'s1','targetId':'g1','sourceId':'flux','status':'playing','volume':26},{'id':'s2','targetId':'g2','sourceId':'album1','status':'playing','volume':23},{'id':'s3','targetId':'g3','sourceId':'dl','status':'playing','volume':28},{'id':'s4','targetId':'d28','sourceId':'ndrinfo','status':'paused','volume':20}]
@@ -92,13 +92,32 @@ compact=device(12,'Desk Compact');compact.update({'brand':'Example Audio','model
 capabilities.update({'devices':[device(1,'Living Room'),buttonless,compact],'pairs':[],'groups':[], 'sessions':[{'id':'s1','targetId':'d1','sourceId':'flux','status':'playing','volume':25},{'id':'s2','targetId':'d11','sourceId':'album1','status':'playing','volume':22}], 'selectedOutputId':'d1','selectedDeviceId':'d1'})
 scenarios['capabilities']=capabilities
 
+updates=sample()
+updates['appUpdate']={'available':True,'currentVersion':'1.6.2','version':'1.6.3'}
+for d in updates['devices']:
+ d['firmwareAvailable']=d['id'] in ['d4','d5']
+ if d['firmwareAvailable']:d['firmwareLatest']='27.0.7'
+scenarios['update-notifications']=updates
+
+# Known sample metadata, not runtime brand detection.
+for scenario in scenarios.values():
+ for d in scenario['devices']:
+  if d.get('agentName')=='STR':
+   profile=d['capabilities'].setdefault('grouping',{})
+   profile['remoteKeys']=['thumbsUp','thumbsDown']
+   if d['model']=='SoundTouch 10':profile['stereoFamily']='soundtouch-10'
+ for group in scenario['groups']:
+  first=next((pair for pair in scenario['pairs'] if pair['id']==group['memberIds'][0]),None)
+  group['leaderDeviceId']=first['memberIds'][0] if first else group['memberIds'][0]
+
 indexes=[
  {'id':'home','name':'Everyday use','description':'7 speakers, one stereo pair, an active group and two streams'},
- {'id':'many','name':'Problem of N · 30 speakers','description':'30 devices, multiple pairs and groups: sidebar scalability'},
+ {'id':'many','name':'Problem of N · 50 devices','description':'50 physical devices, 38 playback targets, multiple pairs and groups'},
  {'id':'multistream','name':'Several streams','description':'Four independent playback sessions on different outputs'},
  {'id':'maintenance','name':'Maintenance & errors','description':'Updating, offline, and unconfigured devices'},
  {'id':'capabilities','name':'Device capabilities','description':'Demo brands: two preset layers, no hardware keys, or two single-press keys'},
  {'id':'first-run','name':'First run','description':'No configured speakers; setup flow and empty states'},
+ {'id':'update-notifications','name':'Update notifications','description':'Desktop and device updates trigger a linked toast; repeat checks do not duplicate it'},
 ]
 (ROOT/'catalog.json').write_text(json.dumps(CATALOG,ensure_ascii=False,indent=2)+'\n')
 (ROOT/'scenario-index.json').write_text(json.dumps(indexes,ensure_ascii=False,indent=2)+'\n')

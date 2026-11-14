@@ -170,3 +170,20 @@ test('transfer dialog previews, applies chosen keys and reports per-device resul
  assert.equal(vm.runInContext('state.modal.report.results.length',ctx),2);
  assert.equal(vm.runInContext("state.model.devices.find(item=>item.id==='d2').presets[0]",ctx),'1live');
 });
+
+test('group button selector binds gesture, edits and recall to the chosen physical member',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('group-open',{dataset:{id:'g1'}});onField('preset-device',{value:'d3',dataset:{id:'g1'}});onAction('preset-gesture',{dataset:{id:'d3',value:'double'}})",ctx);
+ assert(app.innerHTML.includes('Assignments on Kitchen. Playback uses Downstairs.'));
+ assert.equal(vm.runInContext('state.presetGesture',ctx),'double');
+ await vm.runInContext("onField('preset-device',{value:'d4',dataset:{id:'g1'}})",ctx);
+ assert.equal(vm.runInContext('state.presetDeviceId',ctx),'d3');
+ const other=vm.runInContext('JSON.stringify(state.model.devices[0].doublePresets)',ctx);
+ await vm.runInContext("onAction('preset-edit',{dataset:{id:'d3',gesture:'double'}})",ctx);
+ ctx.document.querySelectorAll=selector=>selector==='[data-preset-index]'?['ndrinfo','flux','','','',''].map(value=>({value})):[];
+ await vm.runInContext("onAction('preset-save',{dataset:{}});onAction('preset-play',{dataset:{id:'d3',key:'1',gesture:'double'}})",ctx);
+ assert.equal(vm.runInContext("state.model.devices.find(device=>device.id==='d3').doublePresets[0]",ctx),'ndrinfo');
+ assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].doublePresets)',ctx),other);
+ assert.equal(vm.runInContext("state.model.sessions.find(session=>session.targetId==='g1').sourceId",ctx),'ndrinfo');
+ assert.equal(vm.runInContext("state.model.sessions.find(session=>session.targetId==='d4').sourceId",ctx),'ndrinfo');
+});

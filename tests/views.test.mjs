@@ -77,3 +77,23 @@ test('sidebar marks only the current route, never the unrelated player or stale 
   }
  }
 });
+
+test('button presets remain above device tabs across all configuration sections',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
+ const s={model,catalog,detailDeviceId:'d1',presetGesture:'double'};
+ for(const tab of ['overview','sound','network','functions','advanced']){
+  model.ui.deviceTab=tab;const html=renderDevice(s);
+  assert(html.indexOf('item-key-functions')<html.indexOf('class="detail-tabs"'));
+  assert.equal((html.match(/<h2>Button presets<\/h2>/g)||[]).length,1);
+  assert(html.includes('data-action="preset-edit" data-id="d1" data-gesture="double"'));
+ }
+ s.detailOutputId='g1';s.presetDeviceId='d3';
+ const group=renderGroup(s);
+ assert(group.indexOf('item-key-functions')<group.indexOf('<h2>Members</h2>'));
+ assert(group.includes('data-field="preset-device" data-id="g1"'));
+ assert(group.includes('Assignments on Kitchen. Playback uses Downstairs.'));
+ s.detailOutputId='p1';s.presetDeviceId='d4';
+ const pair=renderGroup(s);
+ assert(pair.includes('Assignments on Living Room L. Playback uses Downstairs.'));
+ assert(!pair.includes('Assignments on Office.'));
+});

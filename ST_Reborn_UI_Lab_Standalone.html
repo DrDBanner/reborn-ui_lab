@@ -429,6 +429,10 @@ input[role=switch]:checked{background:var(--accent);border-color:var(--accent)}i
 /* Status messages must not intercept actions in the workspace underneath. */
 .toast-message{pointer-events:none}.toast-message .icon-btn{pointer-events:auto}
 
+/* Primary item functions remain available above configuration tabs. */
+.item-key-functions{margin-bottom:24px}.item-key-functions .panel-head{margin-bottom:12px}.item-key-functions .preset-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,112px),1fr));gap:10px}.item-key-functions .key-preset{padding:10px}.item-key-functions .key-preset__heading{margin-bottom:10px}.item-key-functions .key-preset__source{gap:7px;margin-bottom:10px;min-height:34px}.item-key-functions .key-preset__source>.material-symbols-rounded{font-size:19px}.item-key-functions .key-preset__source strong{font-size:11px}.item-key-functions .key-preset__source small{display:none}.item-key-functions .key-preset>.btn-quiet{font-size:11px;min-height:28px;padding:4px 8px}.item-key-functions .preset-help{margin:10px 0 14px;font-size:11px}.preset-device-choice{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--muted);margin-bottom:14px}.preset-device-choice select{min-width:0;max-width:100%;flex:1}.item-key-functions .preset-tools .segmented{min-width:130px}
+@media(max-width:560px){.item-key-functions .preset-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.preset-device-choice{flex-wrap:wrap}.preset-device-choice select{flex-basis:100%}.item-key-functions .preset-tools{gap:8px}.item-key-functions .preset-tools .btn-soft,.item-key-functions .preset-tools .btn-quiet{font-size:11px}}
+
 /* Local Google Material Symbols Rounded chevron; see docs/MATERIAL_ICONS.md. */
 :root{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23a4aab5%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
 [data-appearance="light"]{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23566278%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
@@ -759,13 +763,13 @@ const state={catalog:null,scenarioIndex:[],uiLayout:null,variants:null,scenarioI
   view:'listen', detailDeviceId:null, detailOutputId:null, selectedSourceId:null,
   modal:null, toast:null, sidebarOpen:false, speakerPickerFor:null, filter:'', outputSearch:'', selectedForComposite:[],
   setupStep:0, setupSelection:null, designOpen:false, designTokens:null, scenarioEditorOpen:false,
-  radioFiltersOpen:false, appMenuOpen:false, presetGesture:'single', expandingOutputs:false, alert:null};
+  radioFiltersOpen:false, appMenuOpen:false, presetGesture:'single', presetDeviceId:null, expandingOutputs:false, alert:null};
 
 function subscribe(listener){listeners.add(listener);return()=>listeners.delete(listener)}
 function notify(){for(const fn of listeners)fn(state)}
 function mutate(fn,persist=true){fn(state);if(persist)save();notify()}
 function save(){if(!state.model)return;try{localStorage.setItem(`streborn-lab:${state.scenarioId}`,JSON.stringify(state.model));localStorage.setItem('streborn-lab:design',JSON.stringify(state.designTokens));}catch{}}
-function resetUi(){state.filter='';state.outputSearch='';state.detailDeviceId=null;state.detailOutputId=null;state.selectedForComposite=[];state.setupStep=0;state.expandingOutputs=false;state.modal=null;state.toast=null;state.scenarioEditorOpen=false;state.appMenuOpen=false;state.radioFiltersOpen=false;state.presetGesture='single';}
+function resetUi(){state.filter='';state.outputSearch='';state.detailDeviceId=null;state.detailOutputId=null;state.selectedForComposite=[];state.setupStep=0;state.expandingOutputs=false;state.modal=null;state.toast=null;state.scenarioEditorOpen=false;state.appMenuOpen=false;state.radioFiltersOpen=false;state.presetGesture='single';state.presetDeviceId=null;}
 async function initialize(){
   const [index,catalog,design,uiLayout,variants]=await Promise.all(['/data/scenario-index.json','/data/catalog.json','/data/design-tokens.json','/data/ui-layout.json','/data/variants.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw new Error(`Failed to load ${url}`);return r.json()})));
   state.catalog=catalog;state.scenarioIndex=index;state.uiLayout=uiLayout;state.variants=variants;state.designTokens=design;
@@ -1020,19 +1024,27 @@ function renderDialog(s){if(!s.modal)return '';
 // ===== src/views/device-functions.js =====
 
 
-function renderDeviceFunctions(s,device){
+function renderItemKeyFunctions(s,targetId){
+ const devices=leafDeviceIds(s.model,targetId).map(id=>entity(s.model,id)).filter(device=>buttonProfile(device));
+ const device=(kind(s.model,targetId)!=='device'&&devices.find(item=>item.id===s.presetDeviceId))||devices[0];
+ if(!device)return '';
  const profile=buttonProfile(device),gesture=profile?.gestures.includes(s.presetGesture)?s.presetGesture:'single';
  let result='';
  if(profile){
   const target=entity(s.model,presetPlaybackTarget(s.model,device.id));
   result+=card('Button presets',`Assignments on ${esc(device.name)}. Playback uses ${esc(target?.name||device.name)}.`,`
-   <div class="preset-tools"><div class="segmented" aria-label="Hardware button gesture">${profile.gestures.map(g=>action('preset-gesture',g==='single'?'Once':'Twice',`tab-control ${gesture===g?'active':''}`,`data-value="${g}" aria-pressed="${gesture===g}"`)).join('')}</div>${action('preset-edit',icon('edit')+' Edit assignments','btn-soft',`data-id="${esc(device.id)}" data-gesture="${gesture}"`)}${action('button-transfer-open',icon('add_link')+' Transfer buttons','btn-quiet',`data-id="${esc(device.id)}" ${device.status!=='online'||!presetAssignments(device).length?'disabled':''}`)}</div>
+   ${devices.length>1?`<label class="preset-device-choice" for="preset-device">Assignments on<select id="preset-device" class="small-select" data-field="preset-device" data-id="${esc(targetId)}">${devices.map(item=>`<option value="${esc(item.id)}" ${item.id===device.id?'selected':''}>${esc(item.name)}</option>`).join('')}</select></label>`:''}
+   <div class="preset-tools"><div class="segmented" aria-label="Hardware button gesture">${profile.gestures.map(g=>action('preset-gesture',g==='single'?'Once':'Twice',`tab-control ${gesture===g?'active':''}`,`data-id="${esc(device.id)}" data-value="${g}" aria-pressed="${gesture===g}"`)).join('')}</div>${action('preset-edit',icon('edit')+' Edit assignments','btn-soft',`data-id="${esc(device.id)}" data-gesture="${gesture}"`)}${action('button-transfer-open',icon('add_link')+' Transfer buttons','btn-quiet',`data-id="${esc(device.id)}" ${device.status!=='online'||!presetAssignments(device).length?'disabled':''}`)}</div>
    <p class="preset-help">${gesture==='double'?'Press the same hardware key twice quickly to use its second assignment.':'Press a hardware key once to use its first assignment.'}</p>
    <div class="preset-grid">${buttonPresets(device,gesture).map((sourceId,index)=>{
     const item=source(s.catalog,sourceId),key=index+1;
     return `<article class="key-preset"><div class="key-preset__heading"><strong>Key ${key}</strong><span>${gesture==='double'?'2×':'1×'}</span></div><div class="key-preset__source">${icon(item?.type==='radio'?'radio':item?.type==='spotify'?'music_note':'album')}<span><strong>${esc(item?.name||'Unassigned')}</strong><small>${esc(item?.subtitle||'Choose a source in Edit assignments')}</small></span></div>${action('preset-play',icon('play_circle')+' Play','btn-quiet',`data-id="${esc(device.id)}" data-key="${key}" data-gesture="${gesture}" aria-label="Play key ${key}, ${gesture==='double'?'double':'single'} press, on ${esc(target?.name||device.name)}" ${!sourceId||device.status!=='online'?'disabled':''}`)}</article>`;
-   }).join('')}</div>`,'device-presets');
+   }).join('')}</div>`,'device-presets item-key-functions');
  }
+ return result;
+}
+function renderDeviceFunctions(s,device){
+ let result='';
  if(device.capabilities?.alarms)result+=card('Alarms','Scheduled actions for this device.',action('alarms',icon('alarm')+' Manage alarms','btn-soft',`data-id="${esc(device.id)}"`));
  return result||empty('settings','No additional functions','This device does not report additional configurable functions.');
 }
@@ -1077,6 +1089,7 @@ function renderListen(s){if(s.view==='library')return library(s);if(s.view==='hi
 // ===== src/views/outputs.js =====
 
 
+
 const filters=[['all','All outputs'],['device','Speakers'],['pair','Stereo pairs'],['group','Groups']];
 function outputCard(s,t){
  const m=s.model,type=kind(m,t.id),status=targetStatus(m,t.id),session=effectiveSessionFor(m,t.id),parents=parentIds(m,t.id);
@@ -1107,6 +1120,7 @@ function renderGroup(s){const m=s.model,group=entity(m,s.detailOutputId),type=ki
  if(!group||type==='device')return empty('speaker_group','Group not found','Choose a group from Outputs & groups.',action('navigate','All outputs','btn-soft','data-value="outputs"'));
  const session=sessionFor(m,group.id);
  return `${navHeader(typeIcon(type)+esc(group.name),`${leafDeviceIds(m,group.id).length} speakers · ${group.persistent?'Persistent':'Temporary'}`,`${action('navigate',icon('arrow_back')+' All outputs','btn-quiet','data-value="outputs"')}`)}
+ ${renderItemKeyFunctions(s,group.id)}
  <div class="two-col two-col--wide">${card('Members','Manage membership independently of playback',`<div class="settings-list">${group.memberIds.map(id=>{const item=entity(m,id);return `<div class="setting-line"><span class="setting-line__icon">${typeIcon(kind(m,id))}</span><div class="setting-line__body"><strong>${esc(item?.name||id)}</strong><small>${subline(m,id)}</small></div>${type==='group'?action('remove-member',icon('remove_circle_outline'),'icon-btn',`data-id="${id}" title="Remove member"`):''}</div>`}).join('')}</div>${type==='group'?action('add-member',icon('add')+' Add speaker or pair','btn-soft mt-4'):''}`)}
  ${card('Playback & settings','One logical output; detailed controls remain available',`<div class="setting-line"><div class="setting-line__body"><strong>Current stream</strong><small>${esc(source(s.catalog,session?.sourceId)?.name||'Nothing playing')}</small></div>${action('navigate','Browse sources','btn-soft','data-value="listen"')}</div><div class="form-row"><label for="group-volume">Group volume</label><div class="range-row"><input id="group-volume" type="range" data-field="composite-volume" min="0" max="100" value="${group.volume??25}" /><strong>${group.volume??25}</strong></div></div><div class="setting-line"><div class="setting-line__body"><strong>Persistent</strong><small>Restore group when supported by the backend</small></div><input data-field="group-persistent" type="checkbox" role="switch" aria-label="Persistent group" ${group.persistent?'checked':''}/></div>`)}
  </div>
@@ -1121,7 +1135,7 @@ function renderGroup(s){const m=s.model,group=entity(m,s.detailOutputId),type=ki
 function renderDevice(s){
  const m=s.model,d=entity(m,s.detailDeviceId||m.selectedDeviceId);
  if(!d||kind(m,d.id)!=='device')return empty('speaker','No speaker selected','Select a speaker from the device overview.',action('navigate','Open devices','btn-soft','data-value="outputs"'));
- const tabs=[['overview','Overview'],...(d.capabilities?.sound?[['sound','Sound']]:[]),...(d.capabilities?.network?[['network','Network']]:[]),...(buttonProfile(d)||d.capabilities?.alarms?[['functions','Functions']]:[]),['advanced','Advanced']];
+ const tabs=[['overview','Overview'],...(d.capabilities?.sound?[['sound','Sound']]:[]),...(d.capabilities?.network?[['network','Network']]:[]),...(d.capabilities?.alarms?[['functions','Functions']]:[]),['advanced','Advanced']];
  const tabId=tabs.some(([id])=>id===m.ui.deviceTab)?m.ui.deviceTab:'overview';
  let contents='';
  if(tabId==='overview')contents=`<div class="two-col two-col--wide">
@@ -1138,6 +1152,7 @@ function renderDevice(s){
  if(tabId==='functions')contents=renderDeviceFunctions(s,d);
  if(tabId==='advanced')contents=` <section class="section-wrap"><div class="section-heading"><h2>Maintenance</h2></div><div class="panel panel--flush">${action('navigate',icon('system_update')+'<span>Software on speaker</span><span class="row-trailing">'+esc(d.firmware)+' '+icon('chevron_right')+'</span>','menu-row','data-value="updates"')}${action('backup',icon('settings_backup_restore')+'<span>Backup and restore</span><span class="row-trailing">Presets & favorites '+icon('chevron_right')+'</span>','menu-row')}${action('device-maintenance',icon('build')+'<span>Other maintenance actions</span><span class="row-trailing">Restart, remove, reset '+icon('chevron_right')+'</span>','menu-row')}</div></section>`;
  return `${navHeader(typeIcon('device')+`<span class="device-detail-name">${esc(d.name)}</span>`+action('device-rename',icon('edit'),'icon-btn title-edit',`data-id="${esc(d.id)}" title="Rename device" aria-label="Rename ${esc(d.name)}"`),`${esc(d.brand||'')} ${esc(d.model)} · ${esc(d.ip)} · ${d.status==='offline'?'Offline':'Device settings'}`,action('navigate',icon('arrow_back')+' All outputs','btn-quiet','data-value="outputs"'))}
+ ${renderItemKeyFunctions(s,d.id)}
  <div class="detail-tabs">${tabs.map(([id,name])=>tab(id,name,tabId===id,'device-tab')).join('')}</div><div class="detail-body">${contents}</div>`;
 }
 
@@ -1222,7 +1237,7 @@ async function onAction(action,element){
  case 'toggle-app-menu':mutate(s=>{s.appMenuOpen=!s.appMenuOpen},false);break;
  case 'close-app-menu':mutate(s=>s.appMenuOpen=false,false);break;
  case 'select-session':if(!m.sessions.some(session=>session.id===id))throw new Error('Playback no longer available');mutate(s=>{s.model.selectedSessionId=id;s.sidebarOpen=false});break;
- case 'preset-gesture':if(!buttonProfile(currentDevice())?.gestures.includes(val))throw new Error('Unsupported button gesture');mutate(s=>s.presetGesture=val,false);break;
+ case 'preset-gesture':if(!buttonProfile(entity(m,id)||currentDevice())?.gestures.includes(val))throw new Error('Unsupported button gesture');mutate(s=>s.presetGesture=val,false);break;
  case 'toggle-section':mutate(s=>{s.model.ui.collapsed[val]=!s.model.ui.collapsed[val]});break;
  case 'toggle-sidebar-mobile':mutate(s=>{s.sidebarOpen=!s.sidebarOpen},false);break;
  case 'expand-outputs':mutate(s=>s.expandingOutputs=true,false);break;
@@ -1330,6 +1345,7 @@ async function onField(field,target){
  case 'scenario':await loadScenario(val);break;
  case 'button-transfer-key':case 'button-transfer-target':{const key=field==='button-transfer-key'?'keys':'targetIds';if(state.modal?.kind==='button-transfer')mutate(s=>{s.modal[key]=target.checked?[...new Set([...s.modal[key],val])]:s.modal[key].filter(item=>item!==val)},false);break;}
  case 'device-name':if(state.modal?.kind==='rename')state.modal.nameDraft=val;break;
+ case 'preset-device':if(!leafDeviceIds(m,target.dataset.id).includes(val)||!buttonProfile(entity(m,val)))throw new Error('Button device is not part of this output');mutate(s=>s.presetDeviceId=val,false);break;
  case 'speaker-variant':mutate(s=>s.model.ui.speakerVariant=val);break;
  case 'radio-country':case 'radio-language':case 'radio-order':case 'radio-bitrate':case 'radio-genre':case 'radio-output':case 'radio-working':case 'radio-compatible':{
   const keys={'radio-country':'searchCountry','radio-language':'searchLanguage','radio-order':'radioOrder','radio-bitrate':'radioMinBitrate','radio-genre':'radioGenre','radio-output':'radioOutputId','radio-working':'radioOnlyWorking','radio-compatible':'radioOnlyCompatible'};

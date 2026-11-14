@@ -1,3 +1,4 @@
+import {renderItemKeyFunctions} from './device-functions.js';
 import {esc,icon,action,card,empty,navHeader,statusBadge,subline,targetIcon,typeIcon} from '../components/shared.js';
 import {getTargets,kind,entity,parentIds,targetStatus,leafDeviceIds,sessionFor,effectiveSessionFor,source,visibleOutputs,buttonProfile} from '../app/model.js';
 
@@ -31,6 +32,7 @@ export function renderGroup(s){const m=s.model,group=entity(m,s.detailOutputId),
  if(!group||type==='device')return empty('speaker_group','Group not found','Choose a group from Outputs & groups.',action('navigate','All outputs','btn-soft','data-value="outputs"'));
  const session=sessionFor(m,group.id);
  return `${navHeader(typeIcon(type)+esc(group.name),`${leafDeviceIds(m,group.id).length} speakers · ${group.persistent?'Persistent':'Temporary'}`,`${action('navigate',icon('arrow_back')+' All outputs','btn-quiet','data-value="outputs"')}`)}
+ ${renderItemKeyFunctions(s,group.id)}
  <div class="two-col two-col--wide">${card('Members','Manage membership independently of playback',`<div class="settings-list">${group.memberIds.map(id=>{const item=entity(m,id);return `<div class="setting-line"><span class="setting-line__icon">${typeIcon(kind(m,id))}</span><div class="setting-line__body"><strong>${esc(item?.name||id)}</strong><small>${subline(m,id)}</small></div>${type==='group'?action('remove-member',icon('remove_circle_outline'),'icon-btn',`data-id="${id}" title="Remove member"`):''}</div>`}).join('')}</div>${type==='group'?action('add-member',icon('add')+' Add speaker or pair','btn-soft mt-4'):''}`)}
  ${card('Playback & settings','One logical output; detailed controls remain available',`<div class="setting-line"><div class="setting-line__body"><strong>Current stream</strong><small>${esc(source(s.catalog,session?.sourceId)?.name||'Nothing playing')}</small></div>${action('navigate','Browse sources','btn-soft','data-value="listen"')}</div><div class="form-row"><label for="group-volume">Group volume</label><div class="range-row"><input id="group-volume" type="range" data-field="composite-volume" min="0" max="100" value="${group.volume??25}" /><strong>${group.volume??25}</strong></div></div><div class="setting-line"><div class="setting-line__body"><strong>Persistent</strong><small>Restore group when supported by the backend</small></div><input data-field="group-persistent" type="checkbox" role="switch" aria-label="Persistent group" ${group.persistent?'checked':''}/></div>`)}
  </div>

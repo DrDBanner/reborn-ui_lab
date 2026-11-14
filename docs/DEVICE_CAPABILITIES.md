@@ -4,7 +4,7 @@ Every physical device carries `brand`, `model`, `hardwareRevision` and `firmware
 
 `capabilities` explicitly reports available UI functions: `sound`, `network`, `remote`, `alarms` and optional `buttonPresets: {keyCount, gestures: ['single', 'double']}`. UI gates use these fields, never brand-name checks. This is a UI/mock contract, not an implemented manufacturer adapter. The eventual backend owns capability detection and hardware operations.
 
-Button presets live under **Device details → Functions**. The current layer is selected with **Once / Twice**; each layer numbers the same physical keys from 1 to `keyCount`. A device without buttons has no preset editor. Single-only devices have no Twice control. The capabilities scenario includes fictional Example Audio devices to exercise missing keys and two-key hardware without claiming support for an actual other vendor.
+Button presets appear as primary item functions **above the device configuration tabs**, and remain visible across tabs. The current layer is selected with **Once / Twice**; each layer numbers the same physical keys from 1 to `keyCount`. A device without buttons has no preset editor. Single-only devices have no Twice control. The capabilities scenario includes fictional Example Audio devices to exercise missing keys and two-key hardware without claiming support for an actual other vendor.
 
 `presets` holds the existing single-press source IDs; `doublePresets` independently holds double-press source IDs. The editor binds its device ID and gesture when opened, so browsing another output or controlling another playback cannot redirect a save. Saving a layer preserves the other layer. Existing local scenarios migrate identity/capabilities only from matching known fixture devices; their existing assignments remain intact. Unknown devices do not acquire guessed capabilities. Missing legacy double assignments stay empty.
 
@@ -28,7 +28,7 @@ Radio supports country, language, sort (votes/popularity/name/bitrate), minimum 
 
 ## Transfer button assignments
 
-Functions → Transfer buttons copies all occupied keys or a chosen subset to selected devices, pairs or group members. Composites expand to physical devices; overlapping selections are de-duplicated and the source device is excluded. Both gesture layers are included when selected and supported. Empty/unselected source slots do not erase target assignments.
+The primary Button presets panel → Transfer buttons copies all occupied keys or a chosen subset to selected devices, pairs or group members. Composites expand to physical devices; overlapping selections are de-duplicated and the source device is excluded. Both gesture layers are included when selected and supported. Empty/unselected source slots do not erase target assignments.
 
 This matches the existing STR **one-time copy** behavior, verified at the pinned upstream revision above:
 
@@ -41,3 +41,10 @@ The lab previews the plan, then applies local mock assignments with per-device r
 ## Reference app gaps
 
 The screenshot audit of ST Reborn v1.6.2 records additional capabilities and their intended contexts in [project/feature-coverage/coverage.md](../../project/feature-coverage/coverage.md). In particular, the global simulated Spotify connection and unrestricted generic pairing are known mock limitations; production needs per-device account/source state and explicit pairing-compatibility contracts.
+
+
+## Primary functions on composite outputs
+
+Groups and pairs expose the same compact Button presets panel before their configuration sections. A member selector chooses a physical device that explicitly reports button capabilities. Display, gesture selection, editing, recall and transfer are bound to that device; switching the member cannot redirect an already opened editor. A preset recall uses the device's current top-level output. Available gesture layers and key counts follow the chosen member. A foreign or buttonless member is never used as a fallback.
+
+Assignments remain stored per physical device. A common group surface does not imply identical member banks. The add_link transfer action provides deliberate propagation with the existing review/results flow. There is no fictional group-owned button store. Other, less frequent device functions such as alarms remain in Functions; a device that only reports buttons does not need that tab.

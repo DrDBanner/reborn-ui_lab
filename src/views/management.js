@@ -1,11 +1,11 @@
-import {renderDeviceFunctions} from './device-functions.js';
+import {renderDeviceFunctions,renderItemKeyFunctions} from './device-functions.js';
 import {esc,icon,action,card,empty,navHeader,field,statusBadge,tab,typeIcon} from '../components/shared.js';
 import {entity,kind,source,leafDeviceIds,targetStatus,buttonProfile} from '../app/model.js';
 
 export function renderDevice(s){
  const m=s.model,d=entity(m,s.detailDeviceId||m.selectedDeviceId);
  if(!d||kind(m,d.id)!=='device')return empty('speaker','No speaker selected','Select a speaker from the device overview.',action('navigate','Open devices','btn-soft','data-value="outputs"'));
- const tabs=[['overview','Overview'],...(d.capabilities?.sound?[['sound','Sound']]:[]),...(d.capabilities?.network?[['network','Network']]:[]),...(buttonProfile(d)||d.capabilities?.alarms?[['functions','Functions']]:[]),['advanced','Advanced']];
+ const tabs=[['overview','Overview'],...(d.capabilities?.sound?[['sound','Sound']]:[]),...(d.capabilities?.network?[['network','Network']]:[]),...(d.capabilities?.alarms?[['functions','Functions']]:[]),['advanced','Advanced']];
  const tabId=tabs.some(([id])=>id===m.ui.deviceTab)?m.ui.deviceTab:'overview';
  let contents='';
  if(tabId==='overview')contents=`<div class="two-col two-col--wide">
@@ -22,6 +22,7 @@ export function renderDevice(s){
  if(tabId==='functions')contents=renderDeviceFunctions(s,d);
  if(tabId==='advanced')contents=` <section class="section-wrap"><div class="section-heading"><h2>Maintenance</h2></div><div class="panel panel--flush">${action('navigate',icon('system_update')+'<span>Software on speaker</span><span class="row-trailing">'+esc(d.firmware)+' '+icon('chevron_right')+'</span>','menu-row','data-value="updates"')}${action('backup',icon('settings_backup_restore')+'<span>Backup and restore</span><span class="row-trailing">Presets & favorites '+icon('chevron_right')+'</span>','menu-row')}${action('device-maintenance',icon('build')+'<span>Other maintenance actions</span><span class="row-trailing">Restart, remove, reset '+icon('chevron_right')+'</span>','menu-row')}</div></section>`;
  return `${navHeader(typeIcon('device')+`<span class="device-detail-name">${esc(d.name)}</span>`+action('device-rename',icon('edit'),'icon-btn title-edit',`data-id="${esc(d.id)}" title="Rename device" aria-label="Rename ${esc(d.name)}"`),`${esc(d.brand||'')} ${esc(d.model)} · ${esc(d.ip)} · ${d.status==='offline'?'Offline':'Device settings'}`,action('navigate',icon('arrow_back')+' All outputs','btn-quiet','data-value="outputs"'))}
+ ${renderItemKeyFunctions(s,d.id)}
  <div class="detail-tabs">${tabs.map(([id,name])=>tab(id,name,tabId===id,'device-tab')).join('')}</div><div class="detail-body">${contents}</div>`;
 }
 

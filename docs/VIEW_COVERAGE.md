@@ -4,7 +4,7 @@
 
 | Original page | UI Lab |
 |---|---|
-| R01 Radio presets and discovery | **Interactive:** radio browsing, favorites and source/output assignment; device keys are under Device details → Functions |
+| R01 Radio presets and discovery | **Interactive:** radio browsing, favorites and source/output assignment; device keys appear above the detail tabs and in group/pair details |
 | R02 Radio search | **Interactive:** live filtering |
 | R03 Favorites | **Interactive:** add/remove and favorites tab |
 | R04 Station details/filter/missing station | **Interactive** details and genre filters; station-submission form not implemented |

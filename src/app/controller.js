@@ -18,7 +18,7 @@ export async function onAction(action,element){
  case 'toggle-app-menu':mutate(s=>{s.appMenuOpen=!s.appMenuOpen},false);break;
  case 'close-app-menu':mutate(s=>s.appMenuOpen=false,false);break;
  case 'select-session':if(!m.sessions.some(session=>session.id===id))throw new Error('Playback no longer available');mutate(s=>{s.model.selectedSessionId=id;s.sidebarOpen=false});break;
- case 'preset-gesture':if(!buttonProfile(currentDevice())?.gestures.includes(val))throw new Error('Unsupported button gesture');mutate(s=>s.presetGesture=val,false);break;
+ case 'preset-gesture':if(!buttonProfile(entity(m,id)||currentDevice())?.gestures.includes(val))throw new Error('Unsupported button gesture');mutate(s=>s.presetGesture=val,false);break;
  case 'toggle-section':mutate(s=>{s.model.ui.collapsed[val]=!s.model.ui.collapsed[val]});break;
  case 'toggle-sidebar-mobile':mutate(s=>{s.sidebarOpen=!s.sidebarOpen},false);break;
  case 'expand-outputs':mutate(s=>s.expandingOutputs=true,false);break;
@@ -126,6 +126,7 @@ export async function onField(field,target){
  case 'scenario':await loadScenario(val);break;
  case 'button-transfer-key':case 'button-transfer-target':{const key=field==='button-transfer-key'?'keys':'targetIds';if(state.modal?.kind==='button-transfer')mutate(s=>{s.modal[key]=target.checked?[...new Set([...s.modal[key],val])]:s.modal[key].filter(item=>item!==val)},false);break;}
  case 'device-name':if(state.modal?.kind==='rename')state.modal.nameDraft=val;break;
+ case 'preset-device':if(!leafDeviceIds(m,target.dataset.id).includes(val)||!buttonProfile(entity(m,val)))throw new Error('Button device is not part of this output');mutate(s=>s.presetDeviceId=val,false);break;
  case 'speaker-variant':mutate(s=>s.model.ui.speakerVariant=val);break;
  case 'radio-country':case 'radio-language':case 'radio-order':case 'radio-bitrate':case 'radio-genre':case 'radio-output':case 'radio-working':case 'radio-compatible':{
   const keys={'radio-country':'searchCountry','radio-language':'searchLanguage','radio-order':'radioOrder','radio-bitrate':'radioMinBitrate','radio-genre':'radioGenre','radio-output':'radioOutputId','radio-working':'radioOnlyWorking','radio-compatible':'radioOnlyCompatible'};

@@ -1,5 +1,5 @@
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast} from './store.js';
-import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,renameDevice,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily} from './model.js';
+import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,renameDevice,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback} from './model.js';
 import {esc,icon} from '../components/shared.js';
 
 function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
@@ -9,6 +9,7 @@ function confirmAction(title,description,callback){if(window.confirm(`${title}\n
 function exported(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download=name;a.href=url;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function notifySafe(task){try{task()}catch(err){toast(err?.message||String(err),{kind:'error'})}}
 function currentDevice(){return entity(state.model,state.detailDeviceId||state.model.selectedDeviceId)}
+function playbackNotice(sourceId,targetId){return `Playing ${source(state.catalog,sourceId)?.name||'selected source'} on ${entity(state.model,targetId)?.name||'selected output'}`;}
 function generic(title,description,body=''){openModal('generic',{title,description,body})}
 
 export async function onAction(action,element){
@@ -40,10 +41,15 @@ export async function onAction(action,element){
  }
  case 'target-play':{const src=m.selectedSourceId||currentSession(m)?.sourceId||'flux';mutate(s=>{assignSource(s.model,src,id);s.modal=null;});break}
  case 'open-volume-controls':{const playback=currentSession(m);if(!playback)throw new Error('Choose a playback first');openModal('volume',{sessionId:playback.id,targetId:playback.targetId});break;}
- case 'open-output-picker':mutate(s=>{s.speakerPickerFor=currentSession(m)?.sourceId||m.selectedSourceId||'flux';s.modal={kind:'picker'}},false);break;
- case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId;if(!targetId||element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)].slice(0,20)});toast(`Playing on ${entity(m,targetId)?.name}`);break;}
- case 'source-select':mutate(s=>{s.model.selectedSourceId=id;s.speakerPickerFor=id;s.modal={kind:'picker'}},false);break;
- case 'assign-output':{const src=state.speakerPickerFor||m.selectedSourceId||currentSession(m)?.sourceId||'flux';mutate(s=>{assignSource(s.model,src,id);s.model.history=[src,...s.model.history.filter(x=>x!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null;});toast(`Playing on ${entity(m,id)?.name}`);break}
+ case 'open-output-picker':{const playback=currentSession(m);mutate(s=>{s.speakerPickerFor=playback?.sourceId||m.selectedSourceId||'flux';s.modal={kind:'picker',sourceId:s.speakerPickerFor,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
+ case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId;if(!targetId||element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)].slice(0,20)});toast(playbackNotice(id,targetId));break;}
+ case 'source-select':{const playback=currentSession(m);mutate(s=>{s.model.selectedSourceId=id;s.speakerPickerFor=id;s.modal={kind:'picker',sourceId:id,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
+ case 'assign-output':{
+  const modal=state.modal,src=modal?.sourceId||state.speakerPickerFor||m.selectedSourceId||currentSession(m)?.sourceId||'flux';
+  if(modal?.kind==='picker'&&modal.asMember){
+   let outputId;mutate(s=>{if(!source(state.catalog,src))throw new Error('Source no longer available');outputId=joinPlayback(s.model,modal.joinContext,id,src);s.model.history=[src,...s.model.history.filter(item=>item!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null});toast(`${source(state.catalog,src)?.name} on ${entity(m,outputId)?.name} · ${entity(m,id)?.name} joined`);
+  }else{mutate(s=>{assignSource(s.model,src,id);s.model.history=[src,...s.model.history.filter(x=>x!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null});toast(playbackNotice(src,id))}break;
+ }
  case 'source-info':{const d=source(state.catalog,id);generic(d?.name||'Source',`${d?.type||''} · ${d?.country||''} · ${d?.bitrate||''}`,`<div class="key-values"><div><span>Genre</span><strong>${esc(d?.genre)}</strong></div><div><span>Station</span><strong>${esc(d?.subtitle)}</strong></div></div>`);break}
  case 'toggle-favorite':mutate(s=>{s.model.favorites=s.model.favorites.includes(id)?s.model.favorites.filter(x=>x!==id):[...s.model.favorites,id]});break;
  case 'radio-tab':mutate(s=>{s.model.ui.radioTab=val;s.filter=''});break;
@@ -147,6 +153,7 @@ export async function onField(field,target){
  const m=state.model,val=target.value;
  try{switch(field){
  case 'scenario':await loadScenario(val);break;
+ case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
  case 'button-transfer-key':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.keys=target.checked?[...new Set([...s.modal.keys,val])]:s.modal.keys.filter(item=>item!==val),false);break;
  case 'button-transfer-target':if(state.modal?.kind==='button-transfer')mutate(s=>{const selected=new Set(s.modal.targetIds.flatMap(id=>leafDeviceIds(m,id))),ids=leafDeviceIds(m,val).filter(id=>id!==s.modal.deviceId&&buttonProfile(entity(m,id))&&entity(m,id).status==='online');for(const id of ids)target.checked?selected.add(id):selected.delete(id);s.modal.targetIds=[...selected]},false);break;
  case 'device-name':if(state.modal?.kind==='rename')state.modal.nameDraft=val;break;

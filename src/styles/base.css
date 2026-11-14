@@ -449,3 +449,16 @@ input[role=switch]:checked{background:var(--accent);border-color:var(--accent)}i
 @media(max-width:650px){.transfer-workbench{grid-template-columns:minmax(0,1fr);gap:20px}.transfer-targets{max-height:250px}}
 
 .preset-context-controls>.preset-expanded-tools{display:flex;align-items:center;align-self:flex-end;margin:0;min-width:0}.preset-expanded-tools .button-row{flex-wrap:wrap}.item-key-functions .key-preset [data-action=preset-play] .material-symbols-rounded{color:var(--muted)}.item-key-functions .key-preset [data-action=preset-play]:not(:disabled):hover .material-symbols-rounded,.item-key-functions .key-preset [data-action=preset-play]:not(:disabled):focus-visible .material-symbols-rounded{color:var(--accent)}
+
+.picker-membership{display:flex;align-items:flex-start;gap:10px;padding:0 0 16px;font-size:12px}.picker-membership input{margin-top:2px;flex-shrink:0}.picker-membership strong{font-weight:550}.picker-membership small{display:block;font-size:11px;line-height:1.6;color:var(--muted);margin-top:4px}.modal-output .picker-output-label{min-width:0;flex:1}.picker-output-label strong,.picker-output-label small{overflow-wrap:anywhere}
+
+.picker-source-change{font-size:11px;line-height:1.6;color:var(--muted);padding:10px 0;margin:0 0 10px;border-top:1px solid var(--border)}
+
+/* Shared control height: buttons, selects and segmented controls align at the outer edge. */
+.btn-soft,.btn-quiet,.primary-btn,.danger-btn{min-height:var(--control-height);height:auto;padding-block:5px;line-height:1.4}
+select.small-select,select.session-select,input.text-input{height:var(--control-height);min-height:var(--control-height);padding-block:0}
+.search-field{height:var(--control-height)}
+.segmented,.detail-tabs{height:var(--control-height);min-height:var(--control-height);align-items:stretch}
+.segmented>.tab-control,.detail-tabs>.tab-control{height:100%;min-height:0;padding-block:0;display:inline-flex;align-items:center;justify-content:center}
+.radio-filter-trigger,.radio-pin,.preset-settings-trigger{height:var(--control-height);min-height:var(--control-height)}.radio-pin,.preset-settings-trigger{width:var(--control-height)}.radio-toolbar{grid-template-columns:minmax(180px,1fr) auto auto var(--control-height)}
+@media(max-width:720px){.radio-toolbar{grid-template-columns:minmax(0,1fr) auto var(--control-height)}}

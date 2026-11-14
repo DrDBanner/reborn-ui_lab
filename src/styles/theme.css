@@ -2,6 +2,7 @@
   --accent: #79b8ff;
   --accent-rgb: 121,184,255;
   --density: 1;
+  --control-height: 38px;
   --radius: 12px;
   --font-size: 14px;
   --sidebar-width: 270px;
@@ -30,5 +31,5 @@
   --faint: #6e7075;
   --border: #dedee1;
 }
-[data-density="compact"] { --density: .8; --card-gap: 10px; }
-[data-density="comfortable"] { --density: 1.15; --card-gap: 20px; }
+[data-density="compact"] { --density: .8; --control-height: 34px; --card-gap: 10px; }
+[data-density="comfortable"] { --density: 1.15; --control-height: 44px; --card-gap: 20px; }

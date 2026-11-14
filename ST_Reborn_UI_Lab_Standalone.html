@@ -9,6 +9,7 @@
   --accent: #79b8ff;
   --accent-rgb: 121,184,255;
   --density: 1;
+  --control-height: 38px;
   --radius: 12px;
   --font-size: 14px;
   --sidebar-width: 270px;
@@ -37,8 +38,8 @@
   --faint: #6e7075;
   --border: #dedee1;
 }
-[data-density="compact"] { --density: .8; --card-gap: 10px; }
-[data-density="comfortable"] { --density: 1.15; --card-gap: 20px; }
+[data-density="compact"] { --density: .8; --control-height: 34px; --card-gap: 10px; }
+[data-density="comfortable"] { --density: 1.15; --control-height: 44px; --card-gap: 20px; }
 
 /*
  * ST Reborn UI Lab: app-specific visual system.
@@ -492,6 +493,19 @@ input[role=switch]:checked{background:var(--accent);border-color:var(--accent)}i
 
 .preset-context-controls>.preset-expanded-tools{display:flex;align-items:center;align-self:flex-end;margin:0;min-width:0}.preset-expanded-tools .button-row{flex-wrap:wrap}.item-key-functions .key-preset [data-action=preset-play] .material-symbols-rounded{color:var(--muted)}.item-key-functions .key-preset [data-action=preset-play]:not(:disabled):hover .material-symbols-rounded,.item-key-functions .key-preset [data-action=preset-play]:not(:disabled):focus-visible .material-symbols-rounded{color:var(--accent)}
 
+.picker-membership{display:flex;align-items:flex-start;gap:10px;padding:0 0 16px;font-size:12px}.picker-membership input{margin-top:2px;flex-shrink:0}.picker-membership strong{font-weight:550}.picker-membership small{display:block;font-size:11px;line-height:1.6;color:var(--muted);margin-top:4px}.modal-output .picker-output-label{min-width:0;flex:1}.picker-output-label strong,.picker-output-label small{overflow-wrap:anywhere}
+
+.picker-source-change{font-size:11px;line-height:1.6;color:var(--muted);padding:10px 0;margin:0 0 10px;border-top:1px solid var(--border)}
+
+/* Shared control height: buttons, selects and segmented controls align at the outer edge. */
+.btn-soft,.btn-quiet,.primary-btn,.danger-btn{min-height:var(--control-height);height:auto;padding-block:5px;line-height:1.4}
+select.small-select,select.session-select,input.text-input{height:var(--control-height);min-height:var(--control-height);padding-block:0}
+.search-field{height:var(--control-height)}
+.segmented,.detail-tabs{height:var(--control-height);min-height:var(--control-height);align-items:stretch}
+.segmented>.tab-control,.detail-tabs>.tab-control{height:100%;min-height:0;padding-block:0;display:inline-flex;align-items:center;justify-content:center}
+.radio-filter-trigger,.radio-pin,.preset-settings-trigger{height:var(--control-height);min-height:var(--control-height)}.radio-pin,.preset-settings-trigger{width:var(--control-height)}.radio-toolbar{grid-template-columns:minmax(180px,1fr) auto auto var(--control-height)}
+@media(max-width:720px){.radio-toolbar{grid-template-columns:minmax(0,1fr) auto var(--control-height)}}
+
 /* Local Google Material Symbols Rounded chevron; see docs/MATERIAL_ICONS.md. */
 :root{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23a4aab5%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
 [data-appearance="light"]{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23566278%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
@@ -759,6 +773,42 @@ function assignSource(model, sourceId, targetId) {
   model.selectedOutputId = targetId;
   model.selectedSourceId = sourceId;
   return id;
+}
+
+/** Validate a deliberate addition to a bound playback; never split or steal members. */
+function playbackJoinError(model,context,destinationId=null){
+ const session=model.sessions.find(item=>item.id===context?.sessionId);
+ if(!session||!['playing','paused'].includes(session.status)||session.targetId!==context.targetId||session.sourceId!==context.sourceId)return 'Playback changed. Reopen the output picker.';
+ const origin=entity(model,session.targetId);
+ if(!origin||parentIds(model,origin.id).length)return 'Playback target changed. Reopen the output picker.';
+ if(!(kind(model,origin.id)==='group'?['online','partial']:['online']).includes(targetStatus(model,origin.id)))return 'The current output is unavailable.';
+ if(!destinationId)return null;
+ const destination=entity(model,destinationId);
+ if(!destination)return 'Destination no longer available.';
+ const members=new Set(leafDeviceIds(model,origin.id));
+ if(leafDeviceIds(model,destinationId).some(id=>members.has(id)))return 'Already part of this playback.';
+ if(kind(model,destinationId)==='group')return 'Choose a speaker or stereo pair; groups cannot be nested.';
+ if(parentIds(model,destinationId).length)return 'This output already belongs to a group or pair.';
+ if(targetStatus(model,destinationId)!=='online')return 'Destination must be online.';
+ return null;
+}
+
+function joinPlayback(model,context,destinationId,sourceId=context?.sourceId){
+ const error=playbackJoinError(model,context,destinationId);if(error)throw new Error(error);
+ if(typeof sourceId!=='string'||!sourceId)throw new Error('Choose a source to play');
+ const session=model.sessions.find(item=>item.id===context.sessionId),origin=entity(model,session.targetId),destination=entity(model,destinationId);
+ const replaced=new Set(conflictingSessionIds(model,destinationId));
+ let outputId=origin.id;
+ if(kind(model,origin.id)==='group')origin.memberIds.push(destinationId);
+ else{
+  outputId=createComposite(model,'group',`${origin.name} + ${destination.name}`,[origin.id,destinationId],false);
+  entity(model,outputId).volume=session.volume??origin.volume??25;
+ }
+ session.targetId=outputId;
+ if(session.sourceId!==sourceId){session.sourceId=sourceId;session.status='playing';}
+ model.sessions=model.sessions.filter(item=>item.id===session.id||!replaced.has(item.id));
+ model.selectedSessionId=session.id;model.selectedOutputId=outputId;model.selectedSourceId=session.sourceId;
+ return outputId;
 }
 
 // Reported compatibility family; never inferred from brand/model strings.
@@ -1147,11 +1197,19 @@ function renderPresetEditor(s){
 
 
 
-function outputPicker(s){const m=s.model,src=source(s.catalog,s.speakerPickerFor||m.selectedSourceId),targets=visibleOutputs(m);
- return `<div class="modal-heading"><h2>${src?'Play '+esc(src.name)+' on…':'Choose output'}</h2><p>${src?'Selecting an output will start this source. Existing sessions on unrelated devices keep playing.':'Choose a playback target or manage its configuration.'}</p></div>
-  <div class="modal-list">${targets.length?targets.map(t=>{const status=targetStatus(m,t.id);return `<button class="modal-output" data-action="assign-output" data-id="${esc(t.id)}" ${status==='offline'||status==='needs_setup'?'disabled':''}>
-   <span class="target-card__icon">${typeIcon(kind(m,t.id))}</span><span><strong>${esc(t.name)}</strong><small>${subline(m,t.id)}</small></span>${statusBadge(status)}${icon('play_circle')}</button>`}).join(''):`<p class="empty-line">No outputs configured.</p>`}</div>
-  <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('navigate','Manage all outputs','btn-soft','data-value="outputs"')}</div>`;
+function outputPicker(s){
+ const m=s.model,modal=s.modal,src=source(s.catalog,modal.sourceId||s.speakerPickerFor||m.selectedSourceId),targets=visibleOutputs(m),context=modal.joinContext,joining=!!modal.asMember;
+ const origin=entity(m,context?.targetId),contextError=context?playbackJoinError(m,context):'Start or select a playback to join.';
+ const changesSource=context&&src?.id!==context.sourceId;
+ return `<div class="modal-heading"><h2>${joining?`Add members to ${esc(origin?.name||'playback')}`:src?'Play '+esc(src.name)+' on…':'Choose output'}</h2><p>${joining?'Join the same playback and share its controls.':'Start a separate playback on the selected output.'}</p></div>
+ ${`<label class="picker-membership"><input type="checkbox" data-field="picker-as-member" ${joining?'checked':''} ${contextError&&!joining?'disabled':''}/><span><strong>As member</strong><small>${contextError?esc(contextError):`Play ${esc(src?.name||'this source')} together with ${esc(origin?.name)}.`}</small></span></label>`}
+ ${joining&&changesSource?`<p class="picker-source-change">${esc(source(s.catalog,context.sourceId)?.name||'The current source')} on ${esc(origin?.name)} will be replaced by ${esc(src?.name)} for the whole output.</p>`:''}
+ <div class="modal-list">${targets.length?targets.map(target=>{
+  const status=targetStatus(m,target.id),joinError=joining?playbackJoinError(m,context,target.id):null,playback=effectiveSessionFor(m,target.id),replacing=playback&&playback.id!==context?.sessionId&&playback.status!=='stopped';
+  const unavailable=['offline','needs_setup','updating'].includes(status),hint=joinError?esc(joinError):replacing?esc(`Replaces ${source(s.catalog,playback.sourceId)?.name||'existing playback'} on ${target.name}`):subline(m,target.id);
+  return `<button class="modal-output" data-action="assign-output" data-id="${esc(target.id)}" ${unavailable||joinError?'disabled':''}><span class="target-card__icon">${typeIcon(kind(m,target.id))}</span><span class="picker-output-label"><strong>${esc(target.name)}</strong><small>${hint}</small></span>${statusBadge(status)}${icon(joining?'group_add':'play_circle')}</button>`;
+ }).join(''):'<p class="empty-line">No outputs configured.</p>'}</div>
+ <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('navigate','Manage all outputs','btn-soft','data-value="outputs"')}</div>`;
 }
 function renderCompositeDialog(s){
  const m=s.model,draft=s.modal,pair=draft.type==='pair',available=visibleOutputs(m).filter(t=>kind(m,t.id)!=='group');
@@ -1430,6 +1488,7 @@ function confirmAction(title,description,callback){if(window.confirm(`${title}\n
 function exported(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download=name;a.href=url;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function notifySafe(task){try{task()}catch(err){toast(err?.message||String(err),{kind:'error'})}}
 function currentDevice(){return entity(state.model,state.detailDeviceId||state.model.selectedDeviceId)}
+function playbackNotice(sourceId,targetId){return `Playing ${source(state.catalog,sourceId)?.name||'selected source'} on ${entity(state.model,targetId)?.name||'selected output'}`;}
 function generic(title,description,body=''){openModal('generic',{title,description,body})}
 
 async function onAction(action,element){
@@ -1461,10 +1520,15 @@ async function onAction(action,element){
  }
  case 'target-play':{const src=m.selectedSourceId||currentSession(m)?.sourceId||'flux';mutate(s=>{assignSource(s.model,src,id);s.modal=null;});break}
  case 'open-volume-controls':{const playback=currentSession(m);if(!playback)throw new Error('Choose a playback first');openModal('volume',{sessionId:playback.id,targetId:playback.targetId});break;}
- case 'open-output-picker':mutate(s=>{s.speakerPickerFor=currentSession(m)?.sourceId||m.selectedSourceId||'flux';s.modal={kind:'picker'}},false);break;
- case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId;if(!targetId||element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)].slice(0,20)});toast(`Playing on ${entity(m,targetId)?.name}`);break;}
- case 'source-select':mutate(s=>{s.model.selectedSourceId=id;s.speakerPickerFor=id;s.modal={kind:'picker'}},false);break;
- case 'assign-output':{const src=state.speakerPickerFor||m.selectedSourceId||currentSession(m)?.sourceId||'flux';mutate(s=>{assignSource(s.model,src,id);s.model.history=[src,...s.model.history.filter(x=>x!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null;});toast(`Playing on ${entity(m,id)?.name}`);break}
+ case 'open-output-picker':{const playback=currentSession(m);mutate(s=>{s.speakerPickerFor=playback?.sourceId||m.selectedSourceId||'flux';s.modal={kind:'picker',sourceId:s.speakerPickerFor,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
+ case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId;if(!targetId||element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)].slice(0,20)});toast(playbackNotice(id,targetId));break;}
+ case 'source-select':{const playback=currentSession(m);mutate(s=>{s.model.selectedSourceId=id;s.speakerPickerFor=id;s.modal={kind:'picker',sourceId:id,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
+ case 'assign-output':{
+  const modal=state.modal,src=modal?.sourceId||state.speakerPickerFor||m.selectedSourceId||currentSession(m)?.sourceId||'flux';
+  if(modal?.kind==='picker'&&modal.asMember){
+   let outputId;mutate(s=>{if(!source(state.catalog,src))throw new Error('Source no longer available');outputId=joinPlayback(s.model,modal.joinContext,id,src);s.model.history=[src,...s.model.history.filter(item=>item!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null});toast(`${source(state.catalog,src)?.name} on ${entity(m,outputId)?.name} · ${entity(m,id)?.name} joined`);
+  }else{mutate(s=>{assignSource(s.model,src,id);s.model.history=[src,...s.model.history.filter(x=>x!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null});toast(playbackNotice(src,id))}break;
+ }
  case 'source-info':{const d=source(state.catalog,id);generic(d?.name||'Source',`${d?.type||''} · ${d?.country||''} · ${d?.bitrate||''}`,`<div class="key-values"><div><span>Genre</span><strong>${esc(d?.genre)}</strong></div><div><span>Station</span><strong>${esc(d?.subtitle)}</strong></div></div>`);break}
  case 'toggle-favorite':mutate(s=>{s.model.favorites=s.model.favorites.includes(id)?s.model.favorites.filter(x=>x!==id):[...s.model.favorites,id]});break;
  case 'radio-tab':mutate(s=>{s.model.ui.radioTab=val;s.filter=''});break;
@@ -1568,6 +1632,7 @@ async function onField(field,target){
  const m=state.model,val=target.value;
  try{switch(field){
  case 'scenario':await loadScenario(val);break;
+ case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
  case 'button-transfer-key':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.keys=target.checked?[...new Set([...s.modal.keys,val])]:s.modal.keys.filter(item=>item!==val),false);break;
  case 'button-transfer-target':if(state.modal?.kind==='button-transfer')mutate(s=>{const selected=new Set(s.modal.targetIds.flatMap(id=>leafDeviceIds(m,id))),ids=leafDeviceIds(m,val).filter(id=>id!==s.modal.deviceId&&buttonProfile(entity(m,id))&&entity(m,id).status==='online');for(const id of ids)target.checked?selected.add(id):selected.delete(id);s.modal.targetIds=[...selected]},false);break;
  case 'device-name':if(state.modal?.kind==='rename')state.modal.nameDraft=val;break;

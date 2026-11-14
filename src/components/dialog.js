@@ -1,13 +1,21 @@
 import {renderPresetEditor} from './preset-editor.js';
 import {renderPresetTransfer,renderPresetTransferResult} from './preset-transfer.js';
 import {esc,icon,action,statusBadge,targetIcon,subline,typeIcon} from './shared.js';
-import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets,leafDeviceIds,stereoFamily,validateGroupMembers} from '../app/model.js';
+import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets,leafDeviceIds,stereoFamily,validateGroupMembers,playbackJoinError,effectiveSessionFor} from '../app/model.js';
 
-function outputPicker(s){const m=s.model,src=source(s.catalog,s.speakerPickerFor||m.selectedSourceId),targets=visibleOutputs(m);
- return `<div class="modal-heading"><h2>${src?'Play '+esc(src.name)+' on…':'Choose output'}</h2><p>${src?'Selecting an output will start this source. Existing sessions on unrelated devices keep playing.':'Choose a playback target or manage its configuration.'}</p></div>
-  <div class="modal-list">${targets.length?targets.map(t=>{const status=targetStatus(m,t.id);return `<button class="modal-output" data-action="assign-output" data-id="${esc(t.id)}" ${status==='offline'||status==='needs_setup'?'disabled':''}>
-   <span class="target-card__icon">${typeIcon(kind(m,t.id))}</span><span><strong>${esc(t.name)}</strong><small>${subline(m,t.id)}</small></span>${statusBadge(status)}${icon('play_circle')}</button>`}).join(''):`<p class="empty-line">No outputs configured.</p>`}</div>
-  <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('navigate','Manage all outputs','btn-soft','data-value="outputs"')}</div>`;
+function outputPicker(s){
+ const m=s.model,modal=s.modal,src=source(s.catalog,modal.sourceId||s.speakerPickerFor||m.selectedSourceId),targets=visibleOutputs(m),context=modal.joinContext,joining=!!modal.asMember;
+ const origin=entity(m,context?.targetId),contextError=context?playbackJoinError(m,context):'Start or select a playback to join.';
+ const changesSource=context&&src?.id!==context.sourceId;
+ return `<div class="modal-heading"><h2>${joining?`Add members to ${esc(origin?.name||'playback')}`:src?'Play '+esc(src.name)+' on…':'Choose output'}</h2><p>${joining?'Join the same playback and share its controls.':'Start a separate playback on the selected output.'}</p></div>
+ ${`<label class="picker-membership"><input type="checkbox" data-field="picker-as-member" ${joining?'checked':''} ${contextError&&!joining?'disabled':''}/><span><strong>As member</strong><small>${contextError?esc(contextError):`Play ${esc(src?.name||'this source')} together with ${esc(origin?.name)}.`}</small></span></label>`}
+ ${joining&&changesSource?`<p class="picker-source-change">${esc(source(s.catalog,context.sourceId)?.name||'The current source')} on ${esc(origin?.name)} will be replaced by ${esc(src?.name)} for the whole output.</p>`:''}
+ <div class="modal-list">${targets.length?targets.map(target=>{
+  const status=targetStatus(m,target.id),joinError=joining?playbackJoinError(m,context,target.id):null,playback=effectiveSessionFor(m,target.id),replacing=playback&&playback.id!==context?.sessionId&&playback.status!=='stopped';
+  const unavailable=['offline','needs_setup','updating'].includes(status),hint=joinError?esc(joinError):replacing?esc(`Replaces ${source(s.catalog,playback.sourceId)?.name||'existing playback'} on ${target.name}`):subline(m,target.id);
+  return `<button class="modal-output" data-action="assign-output" data-id="${esc(target.id)}" ${unavailable||joinError?'disabled':''}><span class="target-card__icon">${typeIcon(kind(m,target.id))}</span><span class="picker-output-label"><strong>${esc(target.name)}</strong><small>${hint}</small></span>${statusBadge(status)}${icon(joining?'group_add':'play_circle')}</button>`;
+ }).join(''):'<p class="empty-line">No outputs configured.</p>'}</div>
+ <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('navigate','Manage all outputs','btn-soft','data-value="outputs"')}</div>`;
 }
 function renderCompositeDialog(s){
  const m=s.model,draft=s.modal,pair=draft.type==='pair',available=visibleOutputs(m).filter(t=>kind(m,t.id)!=='group');

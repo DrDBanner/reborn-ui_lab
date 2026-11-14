@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume} from '../src/app/model.js';
+import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume,joinPlayback,playbackJoinError} from '../src/app/model.js';
 const base=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data/scenarios/home.json'),'utf8'));
 const fresh=()=>structuredClone(base);
 test('pair and group resolve to physical speakers',()=>{const m=fresh();assert.deepEqual(leafDeviceIds(m,'p1'),['d1','d2']);assert.deepEqual(leafDeviceIds(m,'g1'),['d1','d2','d3'])});
@@ -171,4 +171,40 @@ test('stereo creation preserves explicit L/R and rejects unknown, incompatible o
  const offline=fresh();offline.devices.find(d=>d.id==='d5').status='offline';
  assert.throws(()=>createComposite(offline,'group','Bad',['d4','d5']),/online/);
  assert.equal(offline.groups.length,1);
+});
+
+test('joining playback extends its group without replacing the origin session or independent streams',()=>{
+ const m=fresh(),origin=structuredClone(m.sessions.find(s=>s.id==='s1')),other=JSON.stringify(m.sessions.find(s=>s.id==='s2'));
+ const output=joinPlayback(m,{sessionId:'s1',targetId:'g1',sourceId:'flux'},'d5');
+ assert.equal(output,'g1');assert(m.groups[0].memberIds.includes('d5'));assert.equal(m.groups.length,1);
+ assert.deepEqual(m.sessions.find(s=>s.id==='s1'),origin);assert.equal(JSON.stringify(m.sessions.find(s=>s.id==='s2')),other);
+ assert.equal(m.selectedSessionId,'s1');assert.deepEqual(validateScenario(m),[]);
+});
+test('joining a standalone stereo pair creates a temporary group and replaces only the chosen destination playback',()=>{
+ const m=fresh();dissolveComposite(m,'g1');const id=assignSource(m,'flux','p1');m.sessions.find(s=>s.id===id).status='paused';
+ const independent=assignSource(m,'ndr2','d7'),unrelated=JSON.stringify(m.sessions.find(s=>s.id===independent));
+ const output=joinPlayback(m,{sessionId:id,targetId:'p1',sourceId:'flux'},'d4'),group=entityForTest(m,output);
+ assert.equal(group.persistent,false);assert.deepEqual(group.memberIds,['p1','d4']);assert.equal(m.pairs.length,1);
+ assert.equal(m.sessions.find(s=>s.id===id).status,'paused');assert.equal(m.sessions.find(s=>s.id===id).targetId,output);
+ assert(!m.sessions.some(s=>s.targetId==='d4'));assert.equal(JSON.stringify(m.sessions.find(s=>s.id===independent)),unrelated);
+ assert.deepEqual(validateScenario(m),[]);
+});
+function entityForTest(model,id){return [...model.devices,...model.pairs,...model.groups].find(item=>item.id===id);}
+test('join rejects stale playback, self, unavailable destinations and nested groups before mutation',()=>{
+ const m=fresh(),context={sessionId:'s1',targetId:'g1',sourceId:'flux'};
+ assert(playbackJoinError(m,context,'g1').includes('Already'));
+ assert(playbackJoinError(m,context,'d1').includes('Already'));
+ const group=createComposite(m,'group','Elsewhere',['d5','d6']);
+ let before=JSON.stringify(m);assert.throws(()=>joinPlayback(m,context,group),/nested/);assert.equal(JSON.stringify(m),before);
+ m.devices.find(d=>d.id==='d7').status='offline';before=JSON.stringify(m);
+ assert.throws(()=>joinPlayback(m,context,'d7'),/online/);assert.equal(JSON.stringify(m),before);
+ m.sessions.find(s=>s.id==='s1').sourceId='1live';before=JSON.stringify(m);
+ assert.throws(()=>joinPlayback(m,context,'d4'),/Playback changed/);assert.equal(JSON.stringify(m),before);
+});
+
+test('joining with an explicitly chosen new source switches the whole joined output and preserves independent streams',()=>{
+ const m=fresh();m.sessions.find(s=>s.id==='s1').status='paused';const other=structuredClone(m.sessions.find(s=>s.id==='s2'));
+ joinPlayback(m,{sessionId:'s1',targetId:'g1',sourceId:'flux'},'d5','ndr2');
+ assert.equal(m.sessions.find(s=>s.id==='s1').sourceId,'ndr2');assert.equal(m.sessions.find(s=>s.id==='s1').status,'playing');
+ assert.deepEqual(m.sessions.find(s=>s.id==='s2'),other);
 });

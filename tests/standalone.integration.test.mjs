@@ -359,3 +359,55 @@ test('transfer destination tree de-duplicates groups and allows deselecting one 
  await vm.runInContext("onField('button-transfer-target',{value:'g1',checked:true});onField('button-transfer-target',{value:'d4',checked:true})",ctx);
  assert.equal(vm.runInContext('state.modal.targetIds.length',ctx),3);
 });
+
+test('player output picker can join a member and keeps its bound playback when player selection changes',async()=>{
+ const {ctx,app}=boot();await ready();const before=vm.runInContext('JSON.stringify(state.model)',ctx);
+ await vm.runInContext("onAction('open-output-picker',{dataset:{}})",ctx);
+ assert(app.innerHTML.includes('As member'));assert.equal(vm.runInContext('state.modal.asMember',ctx),false);
+ await vm.runInContext("onField('picker-as-member',{checked:true});onAction('close-modal',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('JSON.stringify(state.model)',ctx),before);
+ await vm.runInContext("onAction('open-output-picker',{dataset:{}});onField('picker-as-member',{checked:true});onField('session',{value:'s2'});onAction('assign-output',{dataset:{id:'d5'}})",ctx);
+ assert.equal(vm.runInContext("state.model.groups[0].memberIds.includes('d5')",ctx),true);
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s1').sourceId",ctx),'flux');
+ assert.equal(vm.runInContext('state.model.sessions.length',ctx),2);
+ assert.equal(vm.runInContext('state.model.selectedSessionId',ctx),'s1');
+});
+test('unchecked player casting stays independent and list pickers offer the same membership option',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('open-output-picker',{dataset:{}});onAction('assign-output',{dataset:{id:'d5'}})",ctx);
+ assert.equal(vm.runInContext('state.model.sessions.length',ctx),3);assert.equal(vm.runInContext('state.model.groups.length',ctx),1);
+ assert.equal(vm.runInContext('state.toasts.at(-1).message',ctx),'Playing FluxFM on Terrace L');
+ await vm.runInContext("onAction('source-select',{dataset:{id:'ndr2'}})",ctx);
+ assert(app.innerHTML.includes('data-field="picker-as-member"'));
+ await vm.runInContext("onAction('assign-output',{dataset:{id:'d5'}})",ctx);
+ assert.equal(vm.runInContext('state.toasts.at(-1).message',ctx),'Playing NDR 2 on Terrace L');
+ await vm.runInContext("onAction('source-play',{dataset:{id:'flux',target:'d5'}})",ctx);
+ assert.equal(vm.runInContext('state.toasts.at(-1).message',ctx),'Playing FluxFM on Terrace L');
+});
+test('stale member joins fail without changing topology or playback',async()=>{
+ const {ctx}=boot();await ready();
+ await vm.runInContext("onAction('open-output-picker',{dataset:{}});onField('picker-as-member',{checked:true});state.model.sessions.find(s=>s.id==='s1').status='stopped'",ctx);
+ const before=vm.runInContext('JSON.stringify(state.model)',ctx);
+ await vm.runInContext("onAction('assign-output',{dataset:{id:'d5'}})",ctx);
+ assert.equal(vm.runInContext('JSON.stringify(state.model)',ctx),before);assert.equal(vm.runInContext('state.modal.kind',ctx),'picker');
+ assert.equal(vm.runInContext('state.toasts.at(-1).kind',ctx),'error');
+});
+
+test('list Choose output joins the player output and explicitly applies the selected source to the whole group',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('source-select',{dataset:{id:'ndr2'}});onField('picker-as-member',{checked:true})",ctx);
+ assert(app.innerHTML.includes('FluxFM on Downstairs will be replaced by NDR 2 for the whole output.'));
+ await vm.runInContext("onAction('assign-output',{dataset:{id:'d5'}})",ctx);
+ assert.equal(vm.runInContext("state.model.groups[0].memberIds.includes('d5')",ctx),true);
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s1').sourceId",ctx),'ndr2');
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s2').sourceId",ctx),'ndrinfo');
+ assert(vm.runInContext('state.toasts.at(-1).message',ctx).includes('NDR 2 on Downstairs'));
+});
+test('list picker shows disabled membership when no current playback exists',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("state.model.sessions.forEach(s=>s.status='stopped');onAction('source-select',{dataset:{id:'flux'}})",ctx);
+ assert(app.innerHTML.includes('data-field="picker-as-member"  disabled'));
+ assert(app.innerHTML.includes('Start or select a playback to join.'));
+ await vm.runInContext("onAction('assign-output',{dataset:{id:'d5'}})",ctx);
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.targetId==='d5').status",ctx),'playing');
+});

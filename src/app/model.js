@@ -246,6 +246,42 @@ export function assignSource(model, sourceId, targetId) {
   return id;
 }
 
+/** Validate a deliberate addition to a bound playback; never split or steal members. */
+export function playbackJoinError(model,context,destinationId=null){
+ const session=model.sessions.find(item=>item.id===context?.sessionId);
+ if(!session||!['playing','paused'].includes(session.status)||session.targetId!==context.targetId||session.sourceId!==context.sourceId)return 'Playback changed. Reopen the output picker.';
+ const origin=entity(model,session.targetId);
+ if(!origin||parentIds(model,origin.id).length)return 'Playback target changed. Reopen the output picker.';
+ if(!(kind(model,origin.id)==='group'?['online','partial']:['online']).includes(targetStatus(model,origin.id)))return 'The current output is unavailable.';
+ if(!destinationId)return null;
+ const destination=entity(model,destinationId);
+ if(!destination)return 'Destination no longer available.';
+ const members=new Set(leafDeviceIds(model,origin.id));
+ if(leafDeviceIds(model,destinationId).some(id=>members.has(id)))return 'Already part of this playback.';
+ if(kind(model,destinationId)==='group')return 'Choose a speaker or stereo pair; groups cannot be nested.';
+ if(parentIds(model,destinationId).length)return 'This output already belongs to a group or pair.';
+ if(targetStatus(model,destinationId)!=='online')return 'Destination must be online.';
+ return null;
+}
+
+export function joinPlayback(model,context,destinationId,sourceId=context?.sourceId){
+ const error=playbackJoinError(model,context,destinationId);if(error)throw new Error(error);
+ if(typeof sourceId!=='string'||!sourceId)throw new Error('Choose a source to play');
+ const session=model.sessions.find(item=>item.id===context.sessionId),origin=entity(model,session.targetId),destination=entity(model,destinationId);
+ const replaced=new Set(conflictingSessionIds(model,destinationId));
+ let outputId=origin.id;
+ if(kind(model,origin.id)==='group')origin.memberIds.push(destinationId);
+ else{
+  outputId=createComposite(model,'group',`${origin.name} + ${destination.name}`,[origin.id,destinationId],false);
+  entity(model,outputId).volume=session.volume??origin.volume??25;
+ }
+ session.targetId=outputId;
+ if(session.sourceId!==sourceId){session.sourceId=sourceId;session.status='playing';}
+ model.sessions=model.sessions.filter(item=>item.id===session.id||!replaced.has(item.id));
+ model.selectedSessionId=session.id;model.selectedOutputId=outputId;model.selectedSourceId=session.sourceId;
+ return outputId;
+}
+
 // Reported compatibility family; never inferred from brand/model strings.
 export function stereoFamily(device){return device?.capabilities?.grouping?.stereoFamily||null;}
 

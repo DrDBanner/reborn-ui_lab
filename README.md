@@ -4,6 +4,8 @@ Interactive frontend for managing audio sources, devices, stereo pairs, groups a
 
 The interface is organized around sources, group membership and reported device capabilities. ST Reborn is the first integration context; future adapters can extend it to other manufacturers and keep devices useful across a longer product lifecycle. [Product direction](docs/PRODUCT_DIRECTION.md).
 
+![ST Reborn UI Lab showing group details, button presets and concurrent playback](docs/assets/screenshot_01.png)
+
 ## Run
 
 ```sh

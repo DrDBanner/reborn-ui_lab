@@ -130,7 +130,7 @@ export async function onAction(action,element){
  case 'device-reset':confirmAction('Factory reset?',`This is a simulation only. No command will be sent.`,()=>{closeModal();toast('Reset simulation completed')});break;
  case 'alarms':generic('Alarms','View and configure device alarms.','<p>The scenario includes the alarm collection. Real scheduling and confirmation are backend responsibilities.</p>');break;
  case 'button-actions':mutate(s=>s.model.ui.deviceTab='functions');break;
- case 'check-updates':toast('Simulated version check completed');break;
+ case 'check-updates':mutate(s=>s.updateChecked=true,false);break;
  case 'update-start':mutate(s=>{const d=entity(s.model,id);if(d&&d.status==='online'){d.status='updating';d.updateProgress=5}});break;
  case 'advance-updates':mutate(s=>s.model.devices.forEach(d=>{if(d.status==='updating'){d.updateProgress=Math.min(100,(d.updateProgress||0)+25);if(d.updateProgress===100){d.status='online';d.firmware=d.firmwareLatest;d.firmwareAvailable=false}}}));break;
  case 'diagnostics':generic('Diagnostics','Simulated diagnostic summary',`<div class="key-values"><div><span>Known speakers</span><strong>${m.devices.length}</strong></div><div><span>Unavailable</span><strong>${m.devices.filter(x=>x.status==='offline').length}</strong></div><div><span>Firmware operations</span><strong>${m.devices.filter(x=>x.status==='updating').length}</strong></div></div>`);break;
@@ -147,6 +147,7 @@ export async function onAction(action,element){
  case 'load-scenario':await loadScenario(id);break;
  case 'close-modal':closeModal();break;
  case 'dismiss-toast':dismissToast(id);break;
+ case 'open-updates-notice':dismissToast(id);navigate('updates');mutate(s=>s.model.ui.collapsed.system=false);break;
  default:console.warn('Unhandled action:',action);
  }}catch(err){toast(err?.message||String(err),{kind:'error'})}
 }

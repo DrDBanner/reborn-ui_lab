@@ -426,3 +426,23 @@ test('group gear drafts persistence, main speaker and remote group keys without 
  await vm.runInContext("onAction('device-rename',{dataset:{id:'g1'}});onField('device-name',{value:'Evening'});onAction('device-rename-save',{dataset:{}})",ctx);
  assert.equal(vm.runInContext('state.model.groups[0].name',ctx),'Evening');assert(app.innerHTML.includes('Temporary'));
 });
+
+test('update events create one linked toast per availability/version and never install on navigation',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("loadScenario('update-notifications',false,true)",ctx);await ready();
+ assert.equal(vm.runInContext("state.toasts.filter(t=>t.kind==='update').length",ctx),1);
+ assert(app.innerHTML.includes('Updates &amp; maintenance'));assert(app.innerHTML.includes('Office'));assert(app.innerHTML.includes('27.0.7'));assert(app.innerHTML.includes('1.6.3'));
+ assert.equal(vm.runInContext("state.toasts.find(t=>t.kind==='update').duration",ctx),8000);
+ await vm.runInContext("onAction('check-updates',{dataset:{}});onAction('check-updates',{dataset:{}});onAction('navigate',{dataset:{value:'listen'}})",ctx);
+ assert.equal(vm.runInContext("state.toasts.filter(t=>t.kind==='update').length",ctx),1);
+ await vm.runInContext("onAction('open-updates-notice',{dataset:{id:state.toasts.find(t=>t.kind==='update').id}})",ctx);
+ assert.equal(vm.runInContext('state.view',ctx),'updates');assert(app.innerHTML.includes('Update available · 1.6.3'));
+ assert.equal(vm.runInContext('state.model.devices.some(d=>d.status===\'updating\')',ctx),false);
+ assert.equal(vm.runInContext('state.model.ui.collapsed.system',ctx),false);
+ assert.equal(vm.runInContext('state.model.appUpdate.version',ctx),'1.6.3');
+ await vm.runInContext("mutate(s=>s.model.appUpdate.version='1.6.4')",ctx);
+ assert.equal(vm.runInContext("state.toasts.filter(t=>t.kind==='update'&&!t.leaving).length",ctx),1);assert(app.innerHTML.includes('1.6.4'));
+ await vm.runInContext("clearToast();onAction('check-updates',{dataset:{}})",ctx);assert.equal(vm.runInContext('state.toasts.length',ctx),0);
+ await vm.runInContext("mutate(s=>s.model.appUpdate.available=false);mutate(s=>s.model.appUpdate.available=true)",ctx);assert.equal(vm.runInContext('state.toasts.length',ctx),1);
+ await vm.runInContext("loadScenario('update-notifications',false,true)",ctx);assert.equal(vm.runInContext("state.toasts.filter(t=>t.kind==='update').length",ctx),1);
+});

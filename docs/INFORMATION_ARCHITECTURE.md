@@ -105,3 +105,9 @@ Joining retains the origin session ID and master volume. With the same source it
 Source-switch notifications from Radio, Recently Played and explicit output assignment name both source and destination: Playing FluxFM on Downstairs. Actual grouping, synchronization compatibility and acknowledgement still belong to a hardware adapter.
 
 Group Members is the shared membership heading. On groups the gear immediately beside Add members opens draft settings: Main speaker, Keep group together, and separate remote group buttons. Persistence is no longer repeated in Overview. The main speaker is identified in the membership list. Title renaming also applies to temporary groups and stereo pairs. Remote group key assignments are receiver-owned templates, not group-owned preset banks; see DEVICE_CAPABILITIES.md for verified contracts and simulation limits.
+
+## Update availability events
+
+Reported desktop-app (`appUpdate.available/version`) and device-firmware (`firmwareAvailable/firmwareLatest`) availability produces one top-right toast for the newly reported targets. Its internal Updates & maintenance link navigates and opens the System section, without installing anything. The ordinary eight-second animation lifecycle applies. Per-scenario runtime fingerprints suppress identical reports on rerenders/rechecks; new versions, availability returning after resolution and explicit scenario reset can report again. Dismissed/expired notifications do not remove available updates from maintenance. The Update notifications Lab scenario reproduces these states without a network update service. App restart may show availability again; this is not a persistent acknowledgement system.
+
+Secondary icon actions use muted color until hover/focus. Opening/removing a member appears on that row's hover or keyboard focus, and remains visible on touch. Selected navigation and explicit playback/favorite states are not made indistinguishable from inactive UI.

@@ -64,6 +64,13 @@ export function currentSession(model) {
   return active.find(item=>item.id===model.selectedSessionId)??active[0]??null;
 }
 
+export function availableUpdates(model){
+ const updates=[];
+ if(model?.appUpdate?.available)updates.push({key:`app:${model.appUpdate.version||'unknown'}`,name:'ST Reborn desktop',version:model.appUpdate.version||null,type:'app'});
+ for(const device of model?.devices||[])if(device.firmwareAvailable&&device.status!=='updating')updates.push({key:`firmware:${device.id}:${device.firmwareLatest||'unknown'}`,name:device.name,version:device.firmwareLatest||null,type:'firmware'});
+ return updates;
+}
+
 function volumeValue(value){
  const number=Number(value);
  if(!Number.isFinite(number)||number<0||number>100)throw new Error('Volume must be between 0 and 100');

@@ -86,3 +86,5 @@ See `docs/INFORMATION_ARCHITECTURE.md`, `docs/WAILS_INTEGRATION.md`, and `docs/V
 The screenshot-based feature gap inventory is maintained in [project/feature-coverage](../project/feature-coverage/coverage.md); it preserves this interaction model while recording missing upstream capabilities.
 
 **Group settings:** use the gear beside Group Members → Add members for the main speaker, Keep group together and supported thumbs-up/down remote group buttons. Remote templates are separate from Once/Twice source presets. Temporary groups and pairs also have a title pencil for renaming. All effects remain local simulation; verified STR mappings and remaining integration work are documented in `docs/DEVICE_CAPABILITIES.md`.
+
+**Update notifications scenario:** select it in Design Lab to report example desktop and speaker updates. A single toast names targets/versions and links to Updates & maintenance, expires after eight seconds, and does not repeat for the same reports when checking again or navigating. Reset the scenario to replay the event. This is simulated availability, with no update service or installation started by the link.

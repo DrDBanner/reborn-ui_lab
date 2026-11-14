@@ -28,5 +28,10 @@
     "id": "first-run",
     "name": "First run",
     "description": "No configured speakers; setup flow and empty states"
+  },
+  {
+    "id": "update-notifications",
+    "name": "Update notifications",
+    "description": "Desktop and device updates trigger a linked toast; repeat checks do not duplicate it"
   }
 ]

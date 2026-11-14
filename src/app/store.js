@@ -1,17 +1,27 @@
-import { validateScenario,normalizeScenario } from './model.js';
+import { validateScenario,normalizeScenario,availableUpdates } from './model.js';
 
 const listeners=new Set();
+const reportedUpdateKeys=new Map();
 export const state={catalog:null,scenarioIndex:[],uiLayout:null,variants:null,scenarioId:'home',model:null,
   view:'listen', detailDeviceId:null, detailOutputId:null, selectedSourceId:null,
   modal:null, toasts:[], sidebarOpen:false, speakerPickerFor:null, filter:'', outputSearch:'', selectedForComposite:[],
   setupStep:0, setupSelection:null, designOpen:false, designTokens:null, scenarioEditorOpen:false,
-  radioFiltersOpen:false, appMenuOpen:false, presetGesture:'single', presetDeviceId:null, expandedPresetTargetId:null, expandingOutputs:false, alert:null};
+  updateChecked:false, radioFiltersOpen:false, appMenuOpen:false, presetGesture:'single', presetDeviceId:null, expandedPresetTargetId:null, expandingOutputs:false, alert:null};
 
 export function subscribe(listener){listeners.add(listener);return()=>listeners.delete(listener)}
-export function notify(){for(const fn of listeners)fn(state)}
+export function notify(){reportAvailableUpdates();for(const fn of listeners)fn(state)}
+function reportAvailableUpdates(){
+ if(!state.model)return;
+ const updates=availableUpdates(state.model),seen=reportedUpdateKeys.get(state.scenarioId)||new Set(),fresh=updates.filter(update=>!seen.has(update.key));
+ reportedUpdateKeys.set(state.scenarioId,new Set(updates.map(update=>update.key)));
+ if(fresh.length){
+  const description=fresh.slice(0,3).map(update=>`${update.name}${update.version?' · '+update.version:''}`).join(', ')+(fresh.length>3?` and ${fresh.length-3} more`:'');
+  toast(`${fresh.length===1?'Update':'Updates'} available: ${description}`,{kind:'update',destination:'updates',announce:false});
+ }
+}
 export function mutate(fn,persist=true){fn(state);if(persist)save();notify()}
 export function save(){if(!state.model)return;try{localStorage.setItem(`streborn-lab:${state.scenarioId}`,JSON.stringify(state.model));localStorage.setItem('streborn-lab:design',JSON.stringify(state.designTokens));}catch{}}
-export function resetUi(){state.filter='';state.outputSearch='';state.detailDeviceId=null;state.detailOutputId=null;state.selectedForComposite=[];state.setupStep=0;state.expandingOutputs=false;state.modal=null;clearToast(false);state.scenarioEditorOpen=false;state.appMenuOpen=false;state.radioFiltersOpen=false;state.presetGesture='single';state.presetDeviceId=null;state.expandedPresetTargetId=null;}
+export function resetUi(){state.updateChecked=false;state.filter='';state.outputSearch='';state.detailDeviceId=null;state.detailOutputId=null;state.selectedForComposite=[];state.setupStep=0;state.expandingOutputs=false;state.modal=null;clearToast(false);state.scenarioEditorOpen=false;state.appMenuOpen=false;state.radioFiltersOpen=false;state.presetGesture='single';state.presetDeviceId=null;state.expandedPresetTargetId=null;}
 export async function initialize(){
   const [index,catalog,design,uiLayout,variants]=await Promise.all(['/data/scenario-index.json','/data/catalog.json','/data/design-tokens.json','/data/ui-layout.json','/data/variants.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw new Error(`Failed to load ${url}`);return r.json()})));
   state.catalog=catalog;state.scenarioIndex=index;state.uiLayout=uiLayout;state.variants=variants;state.designTokens=design;
@@ -26,6 +36,7 @@ export async function loadScenario(id,initial=false,reset=false){
   normalizeScenario(model,fixture);
   const errors=validateScenario(model);if(errors.length)throw new Error(errors.join('; '));
   state.scenarioId=id;state.model=model;state.view=model.activeView || 'listen';
+  if(reset)reportedUpdateKeys.delete(id);
   resetUi();if(reset)save();if(!initial)toast(`${state.scenarioIndex.find(s=>s.id===id)?.name} loaded`);notify();
 }
 export function applyScenarioJson(json){
@@ -49,10 +60,10 @@ export function dismissToast(id){
  notice.leaving=true;notice.dismissedAt=Date.now();notify();
  toastTimers.set(id,[noticeTimer(()=>{state.toasts=state.toasts.filter(item=>item.id!==id);toastTimers.delete(id);notify()},240)]);
 }
-export function toast(message,{kind='info',duration=kind==='error'?0:8000}={}){
+export function toast(message,{kind='info',duration=kind==='error'?0:8000,destination=null,announce=true}={}){
  const id=`notice-${++toastSequence}`;
- state.toasts.push({id,message:String(message),kind,createdAt:Date.now(),duration,leaving:false});
+ state.toasts.push({id,message:String(message),kind,destination:destination==='updates'?'updates':null,createdAt:Date.now(),duration,leaving:false});
  if(duration>0)toastTimers.set(id,[noticeTimer(()=>dismissToast(id),duration)]);
- notify();return id;
+ if(announce)notify();return id;
 }
 export function clearToast(announce=true){for(const timers of toastTimers.values())timers.forEach(clearTimeout);toastTimers.clear();state.toasts=[];if(announce)notify()}

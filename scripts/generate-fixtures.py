@@ -63,6 +63,7 @@ def sample(ui='listen',n=7):
 
 scenarios={}
 base=sample()
+base['fixtureRevision']=2
 for i,name in [(8,'Dining Room L'),(9,'Dining Room R')]:
  d=copy.deepcopy(base['devices'][0]);d.update(id=f'd{i}',name=name,ip=f'192.168.0.{100+i}')
  if i==8:d['capabilities']['buttonPresets']['gestures']=['single'];d['doublePresets']=[]

@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Open the URL printed by Vite. Device and source data comes from JSON fixtures; actions update the local simulation. Scenario changes and appearance settings persist in browser `localStorage`.
+Open the URL printed by Vite. Device and source data comes from JSON fixtures; actions update the local simulation. Local edits and appearance settings persist in browser `localStorage`. Choosing a scenario reloads its shipped fixture. Updated fixture revisions refresh older saved scenario data.
 
 | Command | Purpose |
 |---|---|

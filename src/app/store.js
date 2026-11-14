@@ -31,13 +31,13 @@ export async function initialize(){
 export async function loadScenario(id,initial=false,reset=false){
   if(!state.scenarioIndex.some(x=>x.id===id))throw new Error('Unknown scenario');
   const response=await fetch(`/data/scenarios/${id}.json`);if(!response.ok)throw new Error('Scenario file unavailable');
-  const fixture=await response.json();let model=structuredClone(fixture);
-  if(!reset){try{const saved=localStorage.getItem(`streborn-lab:${id}`);if(saved)model=JSON.parse(saved)}catch{}}
+  const fixture=await response.json();let model=structuredClone(fixture),refreshed=false;
+  if(!reset){try{const saved=localStorage.getItem(`streborn-lab:${id}`);if(saved){const candidate=JSON.parse(saved);if((candidate.fixtureRevision||0)===(fixture.fixtureRevision||0))model=candidate;else refreshed=true}}catch{}}
   normalizeScenario(model,fixture);
   const errors=validateScenario(model);if(errors.length)throw new Error(errors.join('; '));
   state.scenarioId=id;state.model=model;state.view=model.activeView || 'listen';
   if(reset)reportedUpdateKeys.delete(id);
-  resetUi();if(reset)save();if(!initial)toast(`${state.scenarioIndex.find(s=>s.id===id)?.name} loaded`);notify();
+  resetUi();if(reset||refreshed)save();if(!initial)toast(`${state.scenarioIndex.find(s=>s.id===id)?.name} loaded`);notify();
 }
 export function applyScenarioJson(json){
   const model=normalizeScenario(JSON.parse(json));const errors=validateScenario(model);if(errors.length)throw new Error(errors.join('; '));

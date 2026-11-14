@@ -146,7 +146,7 @@ export async function onAction(action,element){
  case 'export-scenario':exported(`streborn-${state.scenarioId}.json`,m);break;
  case 'export-tokens':exported('streborn-design-tokens.json',state.designTokens);break;
  case 'reset-scenario':await loadScenario(state.scenarioId,false,true);break;
- case 'load-scenario':await loadScenario(id);break;
+ case 'load-scenario':await loadScenario(id,false,true);break;
  case 'close-modal':closeModal();break;
  case 'dismiss-toast':dismissToast(id);break;
  case 'open-updates-notice':dismissToast(id);navigate('updates');mutate(s=>s.model.ui.collapsed.system=false);break;
@@ -157,7 +157,7 @@ export async function onAction(action,element){
 export async function onField(field,target){
  const m=state.model,val=target.value;
  try{switch(field){
- case 'scenario':await loadScenario(val);break;
+ case 'scenario':await loadScenario(val,false,true);break;
  case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
  case 'button-transfer-overwrite':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.overwrite=target.checked,false);break;
  case 'button-transfer-key':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.keys=target.checked?[...new Set([...s.modal.keys,val])]:s.modal.keys.filter(item=>item!==val),false);break;

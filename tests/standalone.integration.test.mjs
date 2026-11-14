@@ -477,3 +477,18 @@ test('transfer overwrite is explicit, cancellable and shows the cleared key in r
  assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d5').presets[0]",ctx),'flux');
  assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d5').presets[2]",ctx),null);
 });
+
+test('scenario selection restores fixtures and older Everyday snapshots refresh once on load',async()=>{
+ const {ctx}=boot();await ready();
+ await vm.runInContext("state.model.groups.push({id:'old-group',name:'Old nested room',memberIds:[]});delete state.model.fixtureRevision;localStorage.setItem('streborn-lab:home',JSON.stringify(state.model));loadScenario('home',true)",ctx);
+ assert.equal(vm.runInContext('state.model.fixtureRevision',ctx),2);
+ assert.equal(vm.runInContext('state.model.devices.length',ctx),9);
+ assert.equal(vm.runInContext('state.model.groups.length',ctx),1);
+ assert.equal(vm.runInContext("JSON.parse(localStorage.getItem('streborn-lab:home')).fixtureRevision",ctx),2);
+ await vm.runInContext("state.model.devices[0].name='Session edit';save();loadScenario('home',true)",ctx);
+ assert.equal(vm.runInContext('state.model.devices[0].name',ctx),'Session edit');
+ await vm.runInContext("onField('scenario',{value:'home'})",ctx);
+ assert.equal(vm.runInContext('state.model.devices[0].name',ctx),'Living Room L');
+ await vm.runInContext("state.model.devices[0].name='Another edit';save();onAction('load-scenario',{dataset:{id:'home'}})",ctx);
+ assert.equal(vm.runInContext('state.model.devices[0].name',ctx),'Living Room L');
+});

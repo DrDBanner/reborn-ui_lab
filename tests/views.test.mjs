@@ -7,13 +7,14 @@ import {renderListen} from '../src/views/listen.js';
 import {renderOutputs,renderGroup} from '../src/views/outputs.js';
 import {renderDevice,renderUpdates,renderSettings,renderSetup,renderHelp} from '../src/views/management.js';
 import {renderLab} from '../src/views/lab.js';
+import {renderSessions} from '../src/views/sessions.js';
 import {sidebar,header,player} from '../src/components/shell.js';
 import {renderDialog} from '../src/components/dialog.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data');
 const scenarios=JSON.parse(fs.readFileSync(path.join(root,'scenario-index.json'),'utf8'));
 const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
 const tokens=JSON.parse(fs.readFileSync(path.join(root,'design-tokens.json'),'utf8'));
-const renderers={listen:renderListen,library:renderListen,history:renderListen,spotify:renderListen,outputs:renderOutputs,group:renderGroup,device:renderDevice,updates:renderUpdates,settings:renderSettings,setup:renderSetup,help:renderHelp,lab:renderLab};
+const renderers={listen:renderListen,library:renderListen,history:renderListen,spotify:renderListen,outputs:renderOutputs,group:renderGroup,device:renderDevice,updates:renderUpdates,settings:renderSettings,setup:renderSetup,help:renderHelp,lab:renderLab,sessions:renderSessions};
 for(const scenario of scenarios){
  const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios',`${scenario.id}.json`),'utf8'));
  test(`all views render under scenario ${scenario.id}`,()=>{
@@ -25,8 +26,40 @@ for(const scenario of scenarios){
   assert(sidebar(s).length>300);
   assert(header(s).length>100);
   assert(player(s).length>100);
-  for(const modal of [{kind:'picker'},{kind:'create',type:'pair'},{kind:'create',type:'group'},{kind:'preset'},{kind:'wifi'},{kind:'maintenance'},{kind:'generic',title:'Hello'}]){
+  for(const modal of [{kind:'picker'},{kind:'create',type:'pair'},{kind:'create',type:'group'},{kind:'preset',deviceId:model.devices[0]?.id,gesture:'single'},{kind:'wifi'},{kind:'maintenance'},{kind:'generic',title:'Hello'}]){
    s.modal=modal;const html=renderDialog(s);assert(html.length>120);
   }
  });
 }
+
+test('item identity and capabilities are independent of device brand',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/capabilities.json'),'utf8'));
+ const s={model,catalog,designTokens:tokens,detailDeviceId:'d11',presetGesture:'double'};
+ model.ui.deviceTab='functions';
+ const noButtons=renderDevice(s);
+ assert(!noButtons.includes('data-action="preset-edit"'));
+ assert(!noButtons.includes('data-value="functions"'));
+ assert(noButtons.includes('Example Audio'));
+ assert(noButtons.includes('Hardware revision'));
+ s.detailDeviceId='d12';model.ui.deviceTab='functions';
+ const compact=renderDevice(s);
+ assert(compact.includes('Key 2'));
+ assert(!compact.includes('Key 3'));
+ assert(!compact.includes('data-value="double"'));
+ s.detailDeviceId='d1';
+ assert(renderDevice(s).includes('data-value="double"'));
+});
+
+test('System contains only updates and setup; app preferences stay in the logo menu',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
+ const uiLayout=JSON.parse(fs.readFileSync(path.join(root,'ui-layout.json'),'utf8'));
+ model.ui.collapsed.system=false;
+ for(const layout of [undefined,uiLayout]){
+  const html=sidebar({model,catalog,uiLayout:layout,expandingOutputs:false,designTokens:tokens});
+  assert(html.includes('data-value="updates"'));
+  assert(html.includes('data-value="setup"'));
+  assert(!html.includes('data-value="settings"'));
+  assert(!html.includes('data-value="help"'));
+  assert(!html.includes('data-value="lab"'));
+ }
+});

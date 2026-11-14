@@ -25,7 +25,9 @@ The normal Vite version compiles Tailwind and daisyUI. `preview.html` omits thes
 
 - **The problem of N:** use the `30 speakers` scenario. Sidebar shows selected/top-level shortcuts; the main **Outputs & groups** workspace filters and manages the full list.
 - **Speaker placement A/B:** open **Design Lab** and switch between *A — Player panel* and *B — Sidebar*. Shared playback and group state does not reset.
-- **Independent streams:** choose `Several streams`, use the session selector in the bottom player; select another source and assign it to another output.
+- **App menu:** click the ST Reborn logo for connection status, appearance, app settings, scenarios and Design Lab.
+- **Device functions:** open a device, then **Functions** for its supported button presets and alarms. Switch **Once / Twice** to configure or recall either button layer. **Device capabilities** demonstrates items without buttons and items with only two single-press keys.
+- **Independent streams:** choose `Several streams`, select a playback in the sidebar or the Playbacks overview, or use the session selector in the bottom player; select another source and assign it to another output.
 - **Groups and pairs:** select available items on **Outputs & groups**, then **Create group** or **Stereo pair**. Manage or dissolve each as one output.
 - **Maintenance states:** select `Maintenance & errors` and advance firmware progress in **Updates & maintenance**.
 - **First run:** select `First run` to exercise empty states and the setup wizard.
@@ -39,7 +41,9 @@ The prototype stores per-scenario changes and visual tokens in browser `localSto
 | File / folder | Purpose |
 |---|---|
 | `src/components/shell.js` | Sidebar sections, pinned active output, player and top bar |
-| `src/views/listen.js` | Radio, presets, library, history and Spotify |
+| `src/views/listen.js` | Radio, library, history and Spotify |
+| `src/views/device-functions.js` | Capability-driven functions and per-device button layers |
+| `src/views/sessions.js` | Independent playbacks |
 | `src/views/outputs.js` | N devices, pair/group cards, group details |
 | `src/views/management.js` | Speaker settings, firmware, diagnostics, setup and app settings |
 | `src/views/lab.js` | A/B variants, scenario selection and design tokens |
@@ -68,5 +72,7 @@ The prototype stores per-scenario changes and visual tokens in browser `localSto
 ## Original concept
 
 The full earlier concept is retained in `reference/original/svg/` and `reference/original/views/`. This lab modifies the **interaction and information architecture for output management** rather than discarding the original radio, library, settings or maintenance screens.
+
+Typography uses locally bundled Inter variable fonts; see `docs/FONTS.md`. Device identity and capability contracts are in `docs/DEVICE_CAPABILITIES.md`.
 
 See `docs/INFORMATION_ARCHITECTURE.md`, `docs/WAILS_INTEGRATION.md`, and `docs/VIEW_COVERAGE.md`.

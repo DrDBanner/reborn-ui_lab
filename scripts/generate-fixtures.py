@@ -26,7 +26,9 @@ CATALOG={
 }
 
 def device(i,name=None,status='online'):
- return {'id':f'd{i}','name':name or f'Speaker {i:02d}','model':'SoundTouch 10' if i%3 else 'SoundTouch 30', 'ip':f'192.168.0.{100+i}','status':status,
+ return {'id':f'd{i}','name':name or f'Speaker {i:02d}','brand':'Bose','model':'SoundTouch 10' if i%3 else 'SoundTouch 30','hardwareRevision':None,'agentName':'STR','agentVersion':None,
+         'capabilities':{'sound':True,'network':True,'remote':True,'alarms':True,'buttonPresets':{'keyCount':6,'gestures':['single'] if i%4==0 else ['single','double']}},
+         'doublePresets':[] if i%4==0 else ['album1','ndr2',None,'discover',None,None], 'ip':f'192.168.0.{100+i}','status':status,
          'firmware':'27.0.6' if i%4 else '26.1.4','firmwareLatest':'27.0.6','firmwareAvailable':i%4==0,'updateProgress':62 if status=='updating' else 0,
          'volume':24+(i%7),'bass':0,'startVolumeEnabled':False,'startVolume':20,'language':'English','network':'Home Network',
          'presets':['1live','flux','ffn','sw','dl','ndrinfo'] if i<=3 else ['flux','ndr2',None,'dl',None,None],
@@ -42,7 +44,7 @@ def sample(ui='listen',n=7):
  'selectedOutputId':'g1','selectedSessionId':'s1','selectedSourceId':'flux','selectedDeviceId':'d1','activeView':ui,
  'settings':{'language':'English','appearance':'dark','autoUpdate':True,'telemetry':False,'searchCountry':'Germany','searchLanguage':'All','radioGenre':'All','restoreSession':True},
  'ui':{'speakerVariant':'sidebar','density':'standard','sidebarLimit':6,'collapsed':{'listen':False,'outputs':False,'system':True},'deviceTab':'overview','outputFilter':'all','radioTab':'discover','settingsTab':'general','libraryServer':'nas'},
- 'setupCandidates':[{'id':'found1','name':'SoundTouch 10 (new)','ip':'192.168.0.220'}],
+ 'setupCandidates':[{'id':'found1','name':'SoundTouch 10 (new)','brand':'Bose','model':'SoundTouch 10','firmware':'27.0.6','capabilities':device(1)['capabilities'],'ip':'192.168.0.220'}],
  }
 
 scenarios={}
@@ -67,14 +69,21 @@ maint['sessions']=[maint['sessions'][0]]
 scenarios['maintenance']=maint
 
 fresh=sample('setup');fresh.update({'devices':[],'pairs':[],'groups':[],'sessions':[],'selectedOutputId':None,'selectedSessionId':None,'selectedDeviceId':None,'favorites':[],'history':[]})
-fresh['setupCandidates']=[{'id':'found1','name':'SoundTouch 10','ip':'192.168.0.220'},{'id':'found2','name':'SoundTouch 30','ip':'192.168.0.221'}]
+fresh['setupCandidates']=[{'id':'found1','name':'SoundTouch 10','brand':'Bose','model':'SoundTouch 10','firmware':'27.0.6','capabilities':device(1)['capabilities'],'ip':'192.168.0.220'},{'id':'found2','name':'SoundTouch 30','brand':'Bose','model':'SoundTouch 30','firmware':'27.0.6','capabilities':device(1)['capabilities'],'ip':'192.168.0.221'}]
 scenarios['first-run']=fresh
+
+capabilities=sample('outputs')
+buttonless=device(11,'Studio Display');buttonless.update({'brand':'Example Audio','model':'Network Display','agentName':None,'firmware':None,'firmwareLatest':None,'firmwareAvailable':False,'presets':[],'doublePresets':[], 'capabilities':{'sound':True,'network':True,'remote':False,'alarms':False}})
+compact=device(12,'Desk Compact');compact.update({'brand':'Example Audio','model':'Two-key Speaker','agentName':None,'firmware':None,'firmwareLatest':None,'firmwareAvailable':False,'presets':['flux','dl'],'doublePresets':[], 'capabilities':{'sound':True,'network':False,'remote':False,'alarms':False,'buttonPresets':{'keyCount':2,'gestures':['single']}}})
+capabilities.update({'devices':[device(1,'Living Room'),buttonless,compact],'pairs':[],'groups':[], 'sessions':[{'id':'s1','targetId':'d1','sourceId':'flux','status':'playing','volume':25},{'id':'s2','targetId':'d11','sourceId':'album1','status':'playing','volume':22}], 'selectedOutputId':'d1','selectedDeviceId':'d1'})
+scenarios['capabilities']=capabilities
 
 indexes=[
  {'id':'home','name':'Everyday use','description':'7 speakers, one stereo pair, an active group and two streams'},
  {'id':'many','name':'Problem of N · 30 speakers','description':'30 devices, multiple pairs and groups: sidebar scalability'},
  {'id':'multistream','name':'Several streams','description':'Four independent playback sessions on different outputs'},
  {'id':'maintenance','name':'Maintenance & errors','description':'Updating, offline, and unconfigured devices'},
+ {'id':'capabilities','name':'Device capabilities','description':'Demo brands: two preset layers, no hardware keys, or two single-press keys'},
  {'id':'first-run','name':'First run','description':'No configured speakers; setup flow and empty states'},
 ]
 (ROOT/'catalog.json').write_text(json.dumps(CATALOG,ensure_ascii=False,indent=2)+'\n')

@@ -4,11 +4,11 @@
 
 | Original page | UI Lab |
 |---|---|
-| R01 Radio presets and discovery | **Interactive:** six hardware keys, radio browsing, source/output assignment |
+| R01 Radio presets and discovery | **Interactive:** radio browsing, favorites and source/output assignment; device keys are under Device details → Functions |
 | R02 Radio search | **Interactive:** live filtering |
 | R03 Favorites | **Interactive:** add/remove and favorites tab |
 | R04 Station details/filter/missing station | **Interactive** details and genre filters; station-submission form not implemented |
-| Q01 Preset management | **Interactive** six preset assignments; actual device transfer requires backend |
+| Q01 Preset management | **Interactive** capability-driven key count, independent Once/Twice assignments, device-bound editing and recall; actual device transfer requires backend |
 | M01 Media sources | **Interactive** media server selection; mock folder contents |
 | M02 Library items | **Interactive** sample tracks/collections; actual network browsing is placeholder |
 | H01 Recently played | **Interactive** history |

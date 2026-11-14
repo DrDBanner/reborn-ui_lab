@@ -63,6 +63,54 @@ export function currentSession(model) {
   return model.sessions.find(x => x.id === model.selectedSessionId) ?? model.sessions[0] ?? null;
 }
 
+/** Capabilities come from the adapter/fixture, never from a brand or model name. */
+export function buttonProfile(device) {
+  const profile=device?.capabilities?.buttonPresets;
+  if(!profile||!Number.isInteger(profile.keyCount)||profile.keyCount<1)return null;
+  const gestures=['single','double'].filter(gesture=>profile.gestures?.includes(gesture));
+  return gestures.includes('single')?{keyCount:profile.keyCount,gestures}:null;
+}
+
+export function buttonPresets(device,gesture='single') {
+  const profile=buttonProfile(device);
+  if(!profile?.gestures.includes(gesture))return [];
+  const bank=gesture==='double'?device.doublePresets:device.presets;
+  return Array.from({length:profile.keyCount},(_,index)=>bank?.[index]||null);
+}
+
+export function setButtonPreset(model,deviceId,key,gesture,sourceId) {
+  const device=model.devices.find(item=>item.id===deviceId),profile=buttonProfile(device);
+  if(!profile?.gestures.includes(gesture))throw new Error('This device does not support that button gesture');
+  if(!Number.isInteger(key)||key<1||key>profile.keyCount)throw new Error('Invalid hardware key');
+  const bank=buttonPresets(device,gesture);bank[key-1]=sourceId||null;
+  device[gesture==='double'?'doublePresets':'presets']=bank;
+}
+
+export function presetPlaybackTarget(model,deviceId) {
+  return visibleOutputs(model).find(output=>leafDeviceIds(model,output.id).includes(deviceId))?.id||deviceId;
+}
+
+export function recallButtonPreset(model,deviceId,key,gesture='single') {
+  const device=model.devices.find(item=>item.id===deviceId),profile=buttonProfile(device);
+  if(!profile?.gestures.includes(gesture)||!Number.isInteger(key)||key<1||key>profile.keyCount)throw new Error('Unsupported hardware key or gesture');
+  if(device.status!=='online')throw new Error('Device must be online to recall a button');
+  const sourceId=buttonPresets(device,gesture)[key-1];
+  if(!sourceId)throw new Error('No source assigned to this key');
+  return assignSource(model,sourceId,presetPlaybackTarget(model,deviceId));
+}
+
+export function normalizeScenario(model,fixture=null) {
+  for(const device of model.devices||[]){
+    const original=fixture?.devices?.find(item=>item.id===device.id);
+    // Migrate only known sample identities; unknown devices keep unknown capabilities.
+    for(const key of ['brand','hardwareRevision','agentName','agentVersion','capabilities']){
+      if(device[key]===undefined)device[key]=original?.[key]===undefined?(key==='capabilities'?{}:null):structuredClone(original[key]);
+    }
+    if(device.doublePresets===undefined)device.doublePresets=[];
+  }
+  return model;
+}
+
 export function source(catalog, sourceId) {
   return catalog?.sources?.find(x => x.id === sourceId) ?? null;
 }
@@ -161,5 +209,10 @@ export function validateScenario(m) {
     if(leafDeviceIds(m,comp.id).length === 0) errors.push(`${comp.id}: no physical devices`);
   }
   for(const s of m.sessions) if(!ids.includes(s.targetId))errors.push(`${s.id}: missing output ${s.targetId}`);
+  for(const d of m.devices){
+    const profile=d.capabilities?.buttonPresets;
+    if(profile&&(!Number.isInteger(profile.keyCount)||profile.keyCount<1||profile.keyCount>64||!Array.isArray(profile.gestures)||!profile.gestures.includes('single')||profile.gestures.some(g=>!['single','double'].includes(g))))errors.push(`${d.id}: invalid button capabilities`);
+    for(const key of ['presets','doublePresets'])if(d[key]!==undefined&&!Array.isArray(d[key]))errors.push(`${d.id}: ${key} must be an array`);
+  }
   return errors;
 }

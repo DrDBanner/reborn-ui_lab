@@ -1,8 +1,8 @@
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save} from './store.js';
-import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds} from './model.js';
+import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset} from './model.js';
 import {esc,icon} from '../components/shared.js';
 
-function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
+function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
 function openModal(kind,extras={}){mutate(s=>s.modal={kind,...extras},false)}
 function closeModal(){mutate(s=>s.modal=null,false)}
 function confirmAction(title,description,callback){if(window.confirm(`${title}\n\n${description}`))callback()}
@@ -15,6 +15,10 @@ export async function onAction(action,element){
  const m=state.model,id=element.dataset.id,val=element.dataset.value;
  try{switch(action){
  case 'navigate':navigate(val);break;
+ case 'toggle-app-menu':mutate(s=>{s.appMenuOpen=!s.appMenuOpen},false);break;
+ case 'close-app-menu':mutate(s=>s.appMenuOpen=false,false);break;
+ case 'select-session':if(!m.sessions.some(session=>session.id===id))throw new Error('Playback no longer available');mutate(s=>{s.model.selectedSessionId=id;s.sidebarOpen=false});break;
+ case 'preset-gesture':if(!buttonProfile(currentDevice())?.gestures.includes(val))throw new Error('Unsupported button gesture');mutate(s=>s.presetGesture=val,false);break;
  case 'toggle-section':mutate(s=>{s.model.ui.collapsed[val]=!s.model.ui.collapsed[val]});break;
  case 'toggle-sidebar-mobile':mutate(s=>{s.sidebarOpen=!s.sidebarOpen},false);break;
  case 'expand-outputs':mutate(s=>s.expandingOutputs=true,false);break;
@@ -34,12 +38,18 @@ export async function onAction(action,element){
  case 'radio-tab':mutate(s=>{s.model.ui.radioTab=val;s.filter=''});break;
  case 'radio-filter':generic('Radio filters','Choose from the available filters.',`<div class="form-row"><label>Genre</label><select id="radio-genre" class="small-select">${['All','Pop','Alternative','Information','News','Culture','Oldies'].map(x=>`<option ${m.settings.radioGenre===x?'selected':''}>${x}</option>`).join('')}</select></div><div class="modal-footer"><button class="primary-btn" data-action="apply-radio-filter">Apply</button></div>`);break;
  case 'apply-radio-filter':{const genre=document.getElementById('radio-genre')?.value||'All';mutate(s=>{s.model.settings.radioGenre=genre;s.modal=null});break}
- case 'preset-play':{const d=entity(m,m.selectedOutputId)||m.devices[0],sid=d?.presets?.[Number(val)];if(!sid)throw new Error('No station assigned to this key');mutate(s=>{s.model.selectedSourceId=sid;s.speakerPickerFor=sid;s.modal={kind:'picker'}},false);break}
- case 'preset-edit':openModal('preset');break;
+ case 'preset-play':{const deviceId=id||currentDevice()?.id;mutate(s=>{recallButtonPreset(s.model,deviceId,Number(element.dataset.key),element.dataset.gesture||'single')});break}
+ case 'preset-edit':{
+  const device=entity(m,id||currentDevice()?.id),gesture=element.dataset.gesture||state.presetGesture||'single';
+  if(!buttonProfile(device)?.gestures.includes(gesture))throw new Error('This device does not support that button gesture');
+  openModal('preset',{deviceId:device.id,gesture});break;
+ }
  case 'preset-save':{
-  const d=document.getElementById('preset-device')?.value;
-  const selects=[...document.querySelectorAll('[data-preset-index]')];const presets=selects.map(x=>x.value||null);
-  mutate(s=>{const device=entity(s.model,d);if(!device||kind(s.model,d)!=='device')throw new Error('Select a physical speaker');device.presets=presets;s.model.selectedOutputId=d;s.modal=null});toast('Quick presets updated (mock data)');break;
+  const {deviceId,gesture}=state.modal||{},profile=buttonProfile(entity(m,deviceId));
+  if(!profile?.gestures.includes(gesture))throw new Error('Preset capability no longer available');
+  const values=[...document.querySelectorAll('[data-preset-index]')].map(element=>element.value||null);
+  if(values.length!==profile.keyCount||values.some(value=>value&&!source(state.catalog,value)))throw new Error('Invalid preset assignments');
+  mutate(s=>{values.forEach((value,index)=>setButtonPreset(s.model,deviceId,index+1,gesture,value));s.modal=null});toast('Button assignments saved (mock data)');break;
  }
  case 'library-server':mutate(s=>s.model.ui.libraryServer=id);break;
  case 'library-folder':generic(val,'Folder contents (simulated)',`<p>In the production application this view will request folders and tracks from the current music server. No playback engine is reimplemented here.</p>`);break;
@@ -77,14 +87,14 @@ export async function onAction(action,element){
  case 'device-remove':{const d=currentDevice();confirmAction('Remove device?',`Remove ${d?.name} from the local scenario?`,()=>mutate(s=>{removeDevice(s.model,d.id);s.view='outputs';s.modal=null}));break}
  case 'device-reset':confirmAction('Factory reset?',`This is a simulation only. No command will be sent.`,()=>{closeModal();toast('Reset simulation completed')});break;
  case 'alarms':generic('Alarms','View and configure device alarms.','<p>The scenario includes the alarm collection. Real scheduling and confirmation are backend responsibilities.</p>');break;
- case 'button-actions':generic('Button actions','Assign supported actions to hardware buttons.','<p>This module will use per-device action definitions supplied by the backend.</p>');break;
+ case 'button-actions':mutate(s=>s.model.ui.deviceTab='functions');break;
  case 'check-updates':toast('Simulated version check completed');break;
  case 'update-start':mutate(s=>{const d=entity(s.model,id);if(d&&d.status==='online'){d.status='updating';d.updateProgress=5}});break;
  case 'advance-updates':mutate(s=>s.model.devices.forEach(d=>{if(d.status==='updating'){d.updateProgress=Math.min(100,(d.updateProgress||0)+25);if(d.updateProgress===100){d.status='online';d.firmware=d.firmwareLatest;d.firmwareAvailable=false}}}));break;
  case 'diagnostics':generic('Diagnostics','Simulated diagnostic summary',`<div class="key-values"><div><span>Known speakers</span><strong>${m.devices.length}</strong></div><div><span>Unavailable</span><strong>${m.devices.filter(x=>x.status==='offline').length}</strong></div><div><span>Firmware operations</span><strong>${m.devices.filter(x=>x.status==='updating').length}</strong></div></div>`);break;
- case 'backup':exported('streborn-ui-settings-backup.json',{devices:m.devices.map(d=>({id:d.id,name:d.name,presets:d.presets,alarms:d.alarms,buttonActions:d.buttonActions})),settings:m.settings});toast('Downloaded sample settings backup');break;
+ case 'backup':exported('streborn-ui-settings-backup.json',{devices:m.devices.map(d=>({id:d.id,name:d.name,presets:d.presets,doublePresets:d.doublePresets,brand:d.brand,model:d.model,hardwareRevision:d.hardwareRevision,firmware:d.firmware,agentName:d.agentName,agentVersion:d.agentVersion,capabilities:d.capabilities,alarms:d.alarms,buttonActions:d.buttonActions})),settings:m.settings});toast('Downloaded sample settings backup');break;
  case 'restore':generic('Restore settings','Choose a backup in the production implementation.','<p>Restoring requires validation against actual speakers and their capabilities. UI Lab does not apply a backup automatically.</p>');break;
- case 'setup-next':if(state.setupStep===0){if(!state.setupSelection)throw new Error('Select a speaker');mutate(s=>s.setupStep=1,false)}else if(state.setupStep===1){const name=document.getElementById('setup-name')?.value.trim()||'New Speaker';const network=document.getElementById('setup-network')?.value||'Home Network';const cand=m.setupCandidates.find(x=>x.id===state.setupSelection);mutate(s=>{const id=`d${Math.max(0,...s.model.devices.map(d=>Number(d.id.replace(/\D/g,''))||0))+1}`;s.model.devices.push({id,name,model:'SoundTouch 10',ip:cand?.ip||'192.168.0.221',status:'online',firmware:'27.0.6',firmwareLatest:'27.0.6',firmwareAvailable:false,updateProgress:0,volume:25,bass:0,startVolumeEnabled:false,startVolume:20,language:'English',network,presets:[null,null,null,null,null,null],alarms:[],buttonActions:[]});s.model.selectedDeviceId=id;s.model.selectedOutputId=id;s.setupStep=2})}break;
+ case 'setup-next':if(state.setupStep===0){if(!state.setupSelection)throw new Error('Select a speaker');mutate(s=>s.setupStep=1,false)}else if(state.setupStep===1){const name=document.getElementById('setup-name')?.value.trim()||'New Speaker';const network=document.getElementById('setup-network')?.value||'Home Network';const cand=m.setupCandidates.find(x=>x.id===state.setupSelection);mutate(s=>{const id=`d${Math.max(0,...s.model.devices.map(d=>Number(d.id.replace(/\D/g,''))||0))+1}`;s.model.devices.push({id,name,brand:cand?.brand||null,model:cand?.model||null,hardwareRevision:cand?.hardwareRevision||null,agentName:cand?.agentName||null,agentVersion:cand?.agentVersion||null,capabilities:structuredClone(cand?.capabilities||{}),doublePresets:[],ip:cand?.ip||'192.168.0.221',status:'online',firmware:cand?.firmware||null,firmwareLatest:'27.0.6',firmwareAvailable:false,updateProgress:0,volume:25,bass:0,startVolumeEnabled:false,startVolume:20,language:'English',network,presets:Array(buttonProfile(cand)?.keyCount||0).fill(null),alarms:[],buttonActions:[]});s.model.selectedDeviceId=id;s.model.selectedOutputId=id;s.setupStep=2})}break;
  case 'setup-back':mutate(s=>s.setupStep=Math.max(0,s.setupStep-1),false);break;
  case 'help-open':generic(val==='guide'?'User guide':val==='feedback'?'Report a problem':'Wishes & voting', 'External project resources are not opened automatically.', '<p>Use the links and contribution process in the ST Reborn repository.</p>');break;
  case 'toggle-json-editor':mutate(s=>s.scenarioEditorOpen=!s.scenarioEditorOpen,false);break;

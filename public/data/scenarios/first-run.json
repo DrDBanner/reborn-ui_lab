@@ -40,11 +40,43 @@
     {
       "id": "found1",
       "name": "SoundTouch 10",
+      "brand": "Bose",
+      "model": "SoundTouch 10",
+      "firmware": "27.0.6",
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        }
+      },
       "ip": "192.168.0.220"
     },
     {
       "id": "found2",
       "name": "SoundTouch 30",
+      "brand": "Bose",
+      "model": "SoundTouch 30",
+      "firmware": "27.0.6",
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        }
+      },
       "ip": "192.168.0.221"
     }
   ]

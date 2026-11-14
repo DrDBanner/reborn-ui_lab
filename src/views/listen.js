@@ -8,12 +8,9 @@ function sourceList(s){const m=s.model;let result=s.catalog.sources.filter(x=>x.
  return result;
 }
 function radio(s){
- const m=s.model,selected=m.devices.find(x=>x.id===m.selectedDeviceId)||m.devices[0],presets=selected?.presets??[];
- const showPresets=presets.length>0;
+ const m=s.model;
  const tabName=m.ui.radioTab||'discover';
  return `${navHeader('Radio', 'Pick something to listen to. Choose an output when you start playback.', `${action('radio-filter',icon('tune')+'<span>Filters</span>','btn-soft')}`)}
-  ${showPresets?`<section class="section-wrap"><div class="section-heading"><div><h2>Quick presets</h2><p>${esc(selected?.name||m.devices[0]?.name||'No speaker')} · Hardware keys 1–6</p></div>${action('preset-edit',icon('edit')+' Edit keys','text-action')}</div>
-   <div class="preset-grid">${Array.from({length:6},(_,i)=>{const sid=presets[i],sourceData=source(s.catalog,sid);return `<button class="preset" data-action="preset-play" data-value="${i}" ${!sid?'disabled':''}><span class="preset__number">${i+1}</span><span class="preset__info"><strong>${esc(sourceData?.name||'Not assigned')}</strong><small>${esc(sourceData?.subtitle||'Assign a source')}</small></span>${sourceData?icon('play_arrow'):icon('add')}</button>`}).join('')}</div></section>`:''}
   <section class="section-wrap"><div class="section-heading"><div><h2>Discover stations</h2><p>Find, preview and assign a source to any output.</p></div></div>
    <div class="toolbar"><label class="search-field">${icon('search')}<input type="search" data-field="radio-search" placeholder="Station, city or genre" value="${esc(s.filter)}" aria-label="Search radio" /></label>
     <div class="segmented">${tab('discover','Discover',tabName==='discover','radio-tab')}${tab('favorites','Favorites',tabName==='favorites','radio-tab')}</div><span class="meta-note">Germany · ${esc(m.settings.radioGenre||'All genres')}</span></div>

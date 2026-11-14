@@ -3,7 +3,32 @@
     {
       "id": "d1",
       "name": "Living Room L",
+      "brand": "Bose",
       "model": "SoundTouch 10",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
       "ip": "192.168.0.101",
       "status": "online",
       "firmware": "27.0.6",
@@ -30,7 +55,32 @@
     {
       "id": "d2",
       "name": "Living Room R",
+      "brand": "Bose",
       "model": "SoundTouch 10",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
       "ip": "192.168.0.102",
       "status": "online",
       "firmware": "27.0.6",
@@ -57,7 +107,32 @@
     {
       "id": "d3",
       "name": "Kitchen",
+      "brand": "Bose",
       "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
       "ip": "192.168.0.103",
       "status": "online",
       "firmware": "27.0.6",
@@ -84,7 +159,24 @@
     {
       "id": "d4",
       "name": "Office",
+      "brand": "Bose",
       "model": "SoundTouch 10",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single"
+          ]
+        }
+      },
+      "doublePresets": [],
       "ip": "192.168.0.104",
       "status": "online",
       "firmware": "26.1.4",
@@ -111,7 +203,32 @@
     {
       "id": "d5",
       "name": "Terrace L",
+      "brand": "Bose",
       "model": "SoundTouch 10",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
       "ip": "192.168.0.105",
       "status": "online",
       "firmware": "27.0.6",
@@ -138,7 +255,32 @@
     {
       "id": "d6",
       "name": "Terrace R",
+      "brand": "Bose",
       "model": "SoundTouch 30",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
       "ip": "192.168.0.106",
       "status": "online",
       "firmware": "27.0.6",
@@ -165,7 +307,32 @@
     {
       "id": "d7",
       "name": "Bedroom",
+      "brand": "Bose",
       "model": "SoundTouch 10",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
       "ip": "192.168.0.107",
       "status": "online",
       "firmware": "27.0.6",
@@ -277,6 +444,22 @@
     {
       "id": "found1",
       "name": "SoundTouch 10 (new)",
+      "brand": "Bose",
+      "model": "SoundTouch 10",
+      "firmware": "27.0.6",
+      "capabilities": {
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        }
+      },
       "ip": "192.168.0.220"
     }
   ]

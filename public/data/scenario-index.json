@@ -20,6 +20,11 @@
     "description": "Updating, offline, and unconfigured devices"
   },
   {
+    "id": "capabilities",
+    "name": "Device capabilities",
+    "description": "Demo brands: two preset layers, no hardware keys, or two single-press keys"
+  },
+  {
     "id": "first-run",
     "name": "First run",
     "description": "No configured speakers; setup flow and empty states"

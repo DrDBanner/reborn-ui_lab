@@ -1,37 +1,108 @@
 {
   "sections": [
     {
-      "id": "listen", "name": "LISTEN", "landing": "listen",
+      "id": "listen",
+      "name": "LISTEN",
+      "landing": "listen",
       "items": [
-        {"view":"listen","label":"Radio","icon":"radio"},
-        {"view":"library","label":"Library","icon":"library_music"},
-        {"view":"history","label":"Recently played","icon":"history"},
-        {"view":"spotify","label":"Spotify","icon":"graphic_eq"}
+        {
+          "view": "listen",
+          "label": "Radio",
+          "icon": "radio"
+        },
+        {
+          "view": "library",
+          "label": "Library",
+          "icon": "library_music"
+        },
+        {
+          "view": "history",
+          "label": "Recently played",
+          "icon": "history"
+        },
+        {
+          "view": "spotify",
+          "label": "Spotify",
+          "icon": "graphic_eq"
+        }
       ]
     },
-    {"id":"outputs","name":"OUTPUTS","landing":"outputs","items":[]},
     {
-      "id":"system","name":"SYSTEM","landing":"updates",
-      "items":[
-        {"view":"updates","label":"Updates & maintenance","icon":"system_update"},
-        {"view":"setup","label":"Set up speaker","icon":"add_circle"},
-        {"view":"settings","label":"App settings","icon":"settings"},
-        {"view":"help","label":"Help & info","icon":"help"}
+      "id": "outputs",
+      "name": "OUTPUTS",
+      "landing": "outputs",
+      "items": []
+    },
+    {
+      "id": "system",
+      "name": "SYSTEM",
+      "landing": "updates",
+      "items": [
+        {
+          "view": "updates",
+          "label": "Updates & maintenance",
+          "icon": "system_update"
+        },
+        {
+          "view": "setup",
+          "label": "Set up speaker",
+          "icon": "add_circle"
+        }
       ]
     }
   ],
   "views": {
-    "listen":["Radio","Choose music, then choose where it plays"],
-    "library":["Library","Local media and network sources"],
-    "history":["Recently played","Resume past listening"],
-    "spotify":["Spotify","Streams and playlists"],
-    "outputs":["Outputs & groups","Speakers, stereo pairs and grouped outputs"],
-    "device":["Device settings","Information, sound, network and advanced controls"],
-    "group":["Group details","Membership and persistent grouping"],
-    "updates":["Updates & maintenance","Firmware, backups and device diagnostics"],
-    "setup":["Set up speaker","Guided discovery and configuration"],
-    "settings":["App settings","General preferences and appearance"],
-    "help":["Help & info","Documentation, support and project links"],
-    "lab":["Design Lab","Scenarios, variants and visual tokens"]
+    "listen": [
+      "Radio",
+      "Choose music, then choose where it plays"
+    ],
+    "library": [
+      "Library",
+      "Local media and network sources"
+    ],
+    "history": [
+      "Recently played",
+      "Resume past listening"
+    ],
+    "spotify": [
+      "Spotify",
+      "Streams and playlists"
+    ],
+    "outputs": [
+      "Outputs & groups",
+      "Speakers, stereo pairs and grouped outputs"
+    ],
+    "device": [
+      "Device details",
+      "Identity and available device functions"
+    ],
+    "group": [
+      "Group details",
+      "Membership and persistent grouping"
+    ],
+    "updates": [
+      "Updates & maintenance",
+      "Firmware, backups and device diagnostics"
+    ],
+    "setup": [
+      "Set up speaker",
+      "Guided discovery and configuration"
+    ],
+    "settings": [
+      "App settings",
+      "General preferences and appearance"
+    ],
+    "help": [
+      "Help & info",
+      "Documentation, support and project links"
+    ],
+    "lab": [
+      "Design Lab",
+      "Scenarios, variants and visual tokens"
+    ],
+    "sessions": [
+      "Playbacks",
+      "Independent streams and their outputs"
+    ]
   }
 }

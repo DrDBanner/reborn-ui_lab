@@ -1,23 +1,26 @@
-import {esc,icon,action,statusBadge,targetIcon,subline} from './shared.js';
-import {entity,kind,visibleOutputs,parentIds,source,targetStatus} from '../app/model.js';
+import {esc,icon,action,statusBadge,targetIcon,subline,typeIcon} from './shared.js';
+import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets} from '../app/model.js';
 
 function outputPicker(s){const m=s.model,src=source(s.catalog,s.speakerPickerFor||m.selectedSourceId),targets=visibleOutputs(m);
  return `<div class="modal-heading"><h2>${src?'Play '+esc(src.name)+' on…':'Choose output'}</h2><p>${src?'Selecting an output will start this source. Existing sessions on unrelated devices keep playing.':'Choose a playback target or manage its configuration.'}</p></div>
   <div class="modal-list">${targets.length?targets.map(t=>{const status=targetStatus(m,t.id);return `<button class="modal-output" data-action="assign-output" data-id="${esc(t.id)}" ${status==='offline'||status==='needs_setup'?'disabled':''}>
-   <span class="target-card__icon">${icon(targetIcon(kind(m,t.id)))}</span><span><strong>${esc(t.name)}</strong><small>${subline(m,t.id)}</small></span>${statusBadge(status)}${icon('arrow_forward')}</button>`}).join(''):`<p class="empty-line">No outputs configured.</p>`}</div>
+   <span class="target-card__icon">${typeIcon(kind(m,t.id))}</span><span><strong>${esc(t.name)}</strong><small>${subline(m,t.id)}</small></span>${statusBadge(status)}${icon('arrow_forward')}</button>`}).join(''):`<p class="empty-line">No outputs configured.</p>`}</div>
   <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('navigate','Manage all outputs','btn-soft','data-value="outputs"')}</div>`;
 }
 function createComposite(s){const m=s.model,pair=s.modal.type==='pair',candidates=pair?m.devices.filter(d=>!parentIds(m,d.id).length):visibleOutputs(m).filter(t=>kind(m,t.id)!=='group');
  return `<div class="modal-heading"><h2>${pair?'Create stereo pair':'Create speaker group'}</h2><p>${pair?'Select two available physical speakers.':'Select two or more outputs to play the same source together.'}</p></div>
  <div class="form-row"><label>Name</label><input id="composite-name" class="text-input" value="${pair?'New stereo pair':'New group'}" /></div>
- <div class="form-row"><label>Members</label><div class="modal-list modal-list--small">${candidates.map(t=>`<label class="choice-row"><input type="checkbox" name="compositeMember" value="${esc(t.id)}" ${s.selectedForComposite.includes(t.id)?'checked':''}/>${icon(targetIcon(kind(m,t.id)))}<span><strong>${esc(t.name)}</strong><small>${subline(m,t.id)}</small></span></label>`).join('')}</div></div>
+ <div class="form-row"><label>Members</label><div class="modal-list modal-list--small">${candidates.map(t=>`<label class="choice-row"><input type="checkbox" name="compositeMember" value="${esc(t.id)}" ${s.selectedForComposite.includes(t.id)?'checked':''}/>${typeIcon(kind(m,t.id))}<span><strong>${esc(t.name)}</strong><small>${subline(m,t.id)}</small></span></label>`).join('')}</div></div>
  ${!pair?`<div class="form-row"><label>Persistent</label><input id="composite-persistent" type="checkbox" checked /></div>`:''}
  <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('composite-create',`Create ${pair?'pair':'group'}`,'primary-btn')}</div>`;
 }
-function presetDialog(s){const m=s.model,target=m.devices.find(x=>x.id===m.selectedDeviceId)||m.devices[0];const presets=target?.presets??[];
- return `<div class="modal-heading"><h2>Edit quick presets</h2><p>The six hardware keys belong to a physical speaker. Select a speaker before applying changes.</p></div>
- <div class="form-row"><label>Speaker</label><select id="preset-device" class="small-select">${m.devices.map(d=>`<option value="${d.id}" ${d.id===target?.id?'selected':''}>${esc(d.name)}</option>`).join('')}</select></div>
- <div class="preset-editor">${Array.from({length:6},(_,i)=>`<div class="preset-line"><span class="preset-line__num">${i+1}</span><select class="small-select" data-preset-index="${i}"><option value="">Unassigned</option>${s.catalog.sources.map(x=>`<option value="${x.id}" ${presets[i]===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div>`).join('')}</div><div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('preset-save','Save presets','primary-btn')}</div>`;
+function presetDialog(s){
+ const target=entity(s.model,s.modal.deviceId),profile=buttonProfile(target),gesture=s.modal.gesture||'single';
+ if(!profile?.gestures.includes(gesture))return `<div class="modal-heading"><h2>Button presets unavailable</h2><p>This device does not report this function.</p></div>`;
+ const presets=buttonPresets(target,gesture);
+ return `<div class="modal-heading"><h2>Button presets · ${gesture==='double'?'Twice':'Once'}</h2><p>${esc(target.name)} · ${esc(target.brand||'')} ${esc(target.model||'')}</p></div>
+ <div class="preset-editor">${presets.map((sourceId,index)=>`<div class="preset-line"><label for="preset-key-${index}">Key ${index+1} · ${gesture==='double'?'2×':'1×'}</label><select id="preset-key-${index}" class="small-select" data-preset-index="${index}"><option value="">Unassigned</option>${s.catalog.sources.map(item=>`<option value="${esc(item.id)}" ${sourceId===item.id?'selected':''}>${esc(item.name)}</option>`).join('')}</select></div>`).join('')}</div>
+ <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('preset-save','Save assignments','primary-btn')}</div>`;
 }
 function wifiDialog(s){const d=entity(s.model,s.detailDeviceId||s.model.selectedDeviceId);
  return `<div class="modal-heading"><h2>Change Wi-Fi</h2><p>${esc(d?.name||'Speaker')} may temporarily disconnect. Completion requires rediscovery.</p></div>

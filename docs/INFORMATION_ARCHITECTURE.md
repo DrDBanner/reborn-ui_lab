@@ -14,11 +14,13 @@ The sidebar provides **fast access**, not an exhaustive N-device management inte
 
 1. Category titles open a corresponding full workspace (e.g. OUTPUTS → Outputs & groups).
 2. Chevrons on the right independently collapse the contents of a category.
-3. A playing group is pinned only in the Sidebar variant.
+3. A bounded list shows independent playing and paused sessions in both variants. Selecting a session changes the player context; it does not start, stop or regroup outputs. All sessions are available in Playbacks.
 4. Stereo pairs and groups are shown as **one output item**, not repeated speaker rows.
 5. An optional limit keeps the sidebar short. Full search, filters and group creation operate in the content workspace.
 6. Speaker settings, firmware, network and diagnostics belong in the main workspace.
-7. A persistent player presents playback controls, output selection and **multiple sessions**.
+7. System contains only Updates & maintenance and Set up speaker. App-wide controls and Design Lab are reached through the logo menu. Item types use Material icons with screen-reader names, without redundant visible type labels.
+8. Hardware key configuration lives in device details under Functions, according to reported capabilities. Radio contains sources and app-wide favorites.
+9. A persistent player presents playback controls, output selection and **multiple sessions**.
 
 **Variant A:** outputs are accessed from the player panel; navigation-only sidebar. **Variant B:** output shortcuts appear in a collapsible sidebar section. Both variants share the same model, playback sessions and domain actions.
 
@@ -38,4 +40,4 @@ The original 34-page SVG concept remains available under `reference/original/`: 
 
 ## Separate future projects
 
-Manufacturer-neutral device abstraction, Topology and optional Zones are **not prerequisites** or part of UI 2.0. This UI Lab makes no claim to support cross-manufacturer audio synchronization.
+The UI models brand-neutral identity and device capabilities (see DEVICE_CAPABILITIES.md). Actual manufacturer adapters, Topology and optional Zones remain separate. This UI Lab makes no claim to support cross-manufacturer audio synchronization.

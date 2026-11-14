@@ -25,7 +25,9 @@ function boot(){
 const ready=()=>new Promise(resolve=>setTimeout(resolve,12));
 test('single file loads, renders and switches views/scenarios without a backend',async()=>{
  const {ctx,app}=boot();await ready();
- assert(app.innerHTML.includes('Quick presets'));
+ assert(app.innerHTML.includes('Discover stations'));
+ assert(!app.innerHTML.includes('Quick presets'));
+ assert(app.innerHTML.includes('PLAYBACKS'));
  await vm.runInContext("onAction('navigate',{dataset:{value:'outputs'}})",ctx);await ready();
  assert(app.innerHTML.includes('Outputs &amp; groups') || app.innerHTML.includes('Outputs & groups'));
  await vm.runInContext("onAction('load-scenario',{dataset:{id:'many'}})",ctx);await ready();
@@ -45,4 +47,40 @@ test('source selection opens an output picker then preserves independent streams
  assert.equal(vm.runInContext("state.model.sessions.some(s=>s.targetId==='g1')",ctx),true);
  assert.equal(vm.runInContext("state.model.sessions.some(s=>s.targetId==='d4')",ctx),true);
  assert.equal(vm.runInContext("state.model.sessions.some(s=>s.targetId==='d7'&&s.sourceId==='ndr2')",ctx),true);
+});
+
+test('session selection leaves streams and configuration selection unchanged',async()=>{
+ const {ctx,app}=boot();await ready();
+ const before=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);
+ const selectedDevice=vm.runInContext('state.model.selectedDeviceId',ctx);
+ await vm.runInContext("onAction('select-session',{dataset:{id:'s2'}})",ctx);
+ assert.equal(vm.runInContext('state.model.selectedSessionId',ctx),'s2');
+ assert.equal(vm.runInContext('JSON.stringify(state.model.sessions)',ctx),before);
+ assert.equal(vm.runInContext('state.model.selectedDeviceId',ctx),selectedDevice);
+});
+test('device functions expose the second preset layer and save to its bound device',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('device-open',{dataset:{id:'d1'}});onAction('device-tab',{dataset:{value:'functions'}});onAction('preset-gesture',{dataset:{value:'double'}})",ctx);
+ assert(app.innerHTML.includes('Button presets'));
+ assert(app.innerHTML.includes('2×'));
+ await vm.runInContext("onAction('preset-edit',{dataset:{id:'d1',gesture:'double'}})",ctx);
+ const original=vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx);
+ const other=vm.runInContext('JSON.stringify(state.model.devices[1].doublePresets)',ctx);
+ ctx.document.querySelectorAll=selector=>selector==='[data-preset-index]'?['ndr2','flux','','','',''].map(value=>({value})):[];
+ await vm.runInContext("onAction('preset-save',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.model.devices[0].doublePresets[0]',ctx),'ndr2');
+ assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx),original);
+ assert.equal(vm.runInContext('JSON.stringify(state.model.devices[1].doublePresets)',ctx),other);
+ await vm.runInContext("onAction('preset-play',{dataset:{id:'d1',key:'1',gesture:'double'}})",ctx);
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.targetId==='g1').sourceId",ctx),'ndr2');
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.targetId==='d4').sourceId",ctx),'ndrinfo');
+});
+test('logo menu contains chrome and closes on navigation',async()=>{
+ const {ctx,app}=boot();await ready();
+ assert(!app.innerHTML.includes('data-field="scenario"'));
+ await vm.runInContext("onAction('toggle-app-menu',{dataset:{}})",ctx);
+ assert(app.innerHTML.includes('data-field="scenario"'));
+ assert(app.innerHTML.includes('Design Lab'));
+ await vm.runInContext("onAction('navigate',{dataset:{value:'lab'}})",ctx);
+ assert.equal(vm.runInContext('state.appMenuOpen',ctx),false);
 });

@@ -22,14 +22,15 @@ export const action=(name,label,cls='btn',props='')=>{
 export const statusLabel=(status)=>({online:'Online',offline:'Offline',updating:'Updating',partial:'Partly offline',needs_setup:'Needs setup',unknown:'Unknown'})[status]||esc(status);
 export const statusBadge=(status)=>`<span class="device-status device-status--${esc(status)}"><i></i>${statusLabel(status)}</span>`;
 export function targetIcon(type){return type==='pair'?'speaker_group':type==='group'?'hub':'speaker'}
+export const typeIcon=(type,extra='')=>`<span class="entity-type ${esc(extra)}" role="img" aria-label="${type==='pair'?'Stereo pair':type==='group'?'Speaker group':'Speaker'}" title="${type==='pair'?'Stereo pair':type==='group'?'Speaker group':'Speaker'}">${icon(targetIcon(type))}</span>`;
 export function labelForTarget(model,id){return entity(model,id)?.name||'Choose output'}
-export function subline(model,id){const k=kind(model,id);if(k==='device')return `${esc(entity(model,id)?.model||'Speaker')} · ${statusLabel(targetStatus(model,id))}`;return `${k==='pair'?'Stereo pair':'Group'} · ${leafDeviceIds(model,id).length} speakers`}
+export function subline(model,id){const k=kind(model,id);if(k==='device')return `${esc(entity(model,id)?.model||'Speaker')} · ${statusLabel(targetStatus(model,id))}`;return `${leafDeviceIds(model,id).length} speakers`}
 export function outputItem(model,id,{compact=false,selected=false,extra=''}={}){
  const t=entity(model,id);if(!t)return '';
  const k=kind(model,id),status=targetStatus(model,id),s=sessionFor(model,id);
  return `<button type="button" class="output-item ${compact?'output-item--compact':''} ${selected?'is-selected':''}" data-action="select-output" data-id="${esc(id)}" title="${esc(t.name)}">
-    <span class="output-item__symbol">${icon(targetIcon(k))}</span>
-    <span class="output-item__body"><strong>${esc(t.name)}</strong><small>${statusLabel(status)}${s?' · Playing':''}</small></span>
+    <span class="output-item__symbol">${typeIcon(k)}</span>
+    <span class="output-item__body"><strong>${esc(t.name)}</strong><small>${statusLabel(status)}${s?' · '+({playing:'Playing',paused:'Paused',stopped:'Stopped'}[s.status]||''):''}</small></span>
     <span class="output-item__trail">${s?icon('graphic_eq','eq-symbol'):icon('chevron_right')}</span>
  </button>${extra}`;
 }

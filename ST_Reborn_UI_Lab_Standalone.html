@@ -594,6 +594,28 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 }
 @media(max-width:720px){.sidebar-toggle{display:none!important}}
 
+/* Collapse lives beside the logo; expand stays in the content header. */
+.sidebar-collapse{align-self:center;border-color:var(--border);width:28px;height:28px;min-height:28px;padding:3px}
+@media(min-width:721px){
+ .sidebar .brand{padding-inline:12px}
+ .sidebar .brand-trigger{gap:8px}
+ .sidebar-toggle{display:none}
+ .app-shell.sidebar-is-collapsed .sidebar-toggle{display:inline-grid}
+}
+@media(max-width:720px){.sidebar-collapse{display:none!important}}
+
+.session-card,.session-card--compact{padding:0;gap:2px}
+.session-card__open{display:flex;align-items:center;gap:12px;flex:1;min-width:0;align-self:stretch;border:0;border-radius:9px;background:transparent;color:inherit;padding:16px;text-align:left}
+.session-card--compact .session-card__open{padding:11px 10px;gap:9px}
+.session-card>.session-card__state{margin-right:8px;width:32px;height:32px;min-height:32px}
+.session-card .session-card__transport-icon{display:none}
+.session-card:hover .session-card__status-icon,.session-card:focus-within .session-card__status-icon{display:none}
+.session-card:hover .session-card__transport-icon,.session-card:focus-within .session-card__transport-icon{display:inline-flex}
+.session-card:focus-within{background:var(--panel-hi)}
+.session-card>.session-card__state[data-status=paused]{color:var(--muted)}
+.session-card>.session-card__state:hover,.session-card>.session-card__state:focus-visible{color:var(--accent)}
+@media(hover:none),(pointer:coarse){.session-card .session-card__status-icon{display:none}.session-card .session-card__transport-icon{display:inline-flex}}
+
 /* Local Google Material Symbols Rounded chevron; see docs/MATERIAL_ICONS.md. */
 :root{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23a4aab5%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
 [data-appearance="light"]{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23566278%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
@@ -1342,7 +1364,8 @@ function sectionHeading(id,name,landing,collapsed,count=null,current=false){
 }
 function sessionCard(s,session,compact=false){
  const m=s.model,target=entity(m,session.targetId),playing=session.status==='playing';
- return action('select-session',`${typeIcon(kind(m,session.targetId),'session-card__type')}<span class="session-card__body"><strong>${esc(target?.name||'Unknown output')}</strong><small>${esc(source(s.catalog,session.sourceId)?.name||'Unknown source')}</small></span><span class="session-card__state" data-status="${esc(session.status)}">${playing?icon('music_cast'):''}<span class="${compact&&playing?'sr-only':''}">${playing?'Playing':session.status==='paused'?'Paused':'Stopped'}</span></span>`,`session-card ${compact?'session-card--compact':''} `, `data-id="${esc(session.id)}" aria-label="Control playback on ${esc(target?.name||'output')}"`);
+ const label=`${playing?'Pause':'Resume'} ${source(s.catalog,session.sourceId)?.name||'source'} on ${target?.name||'output'}`;
+ return `<div class="session-card ${compact?'session-card--compact':''}">${action('select-session',`${typeIcon(kind(m,session.targetId),'session-card__type')}<span class="session-card__body"><strong>${esc(target?.name||'Unknown output')}</strong><small>${esc(source(s.catalog,session.sourceId)?.name||'Unknown source')}${!playing?' · Paused':''}</small></span>`,'session-card__open',`data-id="${esc(session.id)}" aria-label="Open playback details for ${esc(target?.name||'output')}"`)}${action('toggle-output-playback',icon(playing?'music_cast':'pause_circle','session-card__status-icon')+icon(playing?'pause_circle':'play_circle','session-card__transport-icon'),'icon-btn session-card__state',`data-id="${esc(session.id)}" data-status="${esc(session.status)}" title="${esc(label)}" aria-label="${esc(label)}"`)}</div>`;
 }
 function sidebar(s){
  const m=s.model,collapsed=m.ui.collapsed||{},sections=s.uiLayout?.sections||navSections;
@@ -1355,7 +1378,7 @@ function sidebar(s){
  const sectionCurrent=id=>id==='playbacks'?(sessions.length>0&&(s.view==='outputs'||s.view==='sessions')&&m.ui.outputScope==='active'):id==='outputs'?((s.view==='outputs'||s.view==='sessions')&&(m.ui.outputScope!=='active'||!sessions.length)||['device','group'].includes(s.view)&&!detailVisible):!!collapsed[id]&&(sections.find(section=>section.id===id)?.items||[]).some(item=>(Array.isArray(item)?item[0]:item.view)===s.view);
  const appContext=['settings','help','lab'].includes(s.view);
  return `<aside id="main-navigation" class="sidebar ${s.sidebarOpen?'sidebar--open':''}" aria-label="Main navigation">
-  <div class="brand"><button class="brand-trigger ${appContext?'is-current':''}" ${appContext?'aria-current="page"':''} data-action="toggle-app-menu" aria-label="ST Reborn menu" aria-haspopup="dialog" aria-expanded="${!!s.appMenuOpen}" aria-controls="app-menu"><span class="brand-icon">${brandMark()}</span><span><strong>ST <em>Reborn</em></strong><small>UI Lab</small></span>${icon('expand_more','brand-chevron')}</button>${action('toggle-sidebar-mobile',icon('close'),'icon-btn sidebar-close','aria-label="Close navigation"')}</div>
+  <div class="brand"><button class="brand-trigger ${appContext?'is-current':''}" ${appContext?'aria-current="page"':''} data-action="toggle-app-menu" aria-label="ST Reborn menu" aria-haspopup="dialog" aria-expanded="${!!s.appMenuOpen}" aria-controls="app-menu"><span class="brand-icon">${brandMark()}</span><span><strong>ST <em>Reborn</em></strong><small>UI Lab</small></span>${icon('expand_more','brand-chevron')}</button>${action('toggle-sidebar',icon('dock_to_left'),'icon-btn sidebar-collapse','aria-label="Collapse sidebar" title="Collapse sidebar" aria-expanded="true" aria-controls="main-navigation"')}${action('toggle-sidebar-mobile',icon('close'),'icon-btn sidebar-close','aria-label="Close navigation"')}</div>
   <div class="sidebar-scroll">
    ${sessions.length?`<section class="pinned-block" data-section="playbacks" aria-label="Playback sessions">${sectionHeading('playbacks','PLAYING','outputs',!!collapsed.playbacks,sessions.length||null,sectionCurrent('playbacks'))}${!collapsed.playbacks?`<div class="nav-section__content">${sessions.length?sessions.slice(0,3).map(session=>sessionCard(s,session,true)).join(''):'<p class="sidebar-empty">Nothing playing</p>'}</div>`:''}</section>`:''}
    ${sections.map(sec=>`<section class="nav-section" data-section="${sec.id}">
@@ -2045,7 +2068,7 @@ function render(){
  if(!detailView||detailLayoutKey!==renderedDetailLayoutKey)detailBodyHeight=0;
  else detailBodyHeight=Math.max(detailBodyHeight,app.querySelector?.('.detail-body')?.getBoundingClientRect().height||0);
  const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-source-results','.group-settings-body'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
- const active=document.activeElement;const sidebarToggleFocused=active?.dataset?.action==='toggle-sidebar';const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
+ const active=document.activeElement;const sidebarToggleFocused=active?.dataset?.action==='toggle-sidebar';const sessionToggleId=active?.classList?.contains('session-card__state')?active.dataset.id:null;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;
  app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''} ${state.designTokens?.sidebarCollapsed?'sidebar-is-collapsed':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
  // Keep shorter tabs from shrinking the scroll range below the visible position.
@@ -2069,7 +2092,8 @@ function render(){
  if(state.appMenuOpen&&!renderedMenuOpen)app.querySelector?.('.app-menu .icon-btn')?.focus({preventScroll:true});
  if(!state.appMenuOpen&&renderedMenuOpen)app.querySelector?.(state.sidebarOpen||globalThis.innerWidth>720&&!state.designTokens?.sidebarCollapsed?'.brand-trigger':'.mobile-brand')?.focus({preventScroll:true});
  renderedMenuOpen=state.appMenuOpen;
- if(sidebarToggleFocused)app.querySelector?.('.sidebar-toggle')?.focus({preventScroll:true});
+ if(sessionToggleId)[...app.querySelectorAll?.('.session-card__state')||[]].find(button=>button.dataset.id===sessionToggleId)?.focus({preventScroll:true});
+ if(sidebarToggleFocused)app.querySelector?.(state.designTokens?.sidebarCollapsed?'.sidebar-toggle':'.sidebar-collapse')?.focus({preventScroll:true});
  if(field){const match=[...document.querySelectorAll('[data-field]')].find(el=>el.dataset.field===field&&el.dataset.id===fieldId&&(el.value===focusValue||field==='radio-search'||field==='output-search'));
   if(match){match.focus({preventScroll:true});if(selStart!==null&&typeof match.setSelectionRange==='function')try{match.setSelectionRange(selStart,selStart)}catch{}}
  }

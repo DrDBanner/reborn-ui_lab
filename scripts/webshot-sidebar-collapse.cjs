@@ -8,7 +8,9 @@ module.exports=async({page,log})=>{
   await page.evaluate(async(url,appearance)=>{const {state,loadScenario,applyDesign,save,notify}=await import(url);await loadScenario('home',false,true);state.designTokens.sidebarCollapsed=false;state.designTokens.appearance=appearance;state.toasts=[];applyDesign();save();notify()},url,appearance);
   const before=await page.$eval('.workspace',e=>e.clientWidth);
   const sessions=await page.evaluate(async url=>JSON.stringify((await import(url)).state.model.sessions),url);
-  await page.focus('.sidebar-toggle');await page.keyboard.press('Enter');
+  check(await page.$eval('.sidebar-collapse',e=>{const r=e.getBoundingClientRect(),p=e.closest('.sidebar').getBoundingClientRect();return r.width>0&&r.left>=p.left&&r.right<=p.right}),'Collapse button is outside sidebar');
+  await page.screenshot({path:path.join(out,`expanded-${appearance}-${width}.png`)});
+  await page.focus('.sidebar-collapse');await page.keyboard.press('Enter');
   check(await page.$eval('.sidebar-toggle',e=>e.getAttribute('aria-expanded')==='false'&&document.activeElement===e),'Collapsed toggle lost focus/ARIA');
   check(await page.$eval('.sidebar',e=>getComputedStyle(e).display==='none'),'Sidebar remains visible');
   const after=await page.$eval('.workspace',e=>e.clientWidth);
@@ -23,7 +25,7 @@ module.exports=async({page,log})=>{
   await page.click('.sidebar-toggle');
   check(await page.$eval('.sidebar',e=>getComputedStyle(e).display!=='none'),'Could not reopen navigation');
   // Mobile drawer opens even with the desktop preference collapsed.
-  await page.click('.sidebar-toggle');await page.setViewport({width:390,height:844,deviceScaleFactor:1,isMobile:true,hasTouch:true});
+  await page.click('.sidebar-collapse');await page.setViewport({width:390,height:844,deviceScaleFactor:1,isMobile:true,hasTouch:true});
   check(await page.$eval('.sidebar-toggle',e=>getComputedStyle(e).display==='none'),'Desktop toggle exposed on mobile');
   await page.click('.mobile-menu');check(await page.$eval('.sidebar',e=>e.getBoundingClientRect().x>=-1),'Mobile drawer did not open');
   await page.click('.sidebar-close');

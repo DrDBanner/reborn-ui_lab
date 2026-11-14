@@ -548,3 +548,25 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
  .app-shell.sidebar-is-collapsed+.app-menu-layer .app-menu{left:auto;right:16px}
 }
 @media(max-width:720px){.sidebar-toggle{display:none!important}}
+
+/* Collapse lives beside the logo; expand stays in the content header. */
+.sidebar-collapse{align-self:center;border-color:var(--border);width:28px;height:28px;min-height:28px;padding:3px}
+@media(min-width:721px){
+ .sidebar .brand{padding-inline:12px}
+ .sidebar .brand-trigger{gap:8px}
+ .sidebar-toggle{display:none}
+ .app-shell.sidebar-is-collapsed .sidebar-toggle{display:inline-grid}
+}
+@media(max-width:720px){.sidebar-collapse{display:none!important}}
+
+.session-card,.session-card--compact{padding:0;gap:2px}
+.session-card__open{display:flex;align-items:center;gap:12px;flex:1;min-width:0;align-self:stretch;border:0;border-radius:9px;background:transparent;color:inherit;padding:16px;text-align:left}
+.session-card--compact .session-card__open{padding:11px 10px;gap:9px}
+.session-card>.session-card__state{margin-right:8px;width:32px;height:32px;min-height:32px}
+.session-card .session-card__transport-icon{display:none}
+.session-card:hover .session-card__status-icon,.session-card:focus-within .session-card__status-icon{display:none}
+.session-card:hover .session-card__transport-icon,.session-card:focus-within .session-card__transport-icon{display:inline-flex}
+.session-card:focus-within{background:var(--panel-hi)}
+.session-card>.session-card__state[data-status=paused]{color:var(--muted)}
+.session-card>.session-card__state:hover,.session-card>.session-card__state:focus-visible{color:var(--accent)}
+@media(hover:none),(pointer:coarse){.session-card .session-card__status-icon{display:none}.session-card .session-card__transport-icon{display:inline-flex}}

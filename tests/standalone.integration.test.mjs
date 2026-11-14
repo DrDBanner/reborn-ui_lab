@@ -552,3 +552,18 @@ test('desktop sidebar preference persists independently of scenario and mobile n
  await run("onAction('toggle-sidebar',{dataset:{}})");
  assert.equal(run('state.designTokens.sidebarCollapsed'),false);
 });
+
+test('Playing transport toggles an independent stream without selecting it or navigating',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ const before=run('JSON.stringify({view:state.view,selected:state.model.selectedSessionId,other:state.model.sessions.find(s=>s.id==="s1")})');
+ assert(app.innerHTML.includes('session-card__transport-icon'));
+ assert(!app.innerHTML.includes('<button type="button" class="session-card '));
+ await run("onAction('toggle-output-playback',{dataset:{id:'s2'}})");
+ assert.equal(run("state.model.sessions.find(s=>s.id==='s2').status"),'paused');
+ assert(app.innerHTML.includes('Resume NDR Info on Office'));
+ assert.equal(run('JSON.stringify({view:state.view,selected:state.model.selectedSessionId,other:state.model.sessions.find(s=>s.id==="s1")})'),before);
+ await run("onAction('toggle-output-playback',{dataset:{id:'s2'}})");
+ assert.equal(run("state.model.sessions.find(s=>s.id==='s2').status"),'playing');
+ await run("onAction('select-session',{dataset:{id:'s2'}})");
+ assert.equal(run('state.view'),'device');assert.equal(run('state.detailDeviceId'),'d4');
+});

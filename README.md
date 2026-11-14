@@ -84,3 +84,5 @@ Typography uses locally bundled Inter variable fonts; see `docs/FONTS.md`. Devic
 See `docs/INFORMATION_ARCHITECTURE.md`, `docs/WAILS_INTEGRATION.md`, and `docs/VIEW_COVERAGE.md`.
 
 The screenshot-based feature gap inventory is maintained in [project/feature-coverage](../project/feature-coverage/coverage.md); it preserves this interaction model while recording missing upstream capabilities.
+
+**Group settings:** use the gear beside Group Members → Add members for the main speaker, Keep group together and supported thumbs-up/down remote group buttons. Remote templates are separate from Once/Twice source presets. Temporary groups and pairs also have a title pencil for renaming. All effects remain local simulation; verified STR mappings and remaining integration work are documented in `docs/DEVICE_CAPABILITIES.md`.

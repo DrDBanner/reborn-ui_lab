@@ -88,10 +88,64 @@ export function setOutputVolume(model,targetId,value){
 export function renameDevice(model,deviceId,name){
   const device=model.devices.find(item=>item.id===deviceId);
   if(!device)throw new Error('Device no longer available');
+  renameItem(model,deviceId,name);
+}
+
+export function renameItem(model,itemId,name){
+  const item=entity(model,itemId);
+  if(!item)throw new Error('Item no longer available');
   const trimmed=String(name??'').trim();
-  if(!trimmed)throw new Error('Enter a device name');
+  if(!trimmed)throw new Error('Enter a name');
   if(trimmed.length>120)throw new Error('Use at most 120 characters');
-  device.name=trimmed;
+  item.name=trimmed;
+}
+
+// A stereo follower cannot independently lead its containing multiroom group.
+export function groupLeaderCandidates(model,group){
+ return (group?.memberIds||[]).flatMap(id=>{
+  const item=entity(model,id),type=kind(model,id);
+  const leader=type==='pair'?(item.leaderDeviceId||item.leftDeviceId||item.memberIds[0]):id;
+  return type==='group'?[]:[entity(model,leader)].filter(Boolean);
+ });
+}
+export function remoteGroupKeyDevices(model){
+ return model.devices.filter(device=>device.capabilities?.grouping?.remoteKeys?.some(key=>['thumbsUp','thumbsDown'].includes(key)));
+}
+export function groupSettingsDraft(model,groupId){
+ const group=model.groups.find(item=>item.id===groupId);
+ if(!group)throw new Error('Group no longer available');
+ const bindings=Object.fromEntries(remoteGroupKeyDevices(model).map(device=>[device.id,Object.fromEntries(['thumbsUp','thumbsDown'].map(key=>[key,device.groupKeys?.bindings?.[key]===group.id]))]));
+ return {groupId,memberIds:[...group.memberIds],persistent:!!group.persistent,leaderDeviceId:group.leaderDeviceId||'',bindings,originalBindings:Object.fromEntries(remoteGroupKeyDevices(model).map(device=>[device.id,structuredClone(device.groupKeys||{templates:[],bindings:{}})])),receiverId:remoteGroupKeyDevices(model).find(device=>leafDeviceIds(model,groupId).includes(device.id))?.id||remoteGroupKeyDevices(model)[0]?.id||''};
+}
+export function saveGroupSettings(model,draft){
+ const group=model.groups.find(item=>item.id===draft.groupId);
+ if(!group||JSON.stringify(group.memberIds)!==JSON.stringify(draft.memberIds))throw new Error('Group members changed; reopen group settings');
+ const leader=groupLeaderCandidates(model,group).find(device=>device.id===draft.leaderDeviceId);
+ if(!leader||leader.status!=='online')throw new Error('Choose an available main speaker');
+ const writes=[];
+ for(const [deviceId,selected] of Object.entries(draft.bindings||{})){
+  const device=entity(model,deviceId),current=device?.groupKeys||{templates:[],bindings:{}},next=structuredClone(current);
+  for(const key of ['thumbsUp','thumbsDown']){
+   const assigned=current.bindings?.[key]===group.id;
+   if(!!selected[key]===assigned)continue;
+   if(device?.status!=='online'||!device.capabilities?.grouping?.remoteKeys?.includes(key))throw new Error('Remote button device is no longer available');
+   next.bindings??={};
+   if(selected[key])next.bindings[key]=group.id;
+   else delete next.bindings[key];
+  }
+  if(Object.values(next.bindings||{}).includes(group.id)){
+   const snapshot={id:group.id,name:group.name,leaderDeviceId:leader.id,deviceIds:leafDeviceIds(model,group.id),persistent:!!draft.persistent};
+   next.templates=[...(next.templates||[]).filter(template=>template.id!==group.id),snapshot];
+  }
+  if(JSON.stringify(next)!==JSON.stringify(current)){
+   if(device?.status!=='online')throw new Error('Remote button device is no longer available');
+   if(JSON.stringify(current)!==JSON.stringify(draft.originalBindings?.[deviceId]))throw new Error('Remote assignments changed; reopen group settings');
+   writes.push([device,next]);
+  }
+ }
+ // Validate the complete draft before changing any group or receiver.
+ group.persistent=!!draft.persistent;group.leaderDeviceId=leader.id;
+ for(const [device,groupKeys] of writes)device.groupKeys=groupKeys;
 }
 
 /** Capabilities come from the adapter/fixture, never from a brand or model name. */
@@ -185,7 +239,12 @@ export function normalizeScenario(model,fixture=null) {
       if(device[key]===undefined)device[key]=original?.[key]===undefined?(key==='capabilities'?{}:null):structuredClone(original[key]);
     }
     if(device.capabilities&&device.capabilities.grouping===undefined&&original?.capabilities?.grouping)device.capabilities.grouping=structuredClone(original.capabilities.grouping);
+    if(device.capabilities?.grouping&&device.capabilities.grouping.remoteKeys===undefined&&original?.capabilities?.grouping?.remoteKeys)device.capabilities.grouping.remoteKeys=structuredClone(original.capabilities.grouping.remoteKeys);
     if(device.doublePresets===undefined)device.doublePresets=[];
+  }
+  for(const group of model.groups||[]){
+   const original=fixture?.groups?.find(item=>item.id===group.id);
+   if(group.leaderDeviceId===undefined&&original?.leaderDeviceId&&groupLeaderCandidates(model,group).some(device=>device.id===original.leaderDeviceId))group.leaderDeviceId=original.leaderDeviceId;
   }
   return model;
 }
@@ -309,6 +368,7 @@ export function createComposite(model, type, name, memberIds, persistent = true)
   const id = `${type === 'pair' ? 'p' : 'g'}${Date.now()}`;
   const record = {id,name: name.trim() || (type==='pair' ? 'Stereo Pair' : 'New Group'),memberIds:[...memberIds],persistent,volume:25};
   if(type==='pair'){record.leftDeviceId=memberIds[0];record.rightDeviceId=memberIds[1];}
+  if(type==='group')record.leaderDeviceId=groupLeaderCandidates(model,record)[0]?.id||null;
   (type==='pair' ? model.pairs : model.groups).push(record);
   model.selectedOutputId=id;
   return id;
@@ -329,6 +389,7 @@ export function removeDevice(model, deviceId) {
   const destroyedPairs=new Set(model.pairs.filter(p=>p.memberIds.includes(deviceId)).map(p=>p.id));
   model.pairs=model.pairs.filter(p=>!destroyedPairs.has(p.id));
   model.groups.forEach(g=>{g.memberIds=g.memberIds.filter(x=>x!==deviceId&&!destroyedPairs.has(x))});
+  model.groups.forEach(g=>{if(!leafDeviceIds(model,g.id).includes(g.leaderDeviceId))g.leaderDeviceId=null});
   model.groups=model.groups.filter(g=>g.memberIds.length>=2);
   const remainingIds=new Set([...model.devices,...model.pairs,...model.groups].map(x=>x.id));
   model.sessions=model.sessions.filter(x=>remainingIds.has(x.targetId));
@@ -347,6 +408,7 @@ export function updateMembership(model,groupId,memberId,shouldAdd) {
     group.memberIds.push(memberId);
   } else {
     group.memberIds=group.memberIds.filter(x=>x!==memberId);
+    if(!leafDeviceIds(model,groupId).includes(group.leaderDeviceId))group.leaderDeviceId=null;
   }
 }
 
@@ -365,6 +427,8 @@ export function validateScenario(m) {
   }
   for(const s of m.sessions) if(!ids.includes(s.targetId))errors.push(`${s.id}: missing output ${s.targetId}`);
   for(const d of m.devices){
+    const remoteKeys=d.capabilities?.grouping?.remoteKeys;
+    if(remoteKeys!==undefined&&(!Array.isArray(remoteKeys)||remoteKeys.some(key=>!['thumbsUp','thumbsDown'].includes(key))))errors.push(`${d.id}: invalid remote group keys`);
     const family=d.capabilities?.grouping?.stereoFamily;
     if(family!==undefined&&(typeof family!=='string'||!family.trim()))errors.push(`${d.id}: invalid stereo family`);
     const profile=d.capabilities?.buttonPresets;

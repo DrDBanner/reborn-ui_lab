@@ -31,7 +31,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [

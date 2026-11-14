@@ -132,7 +132,7 @@ test('rename dialog supports cancel, validation and safely rendered names',async
  assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d4').name",ctx),'Office');
  await vm.runInContext("onAction('device-rename',{dataset:{id:'d4'}});onField('device-name',{value:'   '});onAction('device-rename-save',{dataset:{}})",ctx);
  assert.equal(vm.runInContext('state.modal.kind',ctx),'rename');
- assert(app.innerHTML.includes('Enter a device name'));
+ assert(app.innerHTML.includes('Enter a name'));
  await vm.runInContext("onField('device-name',{value:'Office <demo>'});onAction('device-rename-save',{dataset:{}})",ctx);
  assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d4').name",ctx),'Office <demo>');
  assert(app.innerHTML.includes('Office &lt;demo&gt;'));
@@ -410,4 +410,19 @@ test('list picker shows disabled membership when no current playback exists',asy
  assert(app.innerHTML.includes('Start or select a playback to join.'));
  await vm.runInContext("onAction('assign-output',{dataset:{id:'d5'}})",ctx);
  assert.equal(vm.runInContext("state.model.sessions.find(s=>s.targetId==='d5').status",ctx),'playing');
+});
+
+test('group gear drafts persistence, main speaker and remote group keys without affecting playback',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('group-open',{dataset:{id:'g1'}})",ctx);
+ assert(app.innerHTML.includes('Group Members'));assert(app.innerHTML.includes('data-action="group-settings"'));assert(!app.innerHTML.includes('data-field="group-persistent"'));
+ const before=vm.runInContext('JSON.stringify(state.model)',ctx);
+ await vm.runInContext("onAction('group-settings',{dataset:{id:'g1'}});onField('group-settings-persistent',{checked:false});onAction('close-modal',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('JSON.stringify(state.model)',ctx),before);
+ const sessions=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);
+ await vm.runInContext("onAction('group-settings',{dataset:{id:'g1'}});onField('group-settings-persistent',{checked:false});onField('group-settings-leader',{value:'d3'});onField('group-settings-receiver',{value:'d4'});onField('group-settings-key',{checked:true,dataset:{key:'thumbsUp'}});onAction('group-settings-save',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.model.groups[0].persistent',ctx),false);assert.equal(vm.runInContext('state.model.groups[0].leaderDeviceId',ctx),'d3');
+ assert.equal(vm.runInContext("entity(state.model,'d4').groupKeys.bindings.thumbsUp",ctx),'g1');assert.equal(vm.runInContext('JSON.stringify(state.model.sessions)',ctx),sessions);
+ await vm.runInContext("onAction('device-rename',{dataset:{id:'g1'}});onField('device-name',{value:'Evening'});onAction('device-rename-save',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.model.groups[0].name',ctx),'Evening');assert(app.innerHTML.includes('Temporary'));
 });

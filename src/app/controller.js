@@ -1,5 +1,5 @@
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast} from './store.js';
-import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,renameDevice,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback} from './model.js';
+import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback} from './model.js';
 import {esc,icon} from '../components/shared.js';
 
 function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
@@ -32,8 +32,8 @@ export async function onAction(action,element){
  case 'expand-outputs':mutate(s=>s.expandingOutputs=true,false);break;
  case 'toggle-appearance':mutate(s=>{s.designTokens.appearance=s.designTokens.appearance==='dark'?'light':'dark';applyDesign()});break;
  case 'select-output':mutate(s=>{s.model.selectedOutputId=id;s.sidebarOpen=false;s.detailOutputId=id;if(kind(m,id)==='device'){s.detailDeviceId=id;s.model.selectedDeviceId=id;s.view='device'}else{s.view='group'}});break;
- case 'device-rename':{const device=m.devices.find(item=>item.id===id);if(!device)throw new Error('Device no longer available');openModal('rename',{deviceId:id,nameDraft:device.name});break;}
- case 'device-rename-save':{if(state.modal?.kind!=='rename')break;mutate(s=>{renameDevice(s.model,s.modal.deviceId,s.modal.nameDraft);s.modal=null});toast('Device name saved (mock data)');break;}
+ case 'device-rename':{const device=entity(m,id);if(!device)throw new Error('Device no longer available');openModal('rename',{deviceId:id,nameDraft:device.name});break;}
+ case 'device-rename-save':{if(state.modal?.kind!=='rename')break;mutate(s=>{renameItem(s.model,s.modal.deviceId,s.modal.nameDraft);s.modal=null});toast('Name saved (mock data)');break;}
  case 'device-open':mutate(s=>{s.detailDeviceId=id;s.model.selectedDeviceId=id;s.view='device';s.model.ui.deviceTab=element.dataset.tab||'overview';s.modal=null;});break;
  case 'group-open':mutate(s=>{s.detailOutputId=id;s.model.selectedOutputId=id;s.view='group';s.model.ui.groupTab='overview';s.modal=null});break;
  case 'target-actions':{
@@ -102,6 +102,8 @@ export async function onAction(action,element){
    const type=draft.type,members=type==='pair'?[draft.leftId,draft.rightId]:state.selectedForComposite;
    mutate(s=>{const outputId=createComposite(s.model,type,draft.nameDraft,members,type==='pair'||draft.persistent);s.detailOutputId=outputId;s.view='group';s.model.ui.groupTab='overview';s.sidebarOpen=false;s.modal=null;s.selectedForComposite=[]});toast(type==='pair'?'Stereo pair created':'Group created');break;
  }
+ case 'group-settings':openModal('group-settings',{draft:groupSettingsDraft(m,id||state.detailOutputId)});break;
+ case 'group-settings-save':if(state.modal?.kind==='group-settings'){mutate(s=>{saveGroupSettings(s.model,s.modal.draft);s.modal=null});toast('Group settings saved (mock data)')}break;
  case 'add-member':{
   const group=entity(m,state.detailOutputId),candidates=visibleOutputs(m).filter(t=>t.id!==group.id&&kind(m,t.id)!=='group');
   generic('Add members',`Add an ungrouped speaker or pair to ${group.name}.`, `<div class="modal-list">${candidates.map(t=>`<button class="modal-output" data-action="group-add-item" data-id="${t.id}">${icon(t.memberIds?'speaker_group':'speaker')}<span>${esc(t.name)}</span>${icon('add')}</button>`).join('')}</div>`);break;
@@ -156,6 +158,10 @@ export async function onField(field,target){
  case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
  case 'button-transfer-key':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.keys=target.checked?[...new Set([...s.modal.keys,val])]:s.modal.keys.filter(item=>item!==val),false);break;
  case 'button-transfer-target':if(state.modal?.kind==='button-transfer')mutate(s=>{const selected=new Set(s.modal.targetIds.flatMap(id=>leafDeviceIds(m,id))),ids=leafDeviceIds(m,val).filter(id=>id!==s.modal.deviceId&&buttonProfile(entity(m,id))&&entity(m,id).status==='online');for(const id of ids)target.checked?selected.add(id):selected.delete(id);s.modal.targetIds=[...selected]},false);break;
+ case 'group-settings-persistent':case 'group-settings-leader':case 'group-settings-receiver':case 'group-settings-key':{
+  if(state.modal?.kind!=='group-settings')break;
+  mutate(s=>{const draft=s.modal.draft;if(field==='group-settings-persistent')draft.persistent=target.checked;else if(field==='group-settings-leader')draft.leaderDeviceId=val;else if(field==='group-settings-receiver')draft.receiverId=val;else if(['thumbsUp','thumbsDown'].includes(target.dataset.key)&&draft.bindings[draft.receiverId])draft.bindings[draft.receiverId][target.dataset.key]=target.checked},false);break;
+ }
  case 'device-name':if(state.modal?.kind==='rename')state.modal.nameDraft=val;break;
  case 'preset-playback':if(state.modal?.kind==='preset'){const playback=m.sessions.find(session=>session.id===val&&session.status!=='stopped');if(val&&(!playback||!canAssignPresetSource(entity(m,state.modal.deviceId),source(state.catalog,playback.sourceId))))throw new Error('Playback source is no longer available');mutate(s=>s.modal.captureSessionId=val||null,false)}break;
  case 'preset-search':if(state.modal?.kind==='preset')mutate(s=>s.modal.query=val,false);break;
@@ -178,7 +184,6 @@ export async function onField(field,target){
  case 'dialog-volume':case 'dialog-device-volume':{const modal=state.modal,session=m.sessions.find(item=>item.id===modal?.sessionId&&item.targetId===modal.targetId);if(modal?.kind!=='volume'||!session)throw new Error('Playback no longer available');if(field==='dialog-device-volume'&&!leafDeviceIds(m,modal.targetId).includes(target.dataset.id))throw new Error('Device is not in this output');mutate(s=>field==='dialog-volume'?setOutputVolume(s.model,modal.targetId,val):setDeviceVolume(s.model,target.dataset.id,val));break;}
  case 'composite-volume':mutate(s=>setOutputVolume(s.model,s.detailOutputId,val));break;
  case 'member-volume':mutate(s=>setDeviceVolume(s.model,target.dataset.id,val));break;
- case 'group-persistent':mutate(s=>{const g=entity(s.model,s.detailOutputId);if(g)g.persistent=target.checked});break;
  case 'bass':mutate(s=>currentDevice().bass=Number(val));break;
  case 'start-volume-enabled':mutate(s=>currentDevice().startVolumeEnabled=target.checked);break;
  case 'start-volume':mutate(s=>currentDevice().startVolume=Number(val));break;

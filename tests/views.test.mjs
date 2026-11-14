@@ -89,7 +89,7 @@ test('button presets remain above device tabs across all configuration sections'
  }
  s.detailOutputId='g1';s.presetDeviceId='d3';s.expandedPresetTargetId='g1';
  const group=renderGroup(s);
- assert(group.indexOf('item-key-functions')<group.indexOf('<h2>Members</h2>'));
+ assert(group.indexOf('item-key-functions')<group.indexOf('<h2>Group Members</h2>'));
  assert(group.includes('data-field="preset-device" data-id="g1"'));
  assert(group.includes('value="d3" selected'));
  s.detailOutputId='p1';s.presetDeviceId='d4';s.expandedPresetTargetId='p1';

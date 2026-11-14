@@ -31,7 +31,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -96,7 +100,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -158,6 +166,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -222,7 +236,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [],
@@ -280,7 +298,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -342,6 +364,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -407,7 +435,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -471,7 +503,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [],
@@ -526,6 +562,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -591,7 +633,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -647,7 +693,8 @@
         "d3"
       ],
       "persistent": true,
-      "volume": 25
+      "volume": 25,
+      "leaderDeviceId": "d1"
     },
     {
       "id": "g2",
@@ -657,7 +704,8 @@
         "d6"
       ],
       "persistent": false,
-      "volume": 22
+      "volume": 22,
+      "leaderDeviceId": "d5"
     }
   ],
   "sessions": [

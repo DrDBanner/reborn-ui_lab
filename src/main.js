@@ -22,7 +22,7 @@ function render(){
  const playerContent=player(state);
  // Preserve typing position across updates from search or form controls.
  const viewKey=[state.view,state.detailDeviceId,state.detailOutputId,state.model.ui.deviceTab,state.model.ui.groupTab,state.model.ui.settingsTab].join(':');
- const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-source-results'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
+ const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-source-results','.group-settings-body'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
  const active=document.activeElement;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;
  app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
@@ -31,7 +31,7 @@ function render(){
  for(const checkbox of app.querySelectorAll?.('.transfer-target-heading input[aria-checked="mixed"]')||[])checkbox.indeterminate=true;
  const renameId=state.modal?.kind==='rename'?state.modal.deviceId:null;
  if(renameId&&renameId!==renderedRenameId){const input=app.querySelector?.('#device-name');input?.focus();input?.select();}
- if(!renameId&&renderedRenameId&&state.view==='device')app.querySelector?.('.title-edit')?.focus({preventScroll:true});
+ if(!renameId&&renderedRenameId&&['device','group'].includes(state.view))app.querySelector?.('.title-edit')?.focus({preventScroll:true});
  renderedRenameId=renameId;
  const volumeId=state.modal?.kind==='volume'?state.modal.sessionId:null;
  if(volumeId&&volumeId!==renderedVolumeId)app.querySelector?.('#dialog-overall-volume')?.focus({preventScroll:true});

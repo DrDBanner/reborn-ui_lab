@@ -1,7 +1,23 @@
 import {renderPresetEditor} from './preset-editor.js';
 import {renderPresetTransfer,renderPresetTransferResult} from './preset-transfer.js';
 import {esc,icon,action,statusBadge,targetIcon,subline,typeIcon} from './shared.js';
-import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets,leafDeviceIds,stereoFamily,validateGroupMembers,playbackJoinError,effectiveSessionFor} from '../app/model.js';
+import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets,leafDeviceIds,stereoFamily,validateGroupMembers,playbackJoinError,effectiveSessionFor,groupLeaderCandidates,remoteGroupKeyDevices} from '../app/model.js';
+
+function renderGroupSettings(s){
+ const draft=s.modal.draft,group=entity(s.model,draft.groupId),candidates=groupLeaderCandidates(s.model,group),receivers=remoteGroupKeyDevices(s.model),receiver=entity(s.model,draft.receiverId);
+ if(!group)return '<div class="modal-heading"><h2>Group no longer available</h2></div>';
+ const keys=[['thumbsUp','Thumbs up'],['thumbsDown','Thumbs down']];
+ return `<div class="modal-heading"><h2>Group settings</h2><p>${esc(group.name)}</p></div><div class="group-settings-body">
+ <label class="group-settings-field" for="group-leader"><strong>Main speaker</strong><select id="group-leader" class="small-select" data-field="group-settings-leader"><option value="">Choose speaker</option>${candidates.map(device=>`<option value="${esc(device.id)}" ${draft.leaderDeviceId===device.id?'selected':''} ${device.status!=='online'?'disabled':''}>${esc(device.name)}${device.status!=='online'?' · '+esc(device.status):''}</option>`).join('')}</select><small>Leads playback for this group.</small></label>
+ <label class="group-persistence-setting"><span><strong>Keep group together</strong><small>Restore this group when its main speaker starts music, including after standby or restart.</small></span><input type="checkbox" role="switch" data-field="group-settings-persistent" ${draft.persistent?'checked':''}/></label>
+ <section class="remote-group-settings"><h3>Remote group buttons</h3><p>Press once to form this group, again to dissolve it. Separate from presets 1–6.</p>
+ ${receivers.length?`<label class="group-settings-field" for="group-remote"><span>Remote received by</span><select id="group-remote" class="small-select" data-field="group-settings-receiver">${receivers.map(device=>`<option value="${esc(device.id)}" ${draft.receiverId===device.id?'selected':''}>${esc(device.name)}${device.status!=='online'?' · '+esc(device.status):''}</option>`).join('')}</select></label>
+ <div class="remote-group-key-list">${keys.filter(([key])=>receiver?.capabilities?.grouping?.remoteKeys?.includes(key)).map(([key,label])=>{
+  const binding=receiver.groupKeys?.bindings?.[key],existing=receiver.groupKeys?.templates?.find(template=>template.id===binding),replacing=binding&&binding!==group.id;
+  return `<label class="remote-group-key"><input type="checkbox" data-field="group-settings-key" data-key="${key}" ${draft.bindings[receiver.id]?.[key]?'checked':''} ${receiver.status!=='online'?'disabled':''}/><span><strong>${label}</strong><small>${replacing?`Replaces ${esc(existing?.name||'another group')}`:`Form / dissolve ${esc(group.name)}`}</small></span></label>`;
+ }).join('')}</div><p class="group-settings-help">Saves a group template on the receiving speaker. Playback does not change when you save.</p>`:'<p>No device reports support for remote group buttons.</p>'}</section>
+ </div><div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('group-settings-save','Save settings','primary-btn',draft.leaderDeviceId?'':'disabled')}</div>`;
+}
 
 function outputPicker(s){
  const m=s.model,modal=s.modal,src=source(s.catalog,modal.sourceId||s.speakerPickerFor||m.selectedSourceId),targets=visibleOutputs(m),context=modal.joinContext,joining=!!modal.asMember;
@@ -56,12 +72,13 @@ function deviceMaintenance(s){const d=entity(s.model,s.detailDeviceId||s.model.s
 }
 function renameDialog(s){
  const device=entity(s.model,s.modal.deviceId);
- return `<div class="modal-heading"><h2>Rename device</h2><p>${esc(device?.brand||'')} ${esc(device?.model||'')} · ${esc(device?.ip||'')}</p></div>
- <label class="rename-label" for="device-name">Device name</label><input id="device-name" class="text-input rename-input" data-field="device-name" value="${esc(s.modal.nameDraft??device?.name??'')}" maxlength="120" autocomplete="off" />
+ const label=kind(s.model,s.modal.deviceId)==='device'?'device':kind(s.model,s.modal.deviceId)==='pair'?'stereo pair':'group';
+ return `<div class="modal-heading"><h2>Rename ${label}</h2><p>${esc(device?.name||'')}</p></div>
+ <label class="rename-label" for="device-name">Name</label><input id="device-name" class="text-input rename-input" data-field="device-name" value="${esc(s.modal.nameDraft??device?.name??'')}" maxlength="120" autocomplete="off" />
  <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('device-rename-save','Save name','primary-btn')}</div>`;
 }
 function genericDialog(s){const t=s.modal||{};return `<div class="modal-heading"><h2>${esc(t.title||'Information')}</h2><p>${esc(t.description||'')}</p></div>${t.body?`<div class="modal-generic">${t.body}</div>`:''}<div class="modal-footer">${action('close-modal','Close','primary-btn')}</div>`}
 export function renderDialog(s){if(!s.modal)return '';
- const inner=s.modal.kind==='button-transfer'?renderPresetTransfer(s):s.modal.kind==='button-transfer-result'?renderPresetTransferResult(s):s.modal.kind==='rename'?renameDialog(s):s.modal.kind==='picker'?outputPicker(s):s.modal.kind==='create'?renderCompositeDialog(s):s.modal.kind==='volume'?volumeDialog(s):s.modal.kind==='preset'?renderPresetEditor(s):s.modal.kind==='wifi'?wifiDialog(s):s.modal.kind==='maintenance'?deviceMaintenance(s):genericDialog(s);
- return `<div class="overlay" role="presentation"><div class="modal-window ${s.modal.kind==='button-transfer'?'modal-window--transfer':s.modal.kind==='create'?'modal-window--create':s.modal.kind==='preset'?'modal-window--preset':s.modal.kind==='volume'?'modal-window--volume':''}" role="dialog" aria-modal="true" aria-label="${esc(s.modal.title||s.modal.kind||'Dialog')}"><div class="modal-window__close">${action('close-modal',icon('close'),'icon-btn','aria-label="Close dialog"')}</div>${inner}</div><button class="overlay-backdrop" data-action="close-modal" aria-label="Close dialog"></button></div>`;
+ const inner=s.modal.kind==='group-settings'?renderGroupSettings(s):s.modal.kind==='button-transfer'?renderPresetTransfer(s):s.modal.kind==='button-transfer-result'?renderPresetTransferResult(s):s.modal.kind==='rename'?renameDialog(s):s.modal.kind==='picker'?outputPicker(s):s.modal.kind==='create'?renderCompositeDialog(s):s.modal.kind==='volume'?volumeDialog(s):s.modal.kind==='preset'?renderPresetEditor(s):s.modal.kind==='wifi'?wifiDialog(s):s.modal.kind==='maintenance'?deviceMaintenance(s):genericDialog(s);
+ return `<div class="overlay" role="presentation"><div class="modal-window ${s.modal.kind==='group-settings'?'modal-window--group-settings':s.modal.kind==='button-transfer'?'modal-window--transfer':s.modal.kind==='create'?'modal-window--create':s.modal.kind==='preset'?'modal-window--preset':s.modal.kind==='volume'?'modal-window--volume':''}" role="dialog" aria-modal="true" aria-label="${esc(s.modal.title||s.modal.kind||'Dialog')}"><div class="modal-window__close">${action('close-modal',icon('close'),'icon-btn','aria-label="Close dialog"')}</div>${inner}</div><button class="overlay-backdrop" data-action="close-modal" aria-label="Close dialog"></button></div>`;
 }

@@ -31,7 +31,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -96,7 +100,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -158,6 +166,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -222,7 +236,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [],
@@ -280,7 +298,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -342,6 +364,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -407,7 +435,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -471,7 +503,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [],
@@ -526,6 +562,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -591,7 +633,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -656,7 +702,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -718,6 +768,12 @@
           "gestures": [
             "single"
           ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [],
@@ -775,7 +831,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -840,7 +900,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -902,6 +966,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -966,7 +1036,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [],
@@ -1024,7 +1098,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -1086,6 +1164,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -1151,7 +1235,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -1215,7 +1303,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [],
@@ -1270,6 +1362,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -1335,7 +1433,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -1400,7 +1502,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -1462,6 +1568,12 @@
           "gestures": [
             "single"
           ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [],
@@ -1519,7 +1631,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -1584,7 +1700,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -1646,6 +1766,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -1710,7 +1836,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [],
@@ -1768,7 +1898,11 @@
           ]
         },
         "grouping": {
-          "stereoFamily": "soundtouch-10"
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
         }
       },
       "doublePresets": [
@@ -1830,6 +1964,12 @@
           "gestures": [
             "single",
             "double"
+          ]
+        },
+        "grouping": {
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
           ]
         }
       },
@@ -1918,7 +2058,8 @@
         "d12"
       ],
       "persistent": true,
-      "volume": 26
+      "volume": 26,
+      "leaderDeviceId": "d1"
     },
     {
       "id": "g2",
@@ -1929,7 +2070,8 @@
         "d10"
       ],
       "persistent": true,
-      "volume": 24
+      "volume": 24,
+      "leaderDeviceId": "d5"
     },
     {
       "id": "g3",
@@ -1941,7 +2083,8 @@
         "d20"
       ],
       "persistent": false,
-      "volume": 30
+      "volume": 30,
+      "leaderDeviceId": "d16"
     }
   ],
   "sessions": [

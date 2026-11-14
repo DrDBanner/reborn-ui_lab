@@ -109,7 +109,7 @@ small{font-size:11px}
 .header-left,.header-right{display:flex;align-items:center;gap:14px}.header-left{min-width:0}
 .header-right{flex-shrink:0}.header-status{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px;white-space:nowrap}
 .header-status i,.device-status i{display:inline-block;width:7px;height:7px;border-radius:100%;background:var(--ok)}
-.workspace{width:100%;max-width:1440px;min-height:0;flex:1;overflow-y:auto;scrollbar-gutter:stable;overscroll-behavior-y:contain;scrollbar-width:thin;scrollbar-color:var(--border) transparent;margin:0 auto;padding:31px 38px 38px}
+.workspace{width:100%;max-width:1440px;min-height:0;flex:1;overflow-y:auto;scrollbar-gutter:stable;overflow-anchor:none;overscroll-behavior-y:contain;scrollbar-width:thin;scrollbar-color:var(--border) transparent;margin:0 auto;padding:31px 38px 38px}
 .workspace> :last-child{margin-bottom:0}
 .workspace>.panel+.panel,.workspace>.two-col+.panel{margin-top:var(--card-gap)}
 .page-heading{display:flex;justify-content:space-between;align-items:start;gap:22px;margin:5px 0 26px}
@@ -565,7 +565,7 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 
 .license-notices{margin-top:20px;font-size:12px}.license-notices summary{cursor:pointer;padding:10px 0}.license-document{border-top:1px solid var(--border)}.license-document pre{font-size:11px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;max-height:280px;overflow:auto;padding:12px;margin:0 0 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px}
 
-.item-member__leader{display:inline-block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.item-member__label{padding-top:3px}.item-member>.entity-type{margin-top:3px}
+.item-member__leader{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.item-member__label{padding-top:3px}.item-member>.entity-type{margin-top:3px}
 
 /* Local Google Material Symbols Rounded chevron; see docs/MATERIAL_ICONS.md. */
 :root{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23a4aab5%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
@@ -1544,7 +1544,7 @@ function renderItemMembers(s,item){
  const description=physical?(parents.length?'Part of a pair or group':'No additional members'):`${ids.length} ${ids.length===1?'member':'members'}${type==='pair'?' · Stereo':''}`;
  const rows=ids.map(id=>{
   const member=entity(m,id),memberType=kind(m,id),channel=type==='pair'?(id===(item.leftDeviceId||item.memberIds[0])?'Left · L':'Right · R'):null;
-  const leads=type==='group'&&leafDeviceIds(m,id).includes(item.leaderDeviceId),leaderName=entity(m,item.leaderDeviceId)?.name||'',detail=channel||(memberType!=='device'?`${leafDeviceIds(m,id).length} speakers${leads?` <span class="item-member__leader" title="${esc(leaderName)}">· Main: ${esc(leaderName)}</span>`:''}`:leads?'Main speaker':'');
+  const leads=type==='group'&&leafDeviceIds(m,id).includes(item.leaderDeviceId),leaderName=entity(m,item.leaderDeviceId)?.name||'',detail=channel||(memberType!=='device'?`${leafDeviceIds(m,id).length} speakers${leads?` <span class="item-member__leader" title="${esc(leaderName)}">Main: ${esc(leaderName)}</span>`:''}`:leads?'Main speaker':'');
   return `<div class="item-member" data-member-id="${esc(id)}">${typeIcon(memberType)}<span class="item-member__label"><strong>${esc(member?.name||id)}</strong>${detail?`<small>${detail}</small>`:''}</span>${action(memberType==='device'?'device-open':'group-open',icon('open_in_new'),'icon-btn item-member__open',`data-id="${esc(id)}" title="Open details for ${esc(member?.name||id)}" aria-label="Open details for ${esc(member?.name||id)}"`)}${type==='group'?action('remove-member',icon('remove_circle_outline'),'icon-btn item-member__remove',`data-id="${esc(id)}" aria-label="Remove ${esc(member?.name||id)} from ${esc(item.name)}"`):''}</div>`;
  }).join('');
  const settings=type==='group'?action('group-settings',icon('settings'),'icon-btn group-settings-trigger',`data-id="${esc(item.id)}" title="Group settings" aria-label="Group settings for ${esc(item.name)}"`):'';
@@ -1955,6 +1955,8 @@ let renderedMenuOpen=false;
 let renderedRenameId=null;
 let renderedVolumeId=null;
 let renderedCreateOpen=false;
+let renderedDetailLayoutKey='';
+let detailBodyHeight=0;
 function render(){
  if(!state.model)return;
  const view=views[state.view]||renderListen;
@@ -1962,10 +1964,18 @@ function render(){
  // Preserve typing position across updates from search or form controls.
  // Tab changes keep the current item's workspace position. A different item/route resets it.
  const viewKey=[state.view,state.detailDeviceId,state.detailOutputId].join(':');
+ const detailView=['device','group'].includes(state.view);
+ const detailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.designTokens?.fontSize,state.designTokens?.density].join(':'):'';
+ if(!detailView||detailLayoutKey!==renderedDetailLayoutKey)detailBodyHeight=0;
+ else detailBodyHeight=Math.max(detailBodyHeight,app.querySelector?.('.detail-body')?.getBoundingClientRect().height||0);
  const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-source-results','.group-settings-body'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
  const active=document.activeElement;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;
  app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
+ // Keep shorter tabs from shrinking the scroll range below the visible position.
+ const detailBody=detailView?app.querySelector?.('.detail-body'):null;
+ if(detailBody){if(detailBodyHeight)detailBody.style.minHeight=detailBodyHeight+'px';detailBodyHeight=Math.max(detailBodyHeight,detailBody.getBoundingClientRect().height);}
+ renderedDetailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.designTokens?.fontSize,state.designTokens?.density].join(':'):'';
  for(const {selector,top} of scrollPositions){const element=app.querySelector?.(selector);if(element&&(selector!=='.workspace'||viewKey===renderedViewKey))element.scrollTop=top;}
  renderedViewKey=viewKey;
  for(const checkbox of app.querySelectorAll?.('.transfer-target-heading input[aria-checked="mixed"]')||[])checkbox.indeterminate=true;

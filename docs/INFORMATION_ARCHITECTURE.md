@@ -48,7 +48,7 @@ Devices, pairs and groups share this order:
 
 Presets use at most three columns, adapting to two or one at narrower widths. Buttons on selects the physical owner of the bank; Once/Twice selects its gesture layer. The adjacent gear reveals assignment editing, transfer and source metadata.
 
-Tabs preserve workspace scroll position within the same item. Changing item or route starts the workspace at the top. Shorter content clamps to its available scroll range.
+Tabs preserve workspace scroll position within the same item. Changing item or route starts the workspace at the top. Visited tabs reserve their content height for the current item and layout, so shorter tabs preserve the scroll range. Changing item, width or display density recalculates that height.
 
 ## Group membership
 

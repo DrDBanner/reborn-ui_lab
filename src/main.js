@@ -16,6 +16,8 @@ let renderedMenuOpen=false;
 let renderedRenameId=null;
 let renderedVolumeId=null;
 let renderedCreateOpen=false;
+let renderedDetailLayoutKey='';
+let detailBodyHeight=0;
 function render(){
  if(!state.model)return;
  const view=views[state.view]||renderListen;
@@ -23,10 +25,18 @@ function render(){
  // Preserve typing position across updates from search or form controls.
  // Tab changes keep the current item's workspace position. A different item/route resets it.
  const viewKey=[state.view,state.detailDeviceId,state.detailOutputId].join(':');
+ const detailView=['device','group'].includes(state.view);
+ const detailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.designTokens?.fontSize,state.designTokens?.density].join(':'):'';
+ if(!detailView||detailLayoutKey!==renderedDetailLayoutKey)detailBodyHeight=0;
+ else detailBodyHeight=Math.max(detailBodyHeight,app.querySelector?.('.detail-body')?.getBoundingClientRect().height||0);
  const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-source-results','.group-settings-body'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
  const active=document.activeElement;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;
  app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
+ // Keep shorter tabs from shrinking the scroll range below the visible position.
+ const detailBody=detailView?app.querySelector?.('.detail-body'):null;
+ if(detailBody){if(detailBodyHeight)detailBody.style.minHeight=detailBodyHeight+'px';detailBodyHeight=Math.max(detailBodyHeight,detailBody.getBoundingClientRect().height);}
+ renderedDetailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.designTokens?.fontSize,state.designTokens?.density].join(':'):'';
  for(const {selector,top} of scrollPositions){const element=app.querySelector?.(selector);if(element&&(selector!=='.workspace'||viewKey===renderedViewKey))element.scrollTop=top;}
  renderedViewKey=viewKey;
  for(const checkbox of app.querySelectorAll?.('.transfer-target-heading input[aria-checked="mixed"]')||[])checkbox.indeterminate=true;

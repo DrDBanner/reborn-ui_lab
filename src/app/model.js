@@ -63,6 +63,15 @@ export function currentSession(model) {
   return model.sessions.find(x => x.id === model.selectedSessionId) ?? model.sessions[0] ?? null;
 }
 
+export function renameDevice(model,deviceId,name){
+  const device=model.devices.find(item=>item.id===deviceId);
+  if(!device)throw new Error('Device no longer available');
+  const trimmed=String(name??'').trim();
+  if(!trimmed)throw new Error('Enter a device name');
+  if(trimmed.length>120)throw new Error('Use at most 120 characters');
+  device.name=trimmed;
+}
+
 /** Capabilities come from the adapter/fixture, never from a brand or model name. */
 export function buttonProfile(device) {
   const profile=device?.capabilities?.buttonPresets;
@@ -99,6 +108,48 @@ export function recallButtonPreset(model,deviceId,key,gesture='single') {
   return assignSource(model,sourceId,presetPlaybackTarget(model,deviceId));
 }
 
+export function presetAssignments(device){
+  return (buttonProfile(device)?.gestures||[]).flatMap(gesture=>buttonPresets(device,gesture).flatMap((sourceId,index)=>sourceId?[{key:index+1,gesture,sourceId,token:`${gesture}:${index+1}`}]:[]));
+}
+
+/** Mirrors STR's whole-set / chosen-key copy. Composite targets fan out once per device. */
+export function planPresetTransfer(model,sourceId,targetIds,tokens=null){
+  const device=model.devices.find(item=>item.id===sourceId);
+  if(!buttonProfile(device))throw new Error('Source device has no button presets');
+  if(device.status!=='online')throw new Error('Source device must be online');
+  const available=presetAssignments(device),selected=available.filter(item=>!tokens||tokens.includes(item.token));
+  if(!selected.length)throw new Error('Select at least one assigned key');
+  const whole=selected.length===available.length;
+  const ids=[...new Set(targetIds.flatMap(id=>leafDeviceIds(model,id)))].filter(id=>id!==sourceId);
+  if(!ids.length)throw new Error('Choose another device or group');
+  const results=ids.map(id=>{
+    const target=entity(model,id),profile=buttonProfile(target),result={id,name:target.name,copied:[],skipped:[],error:null};
+    if(!profile){result.error='No hardware button presets';return result;}
+    if(target.status!=='online'){result.error=`Device is ${target.status}`;return result;}
+    let pending=selected.filter(item=>{
+      if(item.key<=profile.keyCount&&profile.gestures.includes(item.gesture))return true;
+      result.skipped.push({...item,reason:'Key or gesture not supported'});return false;
+    });
+    const existing=presetAssignments(target);
+    while(pending.length){
+      const conflict=pending.map((item,index)=>({item,other:pending.slice(0,index).find(other=>other.sourceId===item.sourceId)||existing.find(other=>other.sourceId===item.sourceId&&other.token!==item.token&&!pending.some(write=>write.token===other.token))})).find(entry=>entry.other);
+      if(!conflict)break;
+      const reason=`Source already assigned to key ${conflict.other.key} (${conflict.other.gesture==='double'?'Twice':'Once'})`;
+      if(whole){result.error=reason;result.skipped.push(...pending.map(item=>({...item,reason:'Whole-set transfer refused; target unchanged'})));pending=[];break;}
+      result.skipped.push({...conflict.item,reason});pending=pending.filter(item=>item.token!==conflict.item.token);
+    }
+    result.copied=pending;
+    return result;
+  });
+  return {sourceId,sourceName:device.name,whole,selectedKeys:selected.length,results};
+}
+
+export function transferButtonPresets(model,sourceId,targetIds,tokens=null){
+  const report=planPresetTransfer(model,sourceId,targetIds,tokens);
+  for(const result of report.results)for(const item of result.copied)setButtonPreset(model,result.id,item.key,item.gesture,item.sourceId);
+  return report;
+}
+
 export function normalizeScenario(model,fixture=null) {
   for(const device of model.devices||[]){
     const original=fixture?.devices?.find(item=>item.id===device.id);
@@ -113,6 +164,38 @@ export function normalizeScenario(model,fixture=null) {
 
 export function source(catalog, sourceId) {
   return catalog?.sources?.find(x => x.id === sourceId) ?? null;
+}
+
+export function radioOptions(model){
+  const settings=model.settings||{};
+  return {country:settings.searchCountry||'All',language:settings.searchLanguage||'All',genre:settings.radioGenre||'All',order:settings.radioOrder||'votes',minBitrate:Number(settings.radioMinBitrate)||0,onlyWorking:settings.radioOnlyWorking!==false,onlyCompatible:settings.radioOnlyCompatible!==false,outputId:settings.radioOutputId||model.selectedOutputId||visibleOutputs(model)[0]?.id||''};
+}
+
+export function compatibleRadioSource(model,item,outputId){
+  const codec=String(item.codec||'').toUpperCase();
+  return leafDeviceIds(model,outputId).every(id=>{
+    const profile=entity(model,id)?.capabilities?.radio;
+    if(!profile)return true;
+    if(item.hls){if(profile.hls===true)return true;if(profile.hls===false)return false;}
+    if(!codec||codec==='UNKNOWN'||!Array.isArray(profile.codecs))return true;
+    return profile.codecs.map(value=>value.toUpperCase()).includes(codec);
+  });
+}
+
+export function filterRadioSources(model,catalog,query=''){
+  const options=radioOptions(model),q=query.trim().toLowerCase();
+  let items=catalog.sources.filter(item=>item.type==='radio'&&(model.ui.radioTab!=='favorites'||model.favorites.includes(item.id)));
+  items=items.filter(item=>{
+    if(q&&!`${item.name} ${item.genre} ${item.subtitle} ${item.country}`.toLowerCase().includes(q))return false;
+    if(options.country!=='All'&&item.country!==options.country)return false;
+    if(options.language!=='All'&&item.language!==options.language)return false;
+    if(options.genre!=='All'&&item.genre!==options.genre)return false;
+    const bitrate=Number.parseInt(item.bitrate,10)||0;
+    if(bitrate&&bitrate<options.minBitrate)return false;
+    if(options.onlyWorking&&item.lastCheckOk!==true)return false;
+    return !options.onlyCompatible||compatibleRadioSource(model,item,options.outputId);
+  });
+  return items.sort((a,b)=>options.order==='name'?a.name.localeCompare(b.name,'en'):options.order==='bitrate'?(Number.parseInt(b.bitrate,10)||0)-(Number.parseInt(a.bitrate,10)||0):options.order==='clicks'?(b.clickCount||0)-(a.clickCount||0):(b.votes||0)-(a.votes||0));
 }
 
 export function conflictingSessionIds(model, targetId) {

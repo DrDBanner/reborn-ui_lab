@@ -14,12 +14,12 @@ ROOT = Path(__file__).resolve().parent.parent
 REVISION = "10ecc14790612ca8fd164e3f4ffe9c16fc50d5b7"
 BASE = f"https://raw.githubusercontent.com/google/material-design-icons/{REVISION}"
 NAMES = """
-add add_circle alarm album arrow_back arrow_forward backup bug_report build
-check check_circle chevron_right close code dark_mode delete desktop_windows
+add add_circle add_link alarm album arrow_back arrow_forward backup bug_report build
+cast check check_circle chevron_right close code dark_mode delete desktop_windows
 dns dock_to_left do_not_disturb_on download edit expand_less expand_more fast_forward favorite favorite_border
 folder graphic_eq grid_view group_add groups help history hub info library_music
-light_mode lightbulb menu more_horiz music_note network_check pause phone_iphone
-play_arrow radio restart_alt science search search_off settings
+light_mode lightbulb menu more_horiz music_cast music_note network_check pause pause_circle phone_iphone
+play_arrow play_circle push_pin radio restart_alt science search search_off settings
 settings_backup_restore skip_next skip_previous speaker speaker_group stop sync
 system_update task_alt tune vertical_split volume_up warning wifi
 """.split()
@@ -40,7 +40,12 @@ def fetch_icon(name):
     paths = [element.attrib["d"] for element in svg.iter() if element.tag.endswith("}path")]
     if not paths:
         raise ValueError(f"No paths for {name}")
-    return name, {"viewBox": svg.attrib["viewBox"], "paths": paths}
+    viewbox=svg.attrib.get("viewBox")
+    if not viewbox:
+        width=svg.attrib["width"].removesuffix("px")
+        height=svg.attrib["height"].removesuffix("px")
+        viewbox=f"0 0 {width} {height}"
+    return name, {"viewBox": viewbox, "paths": paths}
 
 
 if __name__ == "__main__":

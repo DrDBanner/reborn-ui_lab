@@ -8,7 +8,13 @@
       "genre": "Alternative",
       "country": "Germany",
       "bitrate": "320 kbit/s",
-      "color": "#f2cb38"
+      "color": "#f2cb38",
+      "language": "German",
+      "codec": "MP3",
+      "lastCheckOk": true,
+      "votes": 1000,
+      "clickCount": 80,
+      "hls": false
     },
     {
       "id": "1live",
@@ -18,7 +24,13 @@
       "genre": "Pop",
       "country": "Germany",
       "bitrate": "320 kbit/s",
-      "color": "#67ac59"
+      "color": "#67ac59",
+      "language": "German",
+      "codec": "MP3",
+      "lastCheckOk": true,
+      "votes": 930,
+      "clickCount": 120,
+      "hls": false
     },
     {
       "id": "ndrinfo",
@@ -28,7 +40,13 @@
       "genre": "News",
       "country": "Germany",
       "bitrate": "128 kbit/s",
-      "color": "#3473b8"
+      "color": "#3473b8",
+      "language": "German",
+      "codec": "MP3",
+      "lastCheckOk": true,
+      "votes": 860,
+      "clickCount": 160,
+      "hls": false
     },
     {
       "id": "ffn",
@@ -38,7 +56,13 @@
       "genre": "Pop",
       "country": "Germany",
       "bitrate": "192 kbit/s",
-      "color": "#ba5361"
+      "color": "#ba5361",
+      "language": "German",
+      "codec": "AAC",
+      "lastCheckOk": true,
+      "votes": 790,
+      "clickCount": 200,
+      "hls": false
     },
     {
       "id": "sw",
@@ -48,7 +72,13 @@
       "genre": "Oldies",
       "country": "Germany",
       "bitrate": "128 kbit/s",
-      "color": "#dd8460"
+      "color": "#dd8460",
+      "language": "German",
+      "codec": "MP3",
+      "lastCheckOk": true,
+      "votes": 720,
+      "clickCount": 240,
+      "hls": false
     },
     {
       "id": "dl",
@@ -58,7 +88,13 @@
       "genre": "Information",
       "country": "Germany",
       "bitrate": "192 kbit/s",
-      "color": "#617996"
+      "color": "#617996",
+      "language": "German",
+      "codec": "MP3",
+      "lastCheckOk": true,
+      "votes": 650,
+      "clickCount": 280,
+      "hls": false
     },
     {
       "id": "ndr2",
@@ -68,7 +104,13 @@
       "genre": "Pop",
       "country": "Germany",
       "bitrate": "128 kbit/s",
-      "color": "#3269b9"
+      "color": "#3269b9",
+      "language": "German",
+      "codec": "MP3",
+      "lastCheckOk": true,
+      "votes": 580,
+      "clickCount": 320,
+      "hls": false
     },
     {
       "id": "wdr5",
@@ -78,7 +120,13 @@
       "genre": "Culture",
       "country": "Germany",
       "bitrate": "128 kbit/s",
-      "color": "#688ba7"
+      "color": "#688ba7",
+      "language": "German",
+      "codec": "MP3",
+      "lastCheckOk": true,
+      "votes": 510,
+      "clickCount": 360,
+      "hls": false
     },
     {
       "id": "album1",
@@ -119,6 +167,70 @@
       "country": "Online",
       "bitrate": "Spotify",
       "color": "#336f65"
+    },
+    {
+      "id": "demo-fr",
+      "name": "Paris Jazz · demo",
+      "type": "radio",
+      "subtitle": "Paris",
+      "genre": "Jazz",
+      "country": "France",
+      "language": "French",
+      "bitrate": "192 kbit/s",
+      "codec": "MP3",
+      "lastCheckOk": true,
+      "votes": 220,
+      "clickCount": 500,
+      "hls": false,
+      "color": "#a775b6"
+    },
+    {
+      "id": "demo-uk",
+      "name": "London Live · demo",
+      "type": "radio",
+      "subtitle": "London",
+      "genre": "News",
+      "country": "United Kingdom",
+      "language": "English",
+      "bitrate": "128 kbit/s",
+      "codec": "UNKNOWN",
+      "lastCheckOk": true,
+      "votes": 180,
+      "clickCount": 220,
+      "hls": true,
+      "color": "#3e85ba"
+    },
+    {
+      "id": "demo-opus",
+      "name": "Open Wave · demo",
+      "type": "radio",
+      "subtitle": "Opus stream",
+      "genre": "Electronic",
+      "country": "Germany",
+      "language": "German",
+      "bitrate": "128 kbit/s",
+      "codec": "OPUS",
+      "lastCheckOk": true,
+      "votes": 120,
+      "clickCount": 80,
+      "hls": false,
+      "color": "#6ca28b"
+    },
+    {
+      "id": "demo-offline",
+      "name": "Offline station · demo",
+      "type": "radio",
+      "subtitle": "Last check failed",
+      "genre": "Pop",
+      "country": "Germany",
+      "language": "German",
+      "bitrate": "320 kbit/s",
+      "codec": "MP3",
+      "lastCheckOk": false,
+      "votes": 60,
+      "clickCount": 40,
+      "hls": false,
+      "color": "#a77d6b"
     }
   ],
   "servers": [

@@ -9,6 +9,16 @@
       "agentName": "STR",
       "agentVersion": null,
       "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
         "sound": true,
         "network": true,
         "remote": true,
@@ -61,6 +71,15 @@
       "agentName": null,
       "agentVersion": null,
       "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "OPUS",
+            "FLAC"
+          ],
+          "hls": false
+        },
         "sound": true,
         "network": true,
         "remote": false,
@@ -168,6 +187,11 @@
     "searchCountry": "Germany",
     "searchLanguage": "All",
     "radioGenre": "All",
+    "radioOrder": "votes",
+    "radioMinBitrate": 0,
+    "radioOnlyWorking": true,
+    "radioOnlyCompatible": true,
+    "radioOutputId": null,
     "restoreSession": true
   },
   "ui": {
@@ -179,6 +203,7 @@
       "outputs": false,
       "system": true
     },
+    "radioFiltersPinned": false,
     "deviceTab": "overview",
     "outputFilter": "all",
     "radioTab": "discover",
@@ -193,6 +218,16 @@
       "model": "SoundTouch 10",
       "firmware": "27.0.6",
       "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
         "sound": true,
         "network": true,
         "remote": true,

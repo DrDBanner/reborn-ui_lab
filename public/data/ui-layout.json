@@ -23,7 +23,7 @@
         {
           "view": "spotify",
           "label": "Spotify",
-          "icon": "graphic_eq"
+          "icon": "music_cast"
         }
       ]
     },
@@ -69,8 +69,8 @@
       "Streams and playlists"
     ],
     "outputs": [
-      "Outputs & groups",
-      "Speakers, stereo pairs and grouped outputs"
+      "Outputs & playbacks",
+      "Sources, playback and available functions"
     ],
     "device": [
       "Device details",
@@ -101,8 +101,8 @@
       "Scenarios, variants and visual tokens"
     ],
     "sessions": [
-      "Playbacks",
-      "Independent streams and their outputs"
+      "Outputs & playbacks",
+      "Sources, playback and available functions"
     ]
   }
 }

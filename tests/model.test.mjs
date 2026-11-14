@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario} from '../src/app/model.js';
+import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets} from '../src/app/model.js';
 const base=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data/scenarios/home.json'),'utf8'));
 const fresh=()=>structuredClone(base);
 test('pair and group resolve to physical speakers',()=>{const m=fresh();assert.deepEqual(leafDeviceIds(m,'p1'),['d1','d2']);assert.deepEqual(leafDeviceIds(m,'g1'),['d1','d2','d3'])});
@@ -50,4 +50,92 @@ test('legacy migration preserves existing assignments and unknown devices',()=>{
 test('scenario validation rejects malformed capability data',()=>{
  const m=fresh();m.devices[0].capabilities.buttonPresets={keyCount:0,gestures:['triple']};
  assert(validateScenario(m).some(error=>error.includes('invalid button capabilities')));
+});
+
+const radioCatalog=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data/catalog.json'),'utf8'));
+test('radio filters combine country, language, genre and minimum bitrate',()=>{
+ const m=fresh();Object.assign(m.settings,{searchCountry:'France',searchLanguage:'French',radioGenre:'Jazz',radioMinBitrate:128});
+ assert.deepEqual(filterRadioSources(m,radioCatalog).map(item=>item.id),['demo-fr']);
+ m.settings.radioMinBitrate=320;assert.equal(filterRadioSources(m,radioCatalog).length,0);
+ m.settings.radioMinBitrate=0;m.settings.searchLanguage='German';assert.equal(filterRadioSources(m,radioCatalog).length,0);
+});
+test('working and compatibility filters respect output capabilities and HLS',()=>{
+ const m=fresh();Object.assign(m.settings,{searchCountry:'All',radioOnlyWorking:false,radioOnlyCompatible:false});
+ assert(filterRadioSources(m,radioCatalog).some(item=>item.id==='demo-offline'));
+ m.settings.radioOnlyWorking=true;assert(!filterRadioSources(m,radioCatalog).some(item=>item.id==='demo-offline'));
+ m.settings.radioOnlyCompatible=true;
+ assert(!filterRadioSources(m,radioCatalog).some(item=>item.id==='demo-opus'));
+ assert(filterRadioSources(m,radioCatalog).some(item=>item.id==='demo-uk'));
+ const d=m.devices.find(item=>item.id==='d4');d.capabilities.radio={codecs:['OPUS'],hls:false};m.settings.radioOutputId='d4';
+ assert(filterRadioSources(m,radioCatalog).some(item=>item.id==='demo-opus'));
+ assert(!filterRadioSources(m,radioCatalog).some(item=>item.id==='demo-uk'));
+ assert(compatibleRadioSource(m,{codec:'UNKNOWN'},'d4'));
+});
+test('radio sorting, query and favorites work with the full filter model',()=>{
+ const m=fresh();Object.assign(m.settings,{searchCountry:'All',radioOnlyWorking:false,radioOnlyCompatible:false,radioOrder:'name'});
+ const byName=filterRadioSources(m,radioCatalog);assert.deepEqual(byName.map(item=>item.name),[...byName].sort((a,b)=>a.name.localeCompare(b.name,'en')).map(item=>item.name));
+ m.settings.radioOrder='bitrate';const bitrates=filterRadioSources(m,radioCatalog).map(item=>parseInt(item.bitrate));assert(bitrates.every((value,index)=>!index||value<=bitrates[index-1]));
+ assert.deepEqual(filterRadioSources(m,radioCatalog,'Paris').map(item=>item.id),['demo-fr']);
+ m.ui.radioTab='favorites';assert(filterRadioSources(m,radioCatalog).every(item=>m.favorites.includes(item.id)));
+});
+
+test('renaming a physical device preserves identity, groups and playbacks',()=>{
+ const m=fresh(),beforeSessions=JSON.stringify(m.sessions),beforeGroups=JSON.stringify([m.pairs,m.groups]);
+ renameDevice(m,'d1','  New Living Room  ');
+ assert.equal(m.devices[0].name,'New Living Room');
+ assert.equal(m.devices[0].brand,'Bose');
+ assert.equal(m.devices[0].id,'d1');
+ assert.equal(JSON.stringify(m.sessions),beforeSessions);
+ assert.equal(JSON.stringify([m.pairs,m.groups]),beforeGroups);
+ assert.throws(()=>renameDevice(m,'d1','   '));
+ assert.throws(()=>renameDevice(m,'d1','x'.repeat(121)));
+ assert.throws(()=>renameDevice(m,'p1','Invalid target'));
+ assert.equal(m.devices[0].name,'New Living Room');
+});
+
+
+test('button transfer fans out groups and pairs, de-duplicates devices and preserves sessions',()=>{
+ const m=fresh(),before=JSON.stringify(m.sessions),sourceBefore=JSON.stringify(m.devices[0]);
+ const report=transferButtonPresets(m,'d1',['g1','p1','d2','d4']);
+ assert.deepEqual(report.results.map(result=>result.id),['d2','d3','d4']);
+ assert.equal(report.results.find(result=>result.id==='d4').skipped.length,3);
+ assert.equal(report.results.find(result=>result.id==='d2').copied.length,9);
+ assert.deepEqual(m.devices.find(device=>device.id==='d4').presets,m.devices[0].presets);
+ assert.equal(JSON.stringify(m.sessions),before);
+ assert.equal(JSON.stringify(m.devices[0]),sourceBefore);
+});
+test('whole-set transfer refuses collisions without changing the target',()=>{
+ const m=fresh(),target=m.devices.find(device=>device.id==='d5');
+ m.devices[0].presets=['flux'];m.devices[0].doublePresets=[];
+ target.presets=['ndrinfo',null,'flux'];target.doublePresets=[];
+ const before=JSON.stringify(target),report=transferButtonPresets(m,'d1',['d5']);
+ assert(report.results[0].error.includes('key 3'));
+ assert.equal(report.results[0].copied.length,0);
+ assert.equal(JSON.stringify(target),before);
+});
+test('selected-key transfer skips collisions while copying accepted keys and keeping untouched keys',()=>{
+ const m=fresh(),source=m.devices[0],target=m.devices.find(device=>device.id==='d5');
+ source.presets=['flux','ndr2','1live'];source.doublePresets=[];
+ target.presets=['dl','ffn','flux','sw'];target.doublePresets=[];
+ const report=transferButtonPresets(m,'d1',['d5'],['single:1','single:2']);
+ assert.equal(report.whole,false);assert.equal(report.results[0].skipped[0].key,1);
+ assert.deepEqual(target.presets.slice(0,4),['dl','ndr2','flux','sw']);
+});
+test('batch transfer supports swaps and rechecks collisions after a refused key',()=>{
+ const m=fresh(),source=m.devices[0],target=m.devices.find(device=>device.id==='d5');
+ source.presets=['flux','ndr2','1live'];source.doublePresets=[];
+ target.presets=['ndr2','flux','dl'];target.doublePresets=[];
+ let report=transferButtonPresets(m,'d1',['d5'],['single:1','single:2']);
+ assert.equal(report.results[0].copied.length,2);assert.deepEqual(target.presets.slice(0,3),['flux','ndr2','dl']);
+ source.presets=['flux','ndr2','1live','sw'];target.presets=['dl','flux','ndr2'];
+ report=planPresetTransfer(m,'d1',['d5'],['single:1','single:2']);
+ assert.equal(report.results[0].copied.length,0);assert.equal(report.results[0].skipped.length,2);
+});
+test('transfer reports offline and unsupported targets without altering them',()=>{
+ const m=fresh(),target=m.devices.find(device=>device.id==='d5');target.status='offline';
+ const before=JSON.stringify(target);assert(planPresetTransfer(m,'d1',['d5']).results[0].error.includes('offline'));
+ transferButtonPresets(m,'d1',['d5']);assert.equal(JSON.stringify(target),before);
+ target.status='online';target.capabilities={};assert(planPresetTransfer(m,'d1',['d5']).results[0].error.includes('No hardware'));
+ assert.throws(()=>planPresetTransfer(m,'d1',['d1']));assert.throws(()=>planPresetTransfer(m,'d1',['d4'],[]));
+ m.devices[0].status='offline';assert.throws(()=>planPresetTransfer(m,'d1',['d4']));
 });

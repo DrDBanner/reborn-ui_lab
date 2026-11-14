@@ -25,9 +25,19 @@ CATALOG={
  'languages':['English','Deutsch','Français','Italiano','Español','Nederlands','Dansk','Svenska','Português','Polski','Suomi','Norsk','العربية']
 }
 
+# Explicit sample metadata supports the same filter dimensions as current STR.
+for index,item in enumerate(CATALOG['sources']):
+ if item['type']=='radio':item.update({'language':'German','codec':'AAC' if item['id']=='ffn' else 'MP3','lastCheckOk':True,'votes':1000-index*70,'clickCount':index*40+80,'hls':False})
+CATALOG['sources'] += [
+ {'id':'demo-fr','name':'Paris Jazz · demo','type':'radio','subtitle':'Paris','genre':'Jazz','country':'France','language':'French','bitrate':'192 kbit/s','codec':'MP3','lastCheckOk':True,'votes':220,'clickCount':500,'hls':False,'color':'#a775b6'},
+ {'id':'demo-uk','name':'London Live · demo','type':'radio','subtitle':'London','genre':'News','country':'United Kingdom','language':'English','bitrate':'128 kbit/s','codec':'UNKNOWN','lastCheckOk':True,'votes':180,'clickCount':220,'hls':True,'color':'#3e85ba'},
+ {'id':'demo-opus','name':'Open Wave · demo','type':'radio','subtitle':'Opus stream','genre':'Electronic','country':'Germany','language':'German','bitrate':'128 kbit/s','codec':'OPUS','lastCheckOk':True,'votes':120,'clickCount':80,'hls':False,'color':'#6ca28b'},
+ {'id':'demo-offline','name':'Offline station · demo','type':'radio','subtitle':'Last check failed','genre':'Pop','country':'Germany','language':'German','bitrate':'320 kbit/s','codec':'MP3','lastCheckOk':False,'votes':60,'clickCount':40,'hls':False,'color':'#a77d6b'},
+]
+
 def device(i,name=None,status='online'):
  return {'id':f'd{i}','name':name or f'Speaker {i:02d}','brand':'Bose','model':'SoundTouch 10' if i%3 else 'SoundTouch 30','hardwareRevision':None,'agentName':'STR','agentVersion':None,
-         'capabilities':{'sound':True,'network':True,'remote':True,'alarms':True,'buttonPresets':{'keyCount':6,'gestures':['single'] if i%4==0 else ['single','double']}},
+         'capabilities':{'radio':{'codecs':['MP3','AAC','AAC+','AACP','MPEG'],'hls':True},'sound':True,'network':True,'remote':True,'alarms':True,'buttonPresets':{'keyCount':6,'gestures':['single'] if i%4==0 else ['single','double']}},
          'doublePresets':[] if i%4==0 else ['album1','ndr2',None,'discover',None,None], 'ip':f'192.168.0.{100+i}','status':status,
          'firmware':'27.0.6' if i%4 else '26.1.4','firmwareLatest':'27.0.6','firmwareAvailable':i%4==0,'updateProgress':62 if status=='updating' else 0,
          'volume':24+(i%7),'bass':0,'startVolumeEnabled':False,'startVolume':20,'language':'English','network':'Home Network',
@@ -42,8 +52,8 @@ def sample(ui='listen',n=7):
  'sessions':[{'id':'s1','targetId':'g1','sourceId':'flux','status':'playing','volume':25},{'id':'s2','targetId':'d4','sourceId':'ndrinfo','status':'playing','volume':28}],
  'favorites':['flux','ndrinfo','dl'], 'history':['flux','ndrinfo','1live','album1','dl'], 'spotifyConnected':False,
  'selectedOutputId':'g1','selectedSessionId':'s1','selectedSourceId':'flux','selectedDeviceId':'d1','activeView':ui,
- 'settings':{'language':'English','appearance':'dark','autoUpdate':True,'telemetry':False,'searchCountry':'Germany','searchLanguage':'All','radioGenre':'All','restoreSession':True},
- 'ui':{'speakerVariant':'sidebar','density':'standard','sidebarLimit':6,'collapsed':{'listen':False,'outputs':False,'system':True},'deviceTab':'overview','outputFilter':'all','radioTab':'discover','settingsTab':'general','libraryServer':'nas'},
+ 'settings':{'language':'English','appearance':'dark','autoUpdate':True,'telemetry':False,'searchCountry':'Germany','searchLanguage':'All','radioGenre':'All','radioOrder':'votes','radioMinBitrate':0,'radioOnlyWorking':True,'radioOnlyCompatible':True,'radioOutputId':None,'restoreSession':True},
+ 'ui':{'speakerVariant':'sidebar','density':'standard','sidebarLimit':6,'collapsed':{'listen':False,'outputs':False,'system':True},'radioFiltersPinned':False,'deviceTab':'overview','outputFilter':'all','radioTab':'discover','settingsTab':'general','libraryServer':'nas'},
  'setupCandidates':[{'id':'found1','name':'SoundTouch 10 (new)','brand':'Bose','model':'SoundTouch 10','firmware':'27.0.6','capabilities':device(1)['capabilities'],'ip':'192.168.0.220'}],
  }
 
@@ -73,7 +83,7 @@ fresh['setupCandidates']=[{'id':'found1','name':'SoundTouch 10','brand':'Bose','
 scenarios['first-run']=fresh
 
 capabilities=sample('outputs')
-buttonless=device(11,'Studio Display');buttonless.update({'brand':'Example Audio','model':'Network Display','agentName':None,'firmware':None,'firmwareLatest':None,'firmwareAvailable':False,'presets':[],'doublePresets':[], 'capabilities':{'sound':True,'network':True,'remote':False,'alarms':False}})
+buttonless=device(11,'Studio Display');buttonless.update({'brand':'Example Audio','model':'Network Display','agentName':None,'firmware':None,'firmwareLatest':None,'firmwareAvailable':False,'presets':[],'doublePresets':[], 'capabilities':{'radio':{'codecs':['MP3','AAC','OPUS','FLAC'],'hls':False},'sound':True,'network':True,'remote':False,'alarms':False}})
 compact=device(12,'Desk Compact');compact.update({'brand':'Example Audio','model':'Two-key Speaker','agentName':None,'firmware':None,'firmwareLatest':None,'firmwareAvailable':False,'presets':['flux','dl'],'doublePresets':[], 'capabilities':{'sound':True,'network':False,'remote':False,'alarms':False,'buttonPresets':{'keyCount':2,'gestures':['single']}}})
 capabilities.update({'devices':[device(1,'Living Room'),buttonless,compact],'pairs':[],'groups':[], 'sessions':[{'id':'s1','targetId':'d1','sourceId':'flux','status':'playing','volume':25},{'id':'s2','targetId':'d11','sourceId':'album1','status':'playing','volume':22}], 'selectedOutputId':'d1','selectedDeviceId':'d1'})
 scenarios['capabilities']=capabilities

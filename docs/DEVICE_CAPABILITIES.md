@@ -19,3 +19,25 @@ Verified against [JRpersonal/streborn](https://github.com/JRpersonal/streborn/tr
 - [`doublepress.go`](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/cmd/agent/doublepress.go): the existing agent handles gesture detection and group echo checks. This logic belongs to that adapter, not the UI.
 
 A future STR adapter translates the two UI banks to those verified slots and reports capabilities from the agent. No live Go/Wails calls are made by this prototype.
+
+## Radio capability filters
+
+Optional `capabilities.radio` reports `codecs` and `hls`. The compatibility filter checks every leaf device of the explicitly chosen output. Unknown capability/codec information stays visible; it is not proof of compatibility. Explicit HLS support allows converted HLS streams regardless of their reported codec. This reflects the current STR adapter behavior without inferring features from a brand.
+
+Radio supports country, language, sort (votes/popularity/name/bitrate), minimum bitrate, last-check success, compatibility output and genre. Filters act on the local sample catalog; no live radio directory or stream verification is claimed. Reset clears search and restrictions. The pin preference sticks the search/filter/genre controls within the scrollable workspace and is persisted per scenario. Expanded filters have a bounded scrolling panel so a small display retains room for results.
+
+## Transfer button assignments
+
+Functions → Transfer buttons copies all occupied keys or a chosen subset to selected devices, pairs or group members. Composites expand to physical devices; overlapping selections are de-duplicated and the source device is excluded. Both gesture layers are included when selected and supported. Empty/unselected source slots do not erase target assignments.
+
+This matches the existing STR **one-time copy** behavior, verified at the pinned upstream revision above:
+
+- [`desktop-app/app_presets.go`](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/desktop-app/app_presets.go): `CopyPresetsAcrossBoxes` copies occupied slots; bulk validation judges the completed assignment set so swaps work. Whole-set duplicate conflicts leave the target unchanged.
+- [`desktop-app/app_presets_keycopy.go`](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/desktop-app/app_presets_keycopy.go): `CopyPresetKeysAcrossBoxes` reports copied, skipped and unsupported second-layer slots per target; collisions can skip a chosen key while other keys copy. Unmentioned target keys remain untouched.
+- [`internal/webui/presets_http.go`](https://github.com/JRpersonal/streborn/blob/6c874ee11bd89175427ef65be56eeeeb33317cd9/internal/webui/presets_http.go): target validation and conflict reporting remain backend responsibilities. A real integration must also handle readiness, partial failures and older agents without bulk support.
+
+The lab previews the plan, then applies local mock assignments with per-device results. Source IDs stand in for real typed preset payloads and duplicate identities; an adapter must use actual backend identities and responses. It must not claim copied keys before acknowledgement. No persistent shared-profile subscription has been established by these copy APIs. The UI therefore does not promise continuous synchronization. Group fan-out is orchestration, not storage on a fictional group device.
+
+## Reference app gaps
+
+The screenshot audit of ST Reborn v1.6.2 records additional capabilities and their intended contexts in [project/feature-coverage/coverage.md](../../project/feature-coverage/coverage.md). In particular, the global simulated Spotify connection and unrestricted generic pairing are known mock limitations; production needs per-device account/source state and explicit pairing-compatibility contracts.

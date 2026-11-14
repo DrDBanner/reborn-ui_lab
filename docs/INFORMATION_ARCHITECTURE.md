@@ -12,9 +12,9 @@ The model permits **multiple independent playback sessions**. Grouping is separa
 
 The sidebar provides **fast access**, not an exhaustive N-device management interface:
 
-1. Category titles open a corresponding full workspace (e.g. OUTPUTS → Outputs & groups).
-2. Chevrons on the right independently collapse the contents of a category.
-3. A bounded list shows independent playing and paused sessions in both variants. Selecting a session changes the player context; it does not start, stop or regroup outputs. All sessions are available in Playbacks.
+1. Category titles open a corresponding full workspace (e.g. OUTPUTS → Outputs & playbacks).
+2. Chevrons on the right independently collapse the contents of a category. Outputs and Playbacks have an always-visible overview icon immediately before the chevron; the separate overview text rows and duplicate Connections & devices menu entry are removed.
+3. A bounded list shows independent playing and paused sessions in both variants. Selecting a session changes the player context; it does not start, stop or regroup outputs. All sessions are available through the active projection in the shared Outputs & playbacks workspace.
 4. Stereo pairs and groups are shown as **one output item**, not repeated speaker rows.
 5. An optional limit keeps the sidebar short. Full search, filters and group creation operate in the content workspace.
 6. Speaker settings, firmware, network and diagnostics belong in the main workspace.
@@ -41,3 +41,15 @@ The original 34-page SVG concept remains available under `reference/original/`: 
 ## Separate future projects
 
 The UI models brand-neutral identity and device capabilities (see DEVICE_CAPABILITIES.md). Actual manufacturer adapters, Topology and optional Zones remain separate. This UI Lab makes no claim to support cross-manufacturer audio synchronization.
+
+## Unified outputs and playbacks
+
+Playbacks and Outputs open the same **Outputs & playbacks** workspace. Playbacks applies the Active only projection; Outputs shows all physical devices, pairs and groups for configuration. Each card projects its current source and playback state; inherited playback names its parent. Direct play/pause addresses that exact session, preserving independent streams. Button-capability projections link to the physical member's Functions tab.
+
+Sidebar selection represents the current content route, not the chosen bottom-player session. Exactly one navigation context is marked current, even if stale device/group IDs remain in state or the section is collapsed. Stream status uses the accent music-cast indicator without a selected card background. A selected device hidden within a composite or in the player-panel variant marks the Outputs section instead.
+
+## Direct source playback
+
+The station artwork is an immediate Play action on the output currently named in the bottom player. Hover or keyboard focus reveals play_circle; touch shows it without requiring hover. Accessible label and tooltip name source and output. An unavailable target disables this shortcut. A stale action cannot redirect playback to a changed player context. Source assignment affects only overlapping physical outputs.
+
+The separate music-cast action opens output selection and waits for an explicit choice. This lets users start independent streams without silently replacing the current one. Device configuration selection never redirects the station shortcut when another playback session is active.

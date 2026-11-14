@@ -63,3 +63,17 @@ test('System contains only updates and setup; app preferences stay in the logo m
   assert(!html.includes('data-value="lab"'));
  }
 });
+
+
+test('sidebar marks only the current route, never the unrelated player or stale detail',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
+ const s={model,catalog,designTokens:tokens,detailDeviceId:'d4',detailOutputId:'g1'};
+ for(const variant of ['sidebar','panel'])for(const collapsed of [true,false])for(const view of Object.keys(renderers)){
+  model.ui.speakerVariant=variant;model.ui.collapsed={listen:collapsed,outputs:collapsed,system:collapsed,playbacks:collapsed};s.view=view;
+  for(const scope of ['all','active']){
+   model.ui.outputScope=scope;const html=sidebar(s);
+   assert.equal((html.match(/aria-current="page"/g)||[]).length,1,`${variant} ${collapsed} ${view} ${scope}`);
+   assert(!html.includes('session-card is-selected'));
+  }
+ }
+});

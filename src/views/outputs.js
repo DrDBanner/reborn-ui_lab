@@ -1,25 +1,28 @@
 import {esc,icon,action,card,empty,navHeader,statusBadge,subline,targetIcon,typeIcon} from '../components/shared.js';
-import {getTargets,kind,entity,parentIds,targetStatus,leafDeviceIds,sessionFor,effectiveSessionFor,source,visibleOutputs} from '../app/model.js';
+import {getTargets,kind,entity,parentIds,targetStatus,leafDeviceIds,sessionFor,effectiveSessionFor,source,visibleOutputs,buttonProfile} from '../app/model.js';
 
 const filters=[['all','All outputs'],['device','Speakers'],['pair','Stereo pairs'],['group','Groups']];
 function outputCard(s,t){
  const m=s.model,type=kind(m,t.id),status=targetStatus(m,t.id),session=effectiveSessionFor(m,t.id),parents=parentIds(m,t.id);
+ const devices=leafDeviceIds(m,t.id).map(id=>entity(m,id)),buttons=devices.filter(device=>buttonProfile(device));
  const selected=s.selectedForComposite.includes(t.id),sourceData=source(s.catalog,session?.sourceId);
  return `<article class="target-card ${selected?'target-card--checked':''}">
  <header class="target-card__header"><span class="target-card__icon">${typeIcon(type)}</span>
  <div class="target-card__title"><strong>${esc(t.name)}</strong><small>${esc(type==='device'?t.model:`${leafDeviceIds(m,t.id).length} speakers`)}</small></div>
  <input type="checkbox" data-field="member-select" value="${esc(t.id)}" ${selected?'checked':''} title="Select to create a group or pair" aria-label="Select ${esc(t.name)} for grouping" /></header>
  <div class="target-card__status">${statusBadge(status)}${parents.length?`<span class="micro">In ${esc(entity(m,parents[0])?.name)}</span>`:''}</div>
- <div class="target-card__stream">${sourceData?`<span>${icon('graphic_eq')} ${esc(sourceData.name)}${session?.targetId!==t.id?' · via group':''}</span>`:`<span class="muted">${type==='device'?esc(t.ip):`${leafDeviceIds(m,t.id).length} speaker(s)`}</span>`}</div>
+ <div class="source-projection">${sourceData?`<span class="source-art source-art--sm" style="--source-color:${esc(sourceData.color)}">${icon(sourceData.type==='radio'?'radio':sourceData.type==='library'?'album':'music_cast')}</span><span class="source-projection__body"><strong>${esc(sourceData.name)}</strong><small>${esc(session.status==='playing'?'Playing':session.status==='paused'?'Paused':'Stopped')}${session.targetId!==t.id?` · via ${esc(entity(m,session.targetId)?.name)}`:''}</small></span>${session.targetId===t.id?action('toggle-output-playback',icon(session.status==='playing'?'pause_circle':'play_circle'),'icon-btn',`data-id="${esc(session.id)}" aria-label="${session.status==='playing'?'Pause':'Play'} ${esc(sourceData.name)} on ${esc(t.name)}"`):''}`:'<span class="muted">No active playback</span>'}</div>
+ ${buttons.length?`<details class="capability-projection"><summary>${icon('grid_view')} Button presets${type!=='device'?` · ${buttons.length} devices`:''}</summary><div>${buttons.map(device=>action('device-open',`<span>${esc(type==='device'?'Configure buttons':device.name)}</span><small>${buttonProfile(device).keyCount} keys · ${buttonProfile(device).gestures.includes('double')?'1× / 2×':'1×'}</small>`,'capability-item',`data-id="${esc(device.id)}" data-tab="functions"`)).join('')}</div></details>`:''}
  <footer class="target-card__actions">${action('select-output',icon('speaker')+' Use output','btn-soft',`data-id="${t.id}"`)}${action(type==='device'?'device-open':'group-open','Manage '+icon('arrow_forward'),'btn-quiet',`data-id="${t.id}"`)}</footer></article>`;
 }
 export function renderOutputs(s){
  const m=s.model,filter=m.ui.outputFilter||'all',q=s.outputSearch.toLowerCase();
- const targets=getTargets(m).filter(x=>(filter==='all'||kind(m,x.id)===filter)&&x.name.toLowerCase().includes(q));
+ const activeOnly=m.ui.outputScope==='active';
+ const targets=(activeOnly?visibleOutputs(m).filter(output=>{const playback=effectiveSessionFor(m,output.id);return playback&&playback.status!=='stopped'}):getTargets(m)).filter(x=>(filter==='all'||kind(m,x.id)===filter)&&x.name.toLowerCase().includes(q));
  const outputCount=visibleOutputs(m).length;
- return `${navHeader('Outputs & groups', 'A speaker, a stereo pair and a group can all be addressed as playback targets.', `${action('start-group-create',icon('group_add')+' Create group','btn-soft')}${action('start-pair-create',icon('speaker_group')+' Stereo pair','primary-btn')}`)}
- <section class="summary-strip"><div><strong>${m.devices.length}</strong><span>physical speakers</span></div><div><strong>${m.pairs.length}</strong><span>stereo pairs</span></div><div><strong>${m.groups.length}</strong><span>groups</span></div><div><strong>${m.sessions.length}</strong><span>playback sessions</span></div></section>
- <div class="toolbar"><div class="segmented">${filters.map(([id,name])=>action('filter-outputs',name,`tab-control ${filter===id?'active':''}`,`data-value="${id}"`)).join('')}</div><label class="search-field search-field--small">${icon('search')}<input type="search" data-field="output-search" value="${esc(s.outputSearch)}" placeholder="Find any output" aria-label="Search devices and groups" /></label></div>
+ return `${navHeader('Outputs & playbacks', 'Sources, playback and available functions in one place.', `${action('start-group-create',icon('group_add')+' Create group','btn-soft')}${action('start-pair-create',icon('speaker_group')+' Stereo pair','primary-btn')}`)}
+ <section class="summary-strip"><div><strong>${m.devices.length}</strong><span>physical speakers</span></div><div><strong>${m.pairs.length}</strong><span>stereo pairs</span></div><div><strong>${m.groups.length}</strong><span>groups</span></div><div><strong>${m.sessions.filter(session=>session.status!=='stopped').length}</strong><span>active playbacks</span></div></section>
+ <div class="toolbar">${action('filter-output-scope',icon('music_cast')+' Active only',`btn-quiet scope-filter ${activeOnly?'is-active':''}`,`aria-pressed="${activeOnly}"`)}<div class="segmented">${filters.map(([id,name])=>action('filter-outputs',name,`tab-control ${filter===id?'active':''}`,`data-value="${id}"`)).join('')}</div><label class="search-field search-field--small">${icon('search')}<input type="search" data-field="output-search" value="${esc(s.outputSearch)}" placeholder="Find any output" aria-label="Search devices and groups" /></label></div>
  ${s.selectedForComposite.length?`<div class="selection-bar"><span>${s.selectedForComposite.length} selected</span>${action('start-group-create','Create group','btn-soft')}${action('start-pair-create','Make stereo pair','btn-soft')}${action('clear-selected','Clear','text-action')}</div>`:''}
  <section class="targets-grid">${targets.length?targets.map(t=>outputCard(s,t)).join(''):empty('speaker_group','No matching outputs','Clear search or change the filter.')}</section>
  <p class="explain-note">Pairs appear as one output in everyday navigation. This full workspace still exposes the physical speakers and their relationships for configuration and maintenance.</p>`;

@@ -5,13 +5,13 @@ export const state={catalog:null,scenarioIndex:[],uiLayout:null,variants:null,sc
   view:'listen', detailDeviceId:null, detailOutputId:null, selectedSourceId:null,
   modal:null, toast:null, sidebarOpen:false, speakerPickerFor:null, filter:'', outputSearch:'', selectedForComposite:[],
   setupStep:0, setupSelection:null, designOpen:false, designTokens:null, scenarioEditorOpen:false,
-  appMenuOpen:false, presetGesture:'single', expandingOutputs:false, alert:null};
+  radioFiltersOpen:false, appMenuOpen:false, presetGesture:'single', expandingOutputs:false, alert:null};
 
 export function subscribe(listener){listeners.add(listener);return()=>listeners.delete(listener)}
 export function notify(){for(const fn of listeners)fn(state)}
 export function mutate(fn,persist=true){fn(state);if(persist)save();notify()}
 export function save(){if(!state.model)return;try{localStorage.setItem(`streborn-lab:${state.scenarioId}`,JSON.stringify(state.model));localStorage.setItem('streborn-lab:design',JSON.stringify(state.designTokens));}catch{}}
-export function resetUi(){state.filter='';state.outputSearch='';state.detailDeviceId=null;state.detailOutputId=null;state.selectedForComposite=[];state.setupStep=0;state.expandingOutputs=false;state.modal=null;state.toast=null;state.scenarioEditorOpen=false;state.appMenuOpen=false;state.presetGesture='single';}
+export function resetUi(){state.filter='';state.outputSearch='';state.detailDeviceId=null;state.detailOutputId=null;state.selectedForComposite=[];state.setupStep=0;state.expandingOutputs=false;state.modal=null;state.toast=null;state.scenarioEditorOpen=false;state.appMenuOpen=false;state.radioFiltersOpen=false;state.presetGesture='single';}
 export async function initialize(){
   const [index,catalog,design,uiLayout,variants]=await Promise.all(['/data/scenario-index.json','/data/catalog.json','/data/design-tokens.json','/data/ui-layout.json','/data/variants.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw new Error(`Failed to load ${url}`);return r.json()})));
   state.catalog=catalog;state.scenarioIndex=index;state.uiLayout=uiLayout;state.variants=variants;state.designTokens=design;

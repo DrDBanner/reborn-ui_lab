@@ -28,22 +28,25 @@ export function subline(model,id){const k=kind(model,id);if(k==='device')return 
 export function outputItem(model,id,{compact=false,selected=false,extra=''}={}){
  const t=entity(model,id);if(!t)return '';
  const k=kind(model,id),status=targetStatus(model,id),s=sessionFor(model,id);
- return `<button type="button" class="output-item ${compact?'output-item--compact':''} ${selected?'is-selected':''}" data-action="select-output" data-id="${esc(id)}" title="${esc(t.name)}">
+ return `<button type="button" class="output-item ${compact?'output-item--compact':''} ${selected?'is-selected':''}" data-action="select-output" data-id="${esc(id)}" title="${esc(t.name)}" ${selected?'aria-current="page"':''}>
     <span class="output-item__symbol">${typeIcon(k)}</span>
     <span class="output-item__body"><strong>${esc(t.name)}</strong><small>${statusLabel(status)}${s?' · '+({playing:'Playing',paused:'Paused',stopped:'Stopped'}[s.status]||''):''}</small></span>
-    <span class="output-item__trail">${s?icon('graphic_eq','eq-symbol'):icon('chevron_right')}</span>
+    <span class="output-item__trail">${s?icon('music_cast','stream-symbol'):icon('chevron_right')}</span>
  </button>${extra}`;
 }
 export function sourceTile(s,{active=false,actionName='source-select',cls=''}={}){
- return `<button type="button" class="source-tile ${active?'is-selected':''} ${cls}" data-action="${esc(actionName)}" data-id="${esc(s.id)}">
+ return `<button type="button" class="source-tile ${active?'is-selected':''} ${cls}" data-action="${esc(actionName)}" data-id="${esc(s.id)}" title="Choose output for ${esc(s.name)}">
   <span class="source-art" style="--source-color:${esc(s.color||'#7289ae')}">${icon(s.type==='radio'?'radio':s.type==='spotify'?'music_note':'album')}</span>
-  <span class="source-tile__content"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></span>${icon('play_arrow','source-tile__play')}
+  <span class="source-tile__content"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></span>${icon('music_cast','source-tile__cast')}
  </button>`;
 }
-export function sourceRow(s,{favorite=false}={}){
- return `<div class="source-row"><span class="source-art source-art--sm" style="--source-color:${esc(s.color)}">${icon(s.type==='radio'?'radio':s.type==='spotify'?'music_note':'album')}</span><div class="source-row__main"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></div><span class="source-row__genre">${esc(s.genre)}</span><div class="source-row__actions">
-   ${action('source-select',icon('play_arrow'),'icon-btn',`data-id="${esc(s.id)}" title="Play on output" aria-label="Play ${esc(s.name)}"`)}
-   ${action('toggle-favorite',icon(favorite?'favorite':'favorite_border'),'icon-btn',`data-id="${esc(s.id)}" title="Toggle favorite" aria-label="Favorite ${esc(s.name)}"`)}
+export function sourceRow(s,{favorite=false,playTarget=null,playable=false}={}){
+ const artwork=icon(s.type==='radio'?'radio':s.type==='spotify'?'music_note':'album');
+ const playLabel=playTarget?`Play ${s.name} on ${playTarget.name}`:`Choose an output before playing ${s.name}`;
+ const art=playTarget?action('source-play',`<span class="source-art__identity">${artwork}</span>${icon('play_circle','source-art__play')}`,'source-art source-art--sm source-art--play',`style="--source-color:${esc(s.color)}" data-id="${esc(s.id)}" data-target="${esc(playTarget.id)}" title="${esc(playLabel)}" aria-label="${esc(playLabel)}" ${playable?'':'disabled'}`):`<span class="source-art source-art--sm" style="--source-color:${esc(s.color)}">${artwork}</span>`;
+ return `<div class="source-row">${art}<div class="source-row__main"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></div><span class="source-row__genre">${esc(s.genre)}</span><div class="source-row__actions">
+   ${action('source-select',icon('music_cast'),'icon-btn',`data-id="${esc(s.id)}" title="Choose output" aria-label="Choose output for ${esc(s.name)}"`)}
+   ${action('toggle-favorite',icon(favorite?'favorite':'favorite_border'),'icon-btn',`data-id="${esc(s.id)}" title="Toggle favorite" aria-label="Favorite ${esc(s.name)}" aria-pressed="${favorite}"`)}
    ${action('source-info',icon('more_horiz'),'icon-btn',`data-id="${esc(s.id)}" title="Station information" aria-label="Information about ${esc(s.name)}"`)}
  </div></div>`;
 }

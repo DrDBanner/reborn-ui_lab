@@ -10,9 +10,9 @@ module.exports=async({page,log})=>{
  await page.waitForSelector('.workspace');
  await page.evaluate(()=>document.fonts.ready);
  if(await page.$eval('.mobile-menu',element=>getComputedStyle(element).display!=='none'))await page.click('.mobile-menu');
- await page.click('.sidebar [data-action="navigate"][data-value="outputs"]');
+ await page.click('[data-section="outputs"] .section-workspace-link');
  await page.waitForSelector('.target-card');
- await page.click('.target-card [data-action="device-open"]');
+ await page.click('.target-card__actions [data-action="device-open"]');
  await page.waitForSelector('.key-values .device-status');
  const status=await page.$eval('.key-values .device-status',element=>{
   const rect=element.getBoundingClientRect();

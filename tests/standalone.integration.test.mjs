@@ -29,7 +29,7 @@ test('single file loads, renders and switches views/scenarios without a backend'
  assert(!app.innerHTML.includes('Quick presets'));
  assert(app.innerHTML.includes('PLAYBACKS'));
  await vm.runInContext("onAction('navigate',{dataset:{value:'outputs'}})",ctx);await ready();
- assert(app.innerHTML.includes('Outputs &amp; groups') || app.innerHTML.includes('Outputs & groups'));
+ assert(app.innerHTML.includes('Outputs &amp; playbacks') || app.innerHTML.includes('Outputs & playbacks'));
  await vm.runInContext("onAction('load-scenario',{dataset:{id:'many'}})",ctx);await ready();
  assert(app.innerHTML.includes('30'));
  await vm.runInContext("onAction('navigate',{dataset:{value:'lab'}})",ctx);await ready();
@@ -39,8 +39,10 @@ test('single file loads, renders and switches views/scenarios without a backend'
 });
 test('source selection opens an output picker then preserves independent streams',async()=>{
  const {ctx,app}=boot();await ready();
+ const sessionsBefore=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);
  await vm.runInContext("onAction('source-select',{dataset:{id:'ndr2'}})",ctx);await ready();
  assert(app.innerHTML.includes('Play NDR 2 on'));
+ assert.equal(vm.runInContext('JSON.stringify(state.model.sessions)',ctx),sessionsBefore);
  await vm.runInContext("onAction('assign-output',{dataset:{id:'d7'}})",ctx);await ready();
  const count=vm.runInContext('state.model.sessions.length',ctx);
  assert.equal(count,3);
@@ -83,4 +85,88 @@ test('logo menu contains chrome and closes on navigation',async()=>{
  assert(app.innerHTML.includes('Design Lab'));
  await vm.runInContext("onAction('navigate',{dataset:{value:'lab'}})",ctx);
  assert.equal(vm.runInContext('state.appMenuOpen',ctx),false);
+});
+
+test('section overview shortcuts remain available while their contents are collapsed',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('toggle-section',{dataset:{value:'playbacks'}});onAction('toggle-section',{dataset:{value:'outputs'}})",ctx);
+ assert(app.innerHTML.includes('aria-label="All playbacks"'));
+ assert(app.innerHTML.includes('aria-label="Manage all outputs"'));
+ assert(!app.innerHTML.includes('class="session-card'));
+ await vm.runInContext("onAction('navigate',{dataset:{value:'sessions'}})",ctx);
+ assert(app.innerHTML.includes('Sources, playback and available functions in one place'));
+ assert.equal(vm.runInContext('state.model.ui.outputScope',ctx),'active');
+ await vm.runInContext("onAction('toggle-app-menu',{dataset:{}})",ctx);
+ assert(!app.innerHTML.includes('Connections & devices'));
+});
+
+test('radio filter disclosure, full controls and pin preference survive updates',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('radio-filter',{dataset:{}})",ctx);
+ for(const field of ['radio-country','radio-language','radio-order','radio-bitrate','radio-working','radio-compatible','radio-output'])assert(app.innerHTML.includes('data-field="'+field+'"'));
+ await vm.runInContext("onField('radio-country',{value:'France'});onField('radio-language',{value:'French'});onAction('pin-radio-filters',{dataset:{}})",ctx);
+ assert(app.innerHTML.includes('Paris Jazz'));
+ assert(app.innerHTML.includes('radio-controls is-pinned'));
+ assert.equal(vm.runInContext('state.model.ui.radioFiltersPinned',ctx),true);
+ await vm.runInContext("onAction('apply-radio-filter',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.radioFiltersOpen',ctx),false);
+ assert.equal(vm.runInContext('state.model.ui.radioFiltersPinned',ctx),true);
+});
+
+test('rename dialog supports cancel, validation and safely rendered names',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('device-open',{dataset:{id:'d4'}});onAction('device-rename',{dataset:{id:'d4'}});onField('device-name',{value:'Cancelled'});onAction('close-modal',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d4').name",ctx),'Office');
+ await vm.runInContext("onAction('device-rename',{dataset:{id:'d4'}});onField('device-name',{value:'   '});onAction('device-rename-save',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.modal.kind',ctx),'rename');
+ assert(app.innerHTML.includes('Enter a device name'));
+ await vm.runInContext("onField('device-name',{value:'Office <demo>'});onAction('device-rename-save',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d4').name",ctx),'Office <demo>');
+ assert(app.innerHTML.includes('Office &lt;demo&gt;'));
+ assert(!app.innerHTML.includes('Office <demo>'));
+ assert.equal(vm.runInContext('state.modal',ctx),null);
+});
+
+
+test('station artwork plays immediately on the player output and preserves independent streams',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('select-session',{dataset:{id:'s2'}})",ctx);
+ const other=vm.runInContext("JSON.stringify(state.model.sessions.find(item=>item.targetId==='g1'))",ctx);
+ assert(app.innerHTML.includes('aria-label="Play 1LIVE on Office"'));
+ await vm.runInContext("onAction('source-play',{dataset:{id:'1live',target:'d4'}})",ctx);
+ assert.equal(vm.runInContext('state.modal',ctx),null);
+ assert.equal(vm.runInContext("currentSession(state.model).targetId",ctx),'d4');
+ assert.equal(vm.runInContext("currentSession(state.model).sourceId",ctx),'1live');
+ assert.equal(vm.runInContext("JSON.stringify(state.model.sessions.find(item=>item.targetId==='g1'))",ctx),other);
+ const before=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);
+ await vm.runInContext("onAction('source-play',{dataset:{id:'ndr2',target:'d5'}})",ctx);
+ assert.equal(vm.runInContext('JSON.stringify(state.model.sessions)',ctx),before);
+ await vm.runInContext("onAction('select-session',{dataset:{id:'s1'}});onAction('source-play',{dataset:{id:'ndr2',target:'g1'}})",ctx);
+ assert.equal(vm.runInContext('currentSession(state.model).targetId',ctx),'g1');
+ assert.equal(vm.runInContext('state.model.history[0]',ctx),'ndr2');
+});
+test('unified workspace scopes active outputs and toggles only the named playback',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('navigate',{dataset:{value:'outputs',scope:'active'}})",ctx);
+ assert(app.innerHTML.includes('class="targets-grid"'));
+ assert(app.innerHTML.includes('Button presets'));
+ assert.equal(vm.runInContext('state.model.ui.outputScope',ctx),'active');
+ const before=vm.runInContext("JSON.stringify(state.model.sessions.find(item=>item.id==='s1'))",ctx);
+ await vm.runInContext("onAction('toggle-output-playback',{dataset:{id:'s2'}})",ctx);
+ assert.equal(vm.runInContext("state.model.sessions.find(item=>item.id==='s2').status",ctx),'paused');
+ assert.equal(vm.runInContext("JSON.stringify(state.model.sessions.find(item=>item.id==='s1'))",ctx),before);
+ await vm.runInContext("onAction('navigate',{dataset:{value:'outputs',scope:'all'}})",ctx);
+ assert.equal(vm.runInContext('state.model.ui.outputScope',ctx),'all');
+ await vm.runInContext("onAction('device-open',{dataset:{id:'d4',tab:'functions'}})",ctx);
+ assert(app.innerHTML.includes('Button presets'));
+});
+test('transfer dialog previews, applies chosen keys and reports per-device results',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('button-transfer-open',{dataset:{id:'d1'}});onAction('button-transfer-all',{dataset:{value:'none'}});onField('button-transfer-key',{value:'single:1',checked:true});onField('button-transfer-target',{value:'g1',checked:true})",ctx);
+ assert(app.innerHTML.includes('Transfer 2 assignments'));
+ await vm.runInContext("onAction('button-transfer-save',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.modal.kind',ctx),'button-transfer-result');
+ assert(app.innerHTML.includes('Transfer results'));
+ assert.equal(vm.runInContext('state.modal.report.results.length',ctx),2);
+ assert.equal(vm.runInContext("state.model.devices.find(item=>item.id==='d2').presets[0]",ctx),'1live');
 });

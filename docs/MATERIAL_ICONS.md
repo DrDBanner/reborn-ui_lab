@@ -7,3 +7,11 @@ Source: [google/material-design-icons](https://github.com/google/material-design
 Run `python3 scripts/vendor-material-icons.py` to regenerate the selected assets from that pinned revision. Normal development, production builds, the plain preview and the generated standalone review need no network access for icons. No icon font or font fallback is used.
 
 When adding a symbol, add its official name to the vendor script, regenerate the module, then rebuild the standalone review. Keep action icons semantically appropriate: speakers for outputs, a hub for multiroom groups, a phone for remote control, and standard playback/navigation symbols for their actions.
+
+Native select arrows are replaced with the same local `expand_more` SVG path in `src/styles/selects.css`, in theme-appropriate colors. Padding reserves space for the icon and centers it vertically.
+
+Playback symbols are reserved for immediate playback actions: `play_circle` / `pause_circle` for the player, preset recall and the confirming output action. Source rows and tiles that first open an output picker use `music_cast` with Choose output labels. Selecting an existing playback is navigation and uses its entity icon; paused/stopped status is text.
+
+Music casting and stream indicators use `music_cast` instead of an equalizer or generic casting glyph.
+
+Button assignment transfer uses `add_link`, paired with an explicit Transfer label. It denotes propagating assignments; it does not promise persistent profile synchronization.

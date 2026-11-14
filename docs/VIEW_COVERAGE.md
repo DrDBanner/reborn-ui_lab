@@ -1,34 +1,31 @@
-# Coverage against the original 34-page concept
+# View coverage
 
-**Interactive** means actions modify simulated JSON state. **Navigable** means a view or dialog is reachable but some hardware-specific operations are illustrative.
+Actions operate on local JSON simulation state. The table describes the behavior available in each view.
 
-| Original page | UI Lab |
+| View | Behavior |
 |---|---|
-| R01 Radio presets and discovery | **Interactive:** radio browsing, favorites and source/output assignment; device keys appear above the detail tabs and in group/pair details |
-| R02 Radio search | **Interactive:** live filtering |
-| R03 Favorites | **Interactive:** add/remove and favorites tab |
-| R04 Station details/filter/missing station | **Interactive** details and genre filters; station-submission form not implemented |
-| Q01 Preset management | **Interactive** capability-driven key count, independent Once/Twice assignments, device-bound editing and recall; actual device transfer requires backend |
-| M01 Media sources | **Interactive** media server selection; mock folder contents |
-| M02 Library items | **Interactive** sample tracks/collections; actual network browsing is placeholder |
-| H01 Recently played | **Interactive** history |
-| S01/S02 Spotify | **Interactive** simulated connected/disconnected state; no actual OAuth |
-| P01 Player | **Interactive** play/pause/stop, session selection, volume |
-| O01/O03 Output selection | **Interactive** source-to-output assignment, independent sessions |
-| O02 Groups/pairs | **Interactive** creation, membership, persistence and dissolution |
-| E01 General settings | **Interactive** app settings, appearance |
-| E02 Speaker overview list | **Interactive** N-device search/filter/details |
-| E03 Speaker details | **Interactive** state; remote endpoint and QR generation placeholders |
-| E04 Sound | **Interactive** bass and startup volume |
-| E05/E08 Network / Wi-Fi | **Interactive** simulated SSID change; no real provisioning |
-| E06 Advanced | **Navigable** alarms, button actions, maintenance actions |
-| E07 Automation details | **Navigable** placeholder, no real scheduler |
-| W01/W02 Setup wizard | **Interactive** discovery choice, simulated device creation |
-| I01/I02 Help and feedback | **Navigable** entry points and links |
-| D01/D02 Maintenance | **Interactive** firmware progression and backup export; restart/reset mock dialogs |
-| Z01 States and errors | **Interactive** first-run, offline, updating, needs-setup, 50-device stress cases |
-| SYS/MAP/BASIS | **Documented** architecture, tests and design tokens |
+| Radio | Search, favorites, country/language/genre/bitrate/health/compatibility filters, sorting, pinned controls and output selection |
+| Library | Server selection, sample folders, tracks and collections |
+| Recently Played | Source history, favorites and playback/output selection |
+| Spotify | Simulated connection state and source selection |
+| Player | Concurrent session selection, Play/Pause/Stop, output selection and volume |
+| Outputs & playbacks | Target/device projections, search, type/active filters, source state and member details |
+| Device, pair and group details | Identity, renaming, capability-specific tabs, presets and membership |
+| Button presets | Physical owner, Once/Twice banks, typed source drafts, playback capture, recall and transfer review |
+| Group settings | Main speaker, persistence and receiver-specific remote group templates |
+| Sound | Bass, startup volume, overall and individual levels according to item capabilities |
+| Network | Reported network state and simulated SSID change |
+| Functions | Alarm and device-function information dialogs |
+| Set up speaker | Candidate selection, configuration and simulated device creation |
+| Updates & maintenance | Availability, simulated firmware progress, diagnostics and settings export |
+| App settings | Language selection, session restoration, appearance and update preferences |
+| Help | Information and feedback links |
+| Design Lab | Scenario selection/reset, navigation variants, tokens, JSON editing and export |
 
-**Added for the current discussion:** 50-device stress scenario, independent streams, player-vs-sidebar A/B variant, collapsible categories, source-first output selection, JSON scenario editing, design token editor, overlap constraints and single-row composites.
+## Scenario data
 
-These are testable UI behaviors, not claims of live hardware compatibility. All original 34 document pages and 51 detail SVGs are preserved in `reference/original/`.
+Seven scenarios cover everyday use, 50 devices, concurrent streams, maintenance states, varied capabilities, first run and update notifications. The 50-device scenario provides 38 playback targets after grouping and pairing.
+
+## Integration plan
+
+The backend adapter supplies discovery, device events, network media browsing, source metadata, remote endpoints/QR data, scheduling, provisioning and update execution. Per-device Spotify account/source state and reported pairing compatibility provide the input for their respective controls. [Device capabilities](DEVICE_CAPABILITIES.md) describes the data contract; [Backend integration](WAILS_INTEGRATION.md) assigns responsibilities.

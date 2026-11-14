@@ -1,1 +1,3 @@
-Unchanged source concept supplied earlier in this conversation: 34 SVG document pages and 51 detail views. Edit these SVGs separately if desired. The UI Lab does not load or overwrite them.
+# Design assets
+
+`svg/` contains 34 document pages. `views/` contains 51 detail views. The SVG files can be inspected and edited directly.

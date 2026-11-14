@@ -1,0 +1,57 @@
+module.exports=async({page,log})=>{
+ const fs=require('node:fs/promises'),path=require('node:path');
+ const out=path.resolve(__dirname,'../../project/interaction-review/evidence'),results=[],errors=[];
+ page.on('pageerror',error=>errors.push(error.message));
+ const check=(ok,msg)=>{if(!ok)throw new Error(msg)};
+ await page.waitForSelector('.workspace');
+ const storeUrl=await page.evaluate(async()=>{const js=await fetch('/src/main.js').then(r=>r.text());return js.match(/from\s*['"]([^'"]*\/app\/store\.js[^'"]*)['"]/)?.[1]||'/src/app/store.js';});
+ const snapshot=()=>page.evaluate(async storeUrl=>{const {state}=await import(storeUrl);return structuredClone(state.model)},storeUrl);
+ const inspect=()=>page.evaluate(()=>[...document.querySelectorAll('.modal-window,.workspace,.player,.output-card,.preset-slot')].filter(el=>el.scrollWidth>el.clientWidth+2).map(el=>el.className));
+ for(const width of [1440,834,390,320]){
+  await page.setViewport({width,height:width<720?844:1000,deviceScaleFactor:1});
+  await page.evaluate(async storeUrl=>{const {loadScenario,state,notify,clearToast}=await import(storeUrl);await loadScenario('home',false,true);state.view='device';state.detailDeviceId='d1';state.model.ui.deviceTab='overview';clearToast(false);notify();},storeUrl);
+  await page.click('[data-action="preset-edit"]');await page.waitForSelector('.preset-workbench');
+  await page.click('[data-action="preset-source-type"][data-value="library"]');
+  check(await page.$$eval('.preset-source-option',els=>els.length>=3&&els.every(el=>el.textContent.includes('Library'))),'Library source types missing');
+  await page.screenshot({path:path.join(out,`preset-editor-library-${width}.png`)});
+  await page.click('[data-action="preset-source-choose"][data-id="track-demo"]');
+  await page.click('[data-action="preset-slot"][data-index="1"]');await page.click('[data-action="preset-source-type"][data-value="spotify"]');
+  await page.click('[data-action="preset-source-choose"][data-id="spotify-album-demo"]');
+  await page.click('[data-action="preset-slot"][data-index="2"]');await page.click('[data-action="preset-source-type"][data-value="native"]');
+  await page.click('[data-action="preset-source-choose"][data-id="native-demo"]');
+  await page.click('[data-action="preset-slot"][data-index="3"]');await page.click('[data-action="preset-use-current"]');
+  check((await snapshot()).devices[0].presets[0]==='1live','Preset selection must remain a draft');
+  check(!(await inspect()).length,'Preset modal overflow at '+width);
+  await page.click('[data-action="preset-save"]');
+  const saved=(await snapshot()).devices[0];
+  check(saved.presets.slice(0,4).join(',')==='track-demo,spotify-album-demo,native-demo,flux'&&saved.doublePresets[0]==='album1','Typed source save affected wrong bank: '+JSON.stringify(saved.presets)+' / '+JSON.stringify(saved.doublePresets));
+  await page.click('[data-action="preset-edit"]');await page.click('[data-action="preset-clear"][data-index="0"]');await page.keyboard.press('Escape');
+  check((await snapshot()).devices[0].presets[0]==='track-demo','Cancel must discard draft');
+  await page.evaluate(async storeUrl=>{const {state,notify,clearToast}=await import(storeUrl);state.view='listen';clearToast(false);notify()},storeUrl);
+  await page.click('[data-action="open-volume-controls"]');await page.waitForSelector('.volume-master');
+  check(await page.$eval('#dialog-overall-volume',el=>document.activeElement===el),'Volume lightbox should focus master');
+  await page.$eval('[data-field="dialog-device-volume"][data-id="d2"]',el=>{el.focus();el.value='47';el.dispatchEvent(new Event('change',{bubbles:true}))});
+  let model=await snapshot();check(model.devices.find(d=>d.id==='d2').volume===47&&model.sessions.find(s=>s.id==='s1').volume===25,'Individual trim changed master');
+  await page.$eval('#dialog-overall-volume',el=>{el.focus();el.value='30';el.dispatchEvent(new Event('change',{bubbles:true}))});
+  model=await snapshot();check(model.devices.find(d=>d.id==='d2').volume===52&&model.sessions.find(s=>s.id==='s2').volume===28,'Master changed unrelated session or member offsets');
+  check(await page.$eval('.volume-slider',el=>el.style.getPropertyValue('--range-fill')==='30%'),'Filled slider did not update');
+  check(!(await inspect()).length,'Volume modal overflow at '+width);
+  await page.screenshot({path:path.join(out,`volume-lightbox-${width}.png`)});
+  await page.keyboard.press('Escape');check(await page.$eval('.volume-details-trigger',el=>document.activeElement===el),'Volume close should restore focus');
+  await page.evaluate(async storeUrl=>{const {state,notify}=await import(storeUrl);state.view='outputs';state.model.ui.outputView='outputs';state.model.ui.outputFilter='all';state.model.ui.outputScope='all';notify()},storeUrl);
+  check(await page.$$eval('.output-card',els=>els.length===5),'Logical targets should not duplicate members');
+  check(await page.$$eval('h1',els=>els.length===1),'Overview heading is redundant');
+  await page.screenshot({path:path.join(out,`playback-targets-${width}.png`)});
+  await page.click('[data-action="output-view"][data-value="devices"]');check(await page.$$eval('.output-card',els=>els.length===7),'Physical device view incomplete');
+  await page.screenshot({path:path.join(out,`all-devices-${width}.png`)});
+  await page.evaluate(async storeUrl=>{const {toast,clearToast}=await import(storeUrl);clearToast();toast('Assignments saved');toast('Playing on Downstairs');toast('Kitchen is offline',{kind:'error'})},storeUrl);
+  await page.waitForSelector('.toast-message');
+  const stack=await page.$$eval('.toast-message',els=>els.map(el=>{const r=el.getBoundingClientRect();return {top:r.top,left:r.left,right:r.right,bottom:r.bottom,animation:getComputedStyle(el).animationName}}));
+  check(stack.length===3&&stack[0].top<(width<720?95:25)&&stack.every(r=>r.left>=0&&r.right<=width)&&stack.every((r,i)=>!i||r.top>=stack[i-1].bottom+5),'Notification stack misplaced');
+  await page.screenshot({path:path.join(out,`notification-stack-${width}.png`)});
+  if(width===1440){await page.waitForFunction(()=>document.querySelectorAll('.toast-message').length===1,{timeout:11000});check(await page.$eval('.toast-message',el=>el.getAttribute('role')==='alert'),'Normal notifications must expire after eight seconds, error remains');}
+  await page.evaluate(async storeUrl=>{const {clearToast}=await import(storeUrl);clearToast()},storeUrl);
+  results.push({width,typedSourceDraftSaveCancel:true,groupCurrentSource:true,individualAndOverallVolume:true,volumeFocus:true,logicalAndPhysicalViews:true,notificationStack:true,overflow:false});
+ }
+ await fs.writeFile(path.join(out,'interaction-review.json'),JSON.stringify({passed:true,pageErrors:errors,results},null,2)+'\n');check(!errors.length,'Browser errors: '+errors.join(', '));log(JSON.stringify({passed:true,widths:results.map(r=>r.width),pageErrors:errors}));
+};

@@ -1,4 +1,4 @@
-import {esc,icon,action,card,empty} from '../components/shared.js';
+import {esc,icon,action,card,empty,sourceTypeLabel,sourceTypeIcon} from '../components/shared.js';
 import {buttonProfile,buttonPresets,presetAssignments,presetPlaybackTarget,entity,source,leafDeviceIds,kind} from '../app/model.js';
 export function renderItemKeyFunctions(s,targetId){
  const devices=leafDeviceIds(s.model,targetId).map(id=>entity(s.model,id)).filter(device=>buttonProfile(device));
@@ -14,7 +14,7 @@ export function renderItemKeyFunctions(s,targetId){
    <p class="preset-help">${gesture==='double'?'Press the same hardware key twice quickly to use its second assignment.':'Press a hardware key once to use its first assignment.'}</p>
    <div class="preset-grid">${buttonPresets(device,gesture).map((sourceId,index)=>{
     const item=source(s.catalog,sourceId),key=index+1;
-    return `<article class="key-preset"><div class="key-preset__heading"><strong>Key ${key}</strong><span>${gesture==='double'?'2×':'1×'}</span></div><div class="key-preset__source">${icon(item?.type==='radio'?'radio':item?.type==='spotify'?'music_note':'album')}<span><strong>${esc(item?.name||'Unassigned')}</strong><small>${esc(item?.subtitle||'Choose a source in Edit assignments')}</small></span></div>${action('preset-play',icon('play_circle')+' Play','btn-quiet',`data-id="${esc(device.id)}" data-key="${key}" data-gesture="${gesture}" aria-label="Play key ${key}, ${gesture==='double'?'double':'single'} press, on ${esc(target?.name||device.name)}" ${!sourceId||device.status!=='online'?'disabled':''}`)}</article>`;
+    return `<article class="key-preset"><div class="key-preset__heading"><strong>Key ${key}</strong><span>${gesture==='double'?'2×':'1×'}</span></div><div class="key-preset__source">${icon(sourceTypeIcon(item))}<span><strong>${esc(item?.name||'Unassigned')}</strong><small>${esc(item?.subtitle||'Choose a source in Edit assignments')}</small><span class="key-preset__type">${esc(sourceTypeLabel(item))}</span></span></div>${action('preset-play',icon('play_circle')+' Play','btn-quiet',`data-id="${esc(device.id)}" data-key="${key}" data-gesture="${gesture}" aria-label="Play key ${key}, ${gesture==='double'?'double':'single'} press, on ${esc(target?.name||device.name)}" ${!sourceId||device.status!=='online'?'disabled':''}`)}</article>`;
    }).join('')}</div>`,'device-presets item-key-functions');
  }
  return result;

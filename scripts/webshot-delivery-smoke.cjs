@@ -12,7 +12,8 @@ module.exports=async({page,log})=>{
  if(await page.$eval('.mobile-menu',element=>getComputedStyle(element).display!=='none'))await page.click('.mobile-menu');
  await page.click('[data-section="outputs"] .section-workspace-link');
  await page.waitForSelector('.target-card');
- await page.click('.target-card__actions [data-action="device-open"]');
+ await page.click('[data-action="output-view"][data-value="devices"]');
+ await page.click('.output-card__footer [data-action="device-open"]');
  await page.waitForSelector('.key-values .device-status');
  const status=await page.$eval('.key-values .device-status',element=>{
   const rect=element.getBoundingClientRect();
@@ -26,6 +27,13 @@ module.exports=async({page,log})=>{
  await page.click('[data-action="device-tab"][data-value="functions"]');
  await page.click('[data-action="preset-gesture"][data-value="double"]');
  await page.waitForSelector('.key-preset');
+ await page.click('[data-action="preset-edit"]');await page.waitForSelector('.preset-workbench');
+ await page.click('[data-action="preset-source-type"][data-value="library"]');
+ if(!await page.$('[data-action="preset-source-choose"][data-id="track-demo"]'))throw new Error('Typed library source missing');
+ await page.keyboard.press('Escape');
+ await page.click('[data-action="open-volume-controls"]');await page.waitForSelector('.volume-master');
+ if(!await page.$$eval('.modal-window output',els=>els.every(el=>el.textContent.trim().endsWith('%'))))throw new Error('Volume percentages missing');
+ await page.keyboard.press('Escape');
  const icons=await page.$$eval('.material-symbols-rounded',elements=>({total:elements.length,missing:elements.filter(element=>!element.querySelector('svg path')).length}));
  if(!icons.total||icons.missing||errors.length)throw new Error('Smoke check failed for '+variant);
  if(variant==='standalone'){

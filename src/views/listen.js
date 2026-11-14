@@ -3,7 +3,7 @@ import {esc,icon,action,sourceTile,sourceRow,card,empty,navHeader,tab} from '../
 import {entity,kind,source,sessionFor,currentSession,visibleOutputs,filterRadioSources,targetStatus} from '../app/model.js';
 
 function rowPlayback(s){
- const id=currentSession(s.model)?.targetId||s.model.selectedOutputId,playTarget=entity(s.model,id);
+ const id=currentSession(s.model)?.targetId,playTarget=entity(s.model,id);
  return {playTarget,playable:!!playTarget&&['online','partial'].includes(targetStatus(s.model,id))};
 }
 function radio(s){

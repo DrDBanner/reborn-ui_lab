@@ -30,9 +30,22 @@ export function outputItem(model,id,{compact=false,selected=false,extra=''}={}){
  const k=kind(model,id),status=targetStatus(model,id),s=sessionFor(model,id);
  return `<button type="button" class="output-item ${compact?'output-item--compact':''} ${selected?'is-selected':''}" data-action="select-output" data-id="${esc(id)}" title="${esc(t.name)}" ${selected?'aria-current="page"':''}>
     <span class="output-item__symbol">${typeIcon(k)}</span>
-    <span class="output-item__body"><strong>${esc(t.name)}</strong><small>${statusLabel(status)}${s?' · '+({playing:'Playing',paused:'Paused',stopped:'Stopped'}[s.status]||''):''}</small></span>
-    <span class="output-item__trail">${s?icon('music_cast','stream-symbol'):icon('chevron_right')}</span>
+    <span class="output-item__body"><strong>${esc(t.name)}</strong><small>${statusLabel(status)}${s&&s.status!=='stopped'?' · '+({playing:'Playing',paused:'Paused'}[s.status]||''):''}</small></span>
+    <span class="output-item__trail">${s&&s.status!=='stopped'?icon('music_cast',s.status==='playing'?'stream-symbol':'stream-symbol--paused'):icon('chevron_right')}</span>
  </button>${extra}`;
+}
+export function sourceTypeLabel(item){
+ if(!item)return 'Unassigned';
+ if(item.type==='radio')return 'Radio station';
+ if(item.type==='spotify')return item.kind==='album'?'Spotify album':'Spotify playlist';
+ if(item.type==='library')return ({track:'Library track',folder:'Library folder',queue:'Library queue',album:'Library album'})[item.kind]||'Library collection';
+ return item.service||'Native service';
+}
+export function sourceTypeIcon(item){
+ if(item?.type==='radio')return 'radio';
+ if(item?.type==='spotify')return 'music_cast';
+ if(item?.type==='library')return item.kind==='folder'?'folder':item.kind==='track'?'music_note':item.kind==='queue'?'library_music':'album';
+ return 'music_cast';
 }
 export function sourceTile(s,{active=false,actionName='source-select',cls=''}={}){
  return `<button type="button" class="source-tile ${active?'is-selected':''} ${cls}" data-action="${esc(actionName)}" data-id="${esc(s.id)}" title="Choose output for ${esc(s.name)}">
@@ -57,3 +70,10 @@ export const empty=(symbol,title,description,button='')=>`<div class="empty-stat
 export const tab=(id,label,selected,actionName='switch-tab')=>action(actionName,esc(label),`tab-control ${selected?'active':''}`,`data-value="${esc(id)}"`);
 export const field=(name,content,help='')=>`<div class="form-row"><label>${name}${help?`<small>${help}</small>`:''}</label><div class="form-row__control">${content}</div></div>`;
 export const navHeader=(title,subtitle,tools='')=>`<div class="page-heading"><div><h1>${title}</h1><p>${subtitle||''}</p></div>${tools?`<div class="page-heading__tools">${tools}</div>`:''}</div>`;
+
+export function notificationStack(s){
+ return `<aside class="toast-stack" aria-label="Notifications">${(s.toasts||[]).map(notice=>{
+  const elapsed=Math.max(0,Date.now()-(notice.leaving?notice.dismissedAt:notice.createdAt)),delay=Math.min(elapsed,notice.leaving?220:280);
+  return `<div class="toast-message toast-message--${esc(notice.kind)} ${notice.leaving?'is-leaving':''}" data-toast-id="${esc(notice.id)}" role="${notice.kind==='error'?'alert':'status'}" style="animation-delay:-${delay}ms;--toast-age:-${Math.max(0,Date.now()-notice.createdAt)}ms;--toast-duration:${notice.duration}ms" ${notice.duration?'data-auto-dismiss="true"':''}>${icon(notice.kind==='error'?'warning':'check_circle','toast-symbol')}<span>${esc(notice.message)}</span>${action('dismiss-toast',icon('close'),'icon-btn',`data-id="${esc(notice.id)}" aria-label="Dismiss notification"`)}</div>`;
+ }).join('')}</aside>`;
+}

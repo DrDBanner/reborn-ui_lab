@@ -26,7 +26,7 @@ module.exports = async ({page, log}) => {
    const {state,notify,applyDesign}=await import(storeUrl);
    state.view=view;state.detailDeviceId=options.deviceId||state.model.devices[0]?.id;state.detailOutputId=state.model.groups[0]?.id||state.model.pairs[0]?.id;
    state.model.ui.deviceTab=options.tab||'overview';state.model.ui.settingsTab=options.tab||'general';
-   state.radioFiltersOpen=!!options.filters;state.model.ui.radioFiltersPinned=!!options.pinned;state.presetGesture=options.gesture||'single';state.appMenuOpen=!!options.appMenu;state.modal=options.modal?{...options.modal,deviceId:state.detailDeviceId,gesture:options.gesture||'single'}:null;state.toast=null;state.sidebarOpen=false;state.scenarioEditorOpen=!!options.editor;
+   state.radioFiltersOpen=!!options.filters;state.model.ui.radioFiltersPinned=!!options.pinned;state.presetGesture=options.gesture||'single';state.appMenuOpen=!!options.appMenu;state.modal=options.modal?{...options.modal,deviceId:state.detailDeviceId,gesture:options.gesture||'single'}:null;state.toasts=[];state.sidebarOpen=false;state.scenarioEditorOpen=!!options.editor;
    state.designTokens.appearance=options.appearance||'dark';applyDesign();notify();
    document.querySelector('.workspace').scrollTop=0;
   },view,options,storeUrl);
@@ -60,10 +60,11 @@ module.exports = async ({page, log}) => {
     if(!['player-toggle','preset-play','assign-output','target-play','toggle-output-playback','source-play'].includes(symbol.closest('[data-action]')?.dataset.action))failures.push('Playback icon used on an action that does not immediately play/pause');
    }
    if(document.querySelectorAll('.sidebar [aria-current="page"]').length!==1)failures.push('Sidebar must mark exactly one active navigation context');
-   const player=document.querySelector('.player').getBoundingClientRect();
+   const playerElement=document.querySelector('.player');
+   const player=playerElement?playerElement.getBoundingClientRect():{top:innerHeight};
    const workspace=document.querySelector('.workspace').getBoundingClientRect();
    if(workspace.bottom>player.top+1)failures.push('Player overlaps workspace');
-   const controls=[...document.querySelectorAll('.player__content,.player__transport,.output-trigger,.session-select,.volume-range,.volume-value')].filter(element=>element.getClientRects().length);
+   const controls=[...document.querySelectorAll('.player__content,.player-target,.player__transport,.output-trigger,.session-select,.volume-details-trigger,.volume-range,.volume-value')].filter(element=>element.getClientRects().length);
    for(let i=0;i<controls.length;i++){
     const a=controls[i].getBoundingClientRect();
     if(a.right>innerWidth+1||a.left<0)failures.push(`Player control outside viewport: ${describe(controls[i])}`);
@@ -84,7 +85,7 @@ module.exports = async ({page, log}) => {
   for(const view of views){await route(view);await inspect(`${view}-${device}`,device!=='small-mobile');}
   for(const tab of ['sound','network','functions','advanced']){await route('device',{tab});await inspect(`device-${tab}-${device}`,device==='desktop'||device==='mobile');}
   for(const tab of ['appearance','advanced']){await route('settings',{tab});await inspect(`settings-${tab}-${device}`);}
-  for(const modal of [{kind:'picker'},{kind:'create',type:'group'},{kind:'create',type:'pair'},{kind:'preset'},{kind:'wifi'},{kind:'maintenance'},{kind:'rename',nameDraft:'Living Room L'},{kind:'button-transfer',targetIds:['g1','d4'],keys:['single:1','double:1']},{kind:'button-transfer-result',report:{sourceName:'Living Room L',whole:false,results:[{name:'Office',copied:[{key:1}],skipped:[{key:1,gesture:'double',reason:'Key or gesture not supported'}]}]}}]){
+  for(const modal of [{kind:'picker'},{kind:'volume',sessionId:'s1',targetId:'g1'},{kind:'create',type:'group'},{kind:'create',type:'pair'},{kind:'preset'},{kind:'wifi'},{kind:'maintenance'},{kind:'rename',nameDraft:'Living Room L'},{kind:'button-transfer',targetIds:['g1','d4'],keys:['single:1','double:1']},{kind:'button-transfer-result',report:{sourceName:'Living Room L',whole:false,results:[{name:'Office',copied:[{key:1}],skipped:[{key:1,gesture:'double',reason:'Key or gesture not supported'}]}]}}]){
    await route('device',{modal});await inspect(`dialog-${modal.kind}-${modal.type||'default'}-${device}`,device==='mobile');
   }
   await route('device',{tab:'functions',gesture:'double'});await inspect(`device-double-${device}`,true);
@@ -133,7 +134,7 @@ module.exports = async ({page, log}) => {
  await page.setViewport({width:390,height:844,deviceScaleFactor:1});
  await route('device',{deviceId:'d1',tab:'functions',gesture:'double'});
  await page.click('[data-action="preset-edit"]');
- await page.select('[data-preset-index="0"]','ndr2');
+ await page.click('[data-action="preset-source-choose"][data-id="ndr2"]');
  await page.click('[data-action="preset-save"]');
  await page.click('[data-action="preset-play"][data-key="1"]');
  const doubleResult=await page.evaluate(async storeUrl=>{

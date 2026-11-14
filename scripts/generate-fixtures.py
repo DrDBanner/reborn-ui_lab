@@ -16,8 +16,8 @@ CATALOG={
   {'id':'dl','name':'Deutschlandfunk','type':'radio','subtitle':'News & talk','genre':'Information','country':'Germany','bitrate':'192 kbit/s','color':'#617996'},
   {'id':'ndr2','name':'NDR 2','type':'radio','subtitle':'Northern Germany','genre':'Pop','country':'Germany','bitrate':'128 kbit/s','color':'#3269b9'},
   {'id':'wdr5','name':'WDR 5','type':'radio','subtitle':'Culture','genre':'Culture','country':'Germany','bitrate':'128 kbit/s','color':'#688ba7'},
-  {'id':'album1','name':'Evening Jazz','type':'library','subtitle':'Music Server · 44 tracks','genre':'Jazz','country':'Local','bitrate':'FLAC','color':'#795c9f'},
-  {'id':'album2','name':'Quiet Sunday','type':'library','subtitle':'NAS · 18 tracks','genre':'Ambient','country':'Local','bitrate':'FLAC','color':'#3f8c9a'},
+  {'id':'album1','name':'Evening Jazz','type':'library','kind':'queue','subtitle':'Music Server · 44 tracks','genre':'Jazz','country':'Local','bitrate':'FLAC','color':'#795c9f'},
+  {'id':'album2','name':'Quiet Sunday','type':'library','kind':'folder','subtitle':'NAS · 18 tracks','genre':'Ambient','country':'Local','bitrate':'FLAC','color':'#3f8c9a'},
   {'id':'discover','name':'Discover Weekly','type':'spotify','subtitle':'Spotify playlist','genre':'Mixed','country':'Online','bitrate':'Spotify','color':'#198c56'},
   {'id':'focus','name':'Deep Focus','type':'spotify','subtitle':'Spotify playlist','genre':'Electronic','country':'Online','bitrate':'Spotify','color':'#336f65'},
  ],
@@ -29,6 +29,10 @@ CATALOG={
 for index,item in enumerate(CATALOG['sources']):
  if item['type']=='radio':item.update({'language':'German','codec':'AAC' if item['id']=='ffn' else 'MP3','lastCheckOk':True,'votes':1000-index*70,'clickCount':index*40+80,'hls':False})
 CATALOG['sources'] += [
+ {'id':'track-demo','name':'Morning Light · demo','type':'library','kind':'track','subtitle':'Living Room NAS · single track','genre':'Jazz','country':'Local','bitrate':'FLAC','color':'#795c9f'},
+ {'id':'spotify-album-demo','name':'Sunday Sessions · demo','type':'spotify','kind':'album','subtitle':'Spotify album','genre':'Jazz','country':'Online','bitrate':'Spotify','color':'#198c56'},
+ {'id':'native-demo','name':'Saved service station · demo','type':'native','kind':'station','service':'Native service','subtitle':'Source saved on the speaker','genre':'Mixed','country':'Online','bitrate':'Native','color':'#b98260'},
+
  {'id':'demo-fr','name':'Paris Jazz · demo','type':'radio','subtitle':'Paris','genre':'Jazz','country':'France','language':'French','bitrate':'192 kbit/s','codec':'MP3','lastCheckOk':True,'votes':220,'clickCount':500,'hls':False,'color':'#a775b6'},
  {'id':'demo-uk','name':'London Live · demo','type':'radio','subtitle':'London','genre':'News','country':'United Kingdom','language':'English','bitrate':'128 kbit/s','codec':'UNKNOWN','lastCheckOk':True,'votes':180,'clickCount':220,'hls':True,'color':'#3e85ba'},
  {'id':'demo-opus','name':'Open Wave · demo','type':'radio','subtitle':'Opus stream','genre':'Electronic','country':'Germany','language':'German','bitrate':'128 kbit/s','codec':'OPUS','lastCheckOk':True,'votes':120,'clickCount':80,'hls':False,'color':'#6ca28b'},

@@ -7,28 +7,34 @@ import {renderOutputs,renderGroup} from './views/outputs.js';
 import {renderDevice,renderUpdates,renderSettings,renderSetup,renderHelp} from './views/management.js';
 import {renderSessions} from './views/sessions.js';
 import {renderLab} from './views/lab.js';
-import {icon,action,esc} from './components/shared.js';
+import {icon,action,esc,notificationStack} from './components/shared.js';
 
 const app=document.getElementById('app');
 const views={listen:renderListen,library:renderListen,history:renderListen,spotify:renderListen,outputs:renderOutputs,group:renderGroup,device:renderDevice,updates:renderUpdates,settings:renderSettings,setup:renderSetup,help:renderHelp,lab:renderLab,sessions:renderOutputs};
 let renderedViewKey='';
 let renderedMenuOpen=false;
 let renderedRenameId=null;
+let renderedVolumeId=null;
 function render(){
  if(!state.model)return;
  const view=views[state.view]||renderListen;
+ const playerContent=player(state);
  // Preserve typing position across updates from search or form controls.
  const viewKey=[state.view,state.detailDeviceId,state.detailOutputId,state.model.ui.deviceTab,state.model.ui.settingsTab].join(':');
  const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
  const active=document.activeElement;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;
- app.innerHTML=`<div class="app-shell">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${view(state)}</main></div>${player(state)}</div>${appMenu(state)}${renderDialog(state)}${state.toast?`<div class="toast-message" role="status">${esc(state.toast)}${action('dismiss-toast',icon('close'),'icon-btn')}</div>`:''}`;
+ app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
  for(const {selector,top} of scrollPositions){const element=app.querySelector?.(selector);if(element&&(selector!=='.workspace'||viewKey===renderedViewKey))element.scrollTop=top;}
  renderedViewKey=viewKey;
  const renameId=state.modal?.kind==='rename'?state.modal.deviceId:null;
  if(renameId&&renameId!==renderedRenameId){const input=app.querySelector?.('#device-name');input?.focus();input?.select();}
  if(!renameId&&renderedRenameId&&state.view==='device')app.querySelector?.('.title-edit')?.focus({preventScroll:true});
  renderedRenameId=renameId;
+ const volumeId=state.modal?.kind==='volume'?state.modal.sessionId:null;
+ if(volumeId&&volumeId!==renderedVolumeId)app.querySelector?.('#dialog-overall-volume')?.focus({preventScroll:true});
+ if(!volumeId&&renderedVolumeId)app.querySelector?.('.volume-details-trigger')?.focus({preventScroll:true});
+ renderedVolumeId=volumeId;
  if(state.appMenuOpen&&!renderedMenuOpen)app.querySelector?.('.app-menu .icon-btn')?.focus({preventScroll:true});
  if(!state.appMenuOpen&&renderedMenuOpen)app.querySelector?.(state.sidebarOpen||globalThis.innerWidth>720?'.brand-trigger':'.mobile-brand')?.focus({preventScroll:true});
  renderedMenuOpen=state.appMenuOpen;
@@ -39,7 +45,7 @@ function render(){
 subscribe(render);
 document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();onAction(button.dataset.action,button)}});
 document.addEventListener('change',event=>{const field=event.target.closest('[data-field]');if(field)onField(field.dataset.field,field)});
-document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name'].includes(field.dataset.field))onField(field.dataset.field,field)});
+document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','preset-search'].includes(field.dataset.field))onField(field.dataset.field,field)});
 document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&state.modal?.kind==='rename'&&event.target.dataset?.field==='device-name'){event.preventDefault();onAction('device-rename-save',document.createElement('button'));}
  if(event.key==='Tab'&&state.appMenuOpen){

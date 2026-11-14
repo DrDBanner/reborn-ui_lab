@@ -25,7 +25,7 @@ for(const scenario of scenarios){
   }
   assert(sidebar(s).length>300);
   assert(header(s).length>100);
-  assert(player(s).length>100);
+  assert.equal(player(s).length>100,model.sessions.some(item=>item.status==='playing'||item.status==='paused'));
   for(const modal of [{kind:'picker'},{kind:'create',type:'pair'},{kind:'create',type:'group'},{kind:'preset',deviceId:model.devices[0]?.id,gesture:'single'},{kind:'wifi'},{kind:'maintenance'},{kind:'generic',title:'Hello'}]){
    s.modal=modal;const html=renderDialog(s);assert(html.length>120);
   }
@@ -96,4 +96,26 @@ test('button presets remain above device tabs across all configuration sections'
  const pair=renderGroup(s);
  assert(pair.includes('Assignments on Living Room L. Playback uses Downstairs.'));
  assert(!pair.includes('Assignments on Office.'));
+});
+
+test('output overview separates logical outputs from physical devices without repeated page headings',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
+ const s={model,catalog,outputSearch:'',selectedForComposite:[]};
+ let html=renderOutputs(s);
+ assert(!html.includes('<h1>'));assert(!html.includes('Use output'));assert(!html.includes('summary-strip'));
+ assert.equal((html.match(/<article class="target-card output-card"/g)||[]).length,5);
+ assert(!html.includes('Details for Living Room L'));
+ model.ui.outputView='devices';html=renderOutputs(s);
+ assert.equal((html.match(/<article class="target-card output-card"/g)||[]).length,7);
+ assert(html.includes('Details for Living Room L'));assert(!html.includes('Details for Downstairs'));
+});
+
+test('Playing section is hidden when there is no playback',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));model.sessions=[];
+ const html=sidebar({model,catalog,view:'listen',designTokens:tokens});
+ assert(!html.includes('data-section="playbacks"'));assert(!html.includes('Nothing playing'));
+ assert(html.includes('MEDIA'));
+ model.ui.outputScope='active';
+ const active=sidebar({model,catalog,view:'outputs',designTokens:tokens});
+ assert.equal((active.match(/aria-current="page"/g)||[]).length,1);
 });

@@ -1,6 +1,7 @@
+import {renderPresetEditor} from './preset-editor.js';
 import {renderPresetTransfer,renderPresetTransferResult} from './preset-transfer.js';
 import {esc,icon,action,statusBadge,targetIcon,subline,typeIcon} from './shared.js';
-import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets} from '../app/model.js';
+import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets,leafDeviceIds} from '../app/model.js';
 
 function outputPicker(s){const m=s.model,src=source(s.catalog,s.speakerPickerFor||m.selectedSourceId),targets=visibleOutputs(m);
  return `<div class="modal-heading"><h2>${src?'Play '+esc(src.name)+' on…':'Choose output'}</h2><p>${src?'Selecting an output will start this source. Existing sessions on unrelated devices keep playing.':'Choose a playback target or manage its configuration.'}</p></div>
@@ -15,13 +16,19 @@ function createComposite(s){const m=s.model,pair=s.modal.type==='pair',candidate
  ${!pair?`<div class="form-row"><label>Persistent</label><input id="composite-persistent" type="checkbox" checked /></div>`:''}
  <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('composite-create',`Create ${pair?'pair':'group'}`,'primary-btn')}</div>`;
 }
-function presetDialog(s){
- const target=entity(s.model,s.modal.deviceId),profile=buttonProfile(target),gesture=s.modal.gesture||'single';
- if(!profile?.gestures.includes(gesture))return `<div class="modal-heading"><h2>Button presets unavailable</h2><p>This device does not report this function.</p></div>`;
- const presets=buttonPresets(target,gesture);
- return `<div class="modal-heading"><h2>Button presets · ${gesture==='double'?'Twice':'Once'}</h2><p>${esc(target.name)} · ${esc(target.brand||'')} ${esc(target.model||'')}</p></div>
- <div class="preset-editor">${presets.map((sourceId,index)=>`<div class="preset-line"><label for="preset-key-${index}">Key ${index+1} · ${gesture==='double'?'2×':'1×'}</label><select id="preset-key-${index}" class="small-select" data-preset-index="${index}"><option value="">Unassigned</option>${s.catalog.sources.map(item=>`<option value="${esc(item.id)}" ${sourceId===item.id?'selected':''}>${esc(item.name)}</option>`).join('')}</select></div>`).join('')}</div>
- <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('preset-save','Save assignments','primary-btn')}</div>`;
+function volumeDialog(s){
+ const modal=s.modal,playback=s.model.sessions.find(item=>item.id===modal.sessionId&&item.targetId===modal.targetId),target=entity(s.model,modal.targetId);
+ if(!playback||!target)return `<div class="modal-heading"><h2>Playback no longer available</h2><p>Close this panel and choose another output.</p></div>`;
+ const ids=leafDeviceIds(s.model,target.id),enabled=['online','partial'].includes(targetStatus(s.model,target.id)),now=source(s.catalog,playback.sourceId),volume=playback.volume??25;
+ const deviceRow=id=>{
+  const device=entity(s.model,id),online=device.status==='online',level=device.volume??25;
+  return `<div class="volume-device-row ${online?'':'is-unavailable'}"><label for="device-volume-${esc(id)}"><strong>${esc(device.name)}</strong>${online?'':`<small>${esc(device.status)}</small>`}</label><output for="device-volume-${esc(id)}">${level} %</output><input class="volume-slider" style="--range-fill:${level}%" id="device-volume-${esc(id)}" type="range" min="0" max="100" value="${level}" aria-valuetext="${level} percent" data-field="dialog-device-volume" data-id="${esc(id)}" aria-label="Volume for ${esc(device.name)}" ${online?'':'disabled'}/></div>`;
+ };
+ const units=kind(s.model,target.id)==='group'?target.memberIds:[target.id];
+ return `<div class="modal-heading volume-heading"><h2>Volume · ${esc(target.name)}</h2>${now?`<p>${esc(now.name)}</p>`:''}</div>
+ <section class="volume-master"><label for="dialog-overall-volume">${ids.length>1?'Overall volume':'Volume'}</label><output for="dialog-overall-volume">${volume} %</output><input class="volume-slider" style="--range-fill:${volume}%" id="dialog-overall-volume" type="range" min="0" max="100" value="${volume}" aria-valuetext="${volume} percent" data-field="dialog-volume" data-id="${esc(playback.id)}" aria-label="Overall volume for ${esc(target.name)}" ${enabled?'':'disabled'}/></section>
+ ${ids.length>1?`<div class="volume-device-list">${units.map(id=>kind(s.model,id)==='pair'?`<section class="volume-pair"><header>${typeIcon('pair')}<strong>${esc(entity(s.model,id).name)}</strong></header>${leafDeviceIds(s.model,id).map(deviceRow).join('')}</section>`:`<section class="volume-single">${leafDeviceIds(s.model,id).map(deviceRow).join('')}</section>`).join('')}</div>`:''}
+ <div class="modal-footer volume-footer">${action('close-modal','Done','primary-btn')}</div>`;
 }
 function wifiDialog(s){const d=entity(s.model,s.detailDeviceId||s.model.selectedDeviceId);
  return `<div class="modal-heading"><h2>Change Wi-Fi</h2><p>${esc(d?.name||'Speaker')} may temporarily disconnect. Completion requires rediscovery.</p></div>
@@ -40,6 +47,6 @@ function renameDialog(s){
 }
 function genericDialog(s){const t=s.modal||{};return `<div class="modal-heading"><h2>${esc(t.title||'Information')}</h2><p>${esc(t.description||'')}</p></div>${t.body?`<div class="modal-generic">${t.body}</div>`:''}<div class="modal-footer">${action('close-modal','Close','primary-btn')}</div>`}
 export function renderDialog(s){if(!s.modal)return '';
- const inner=s.modal.kind==='button-transfer'?renderPresetTransfer(s):s.modal.kind==='button-transfer-result'?renderPresetTransferResult(s):s.modal.kind==='rename'?renameDialog(s):s.modal.kind==='picker'?outputPicker(s):s.modal.kind==='create'?createComposite(s):s.modal.kind==='preset'?presetDialog(s):s.modal.kind==='wifi'?wifiDialog(s):s.modal.kind==='maintenance'?deviceMaintenance(s):genericDialog(s);
- return `<div class="overlay" role="presentation"><div class="modal-window" role="dialog" aria-modal="true" aria-label="${esc(s.modal.title||s.modal.kind||'Dialog')}"><div class="modal-window__close">${action('close-modal',icon('close'),'icon-btn','aria-label="Close dialog"')}</div>${inner}</div><button class="overlay-backdrop" data-action="close-modal" aria-label="Close dialog"></button></div>`;
+ const inner=s.modal.kind==='button-transfer'?renderPresetTransfer(s):s.modal.kind==='button-transfer-result'?renderPresetTransferResult(s):s.modal.kind==='rename'?renameDialog(s):s.modal.kind==='picker'?outputPicker(s):s.modal.kind==='create'?createComposite(s):s.modal.kind==='volume'?volumeDialog(s):s.modal.kind==='preset'?renderPresetEditor(s):s.modal.kind==='wifi'?wifiDialog(s):s.modal.kind==='maintenance'?deviceMaintenance(s):genericDialog(s);
+ return `<div class="overlay" role="presentation"><div class="modal-window ${s.modal.kind==='preset'?'modal-window--preset':s.modal.kind==='volume'?'modal-window--volume':''}" role="dialog" aria-modal="true" aria-label="${esc(s.modal.title||s.modal.kind||'Dialog')}"><div class="modal-window__close">${action('close-modal',icon('close'),'icon-btn','aria-label="Close dialog"')}</div>${inner}</div><button class="overlay-backdrop" data-action="close-modal" aria-label="Close dialog"></button></div>`;
 }

@@ -7,7 +7,7 @@ module.exports=async({page,log})=>{
  const storeUrl=await page.evaluate(async()=>{const js=await fetch('/src/main.js').then(response=>response.text());return js.match(/from\s*['"]([^'"]*\/app\/store\.js[^'"]*)['"]/)?.[1]||'/src/app/store.js';});
  for(const width of [1440,834,390,320]){
   await page.setViewport({width,height:width<720?844:1000,hasTouch:width<720,deviceScaleFactor:1});
-  await page.evaluate(async storeUrl=>{const {loadScenario,state,notify}=await import(storeUrl);await loadScenario('home',false,true);state.model.selectedSessionId='s2';state.toast=null;notify();},storeUrl);
+  await page.evaluate(async storeUrl=>{const {loadScenario,state,notify}=await import(storeUrl);await loadScenario('home',false,true);state.model.selectedSessionId='s2';state.toasts=[];notify();},storeUrl);
   const direct='.source-row [data-action="source-play"][data-id="1live"]';
   check((await page.$eval(direct,element=>element.getAttribute('aria-label'))).includes('Office'),'Direct play must identify current player output');
   await page.hover('.source-row');
@@ -22,7 +22,7 @@ module.exports=async({page,log})=>{
   const pending=await page.evaluate(async storeUrl=>{const {state}=await import(storeUrl);return state.model.sessions;},storeUrl);
   check(JSON.stringify(pending)===JSON.stringify(played.sessions),'Cast picker should wait for target selection');
   await page.keyboard.press('Escape');
-  await page.evaluate(async storeUrl=>{const {state,notify}=await import(storeUrl);state.view='device';state.detailDeviceId='d1';state.model.ui.deviceTab='functions';state.toast=null;notify();},storeUrl);
+  await page.evaluate(async storeUrl=>{const {state,notify}=await import(storeUrl);state.view='device';state.detailDeviceId='d1';state.model.ui.deviceTab='functions';state.toasts=[];notify();},storeUrl);
   check(!!await page.$('[data-action="button-transfer-open"] [data-icon="add_link"]'),'Transfer action should use add_link');
   await page.click('[data-action="button-transfer-open"]');await page.waitForSelector('.transfer-key-grid');
   await page.click('[data-field="button-transfer-target"][value="g1"]');

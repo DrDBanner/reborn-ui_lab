@@ -1,9 +1,9 @@
 import {brandMark} from './brand.js';
 import {esc,icon,action,statusLabel,outputItem,typeIcon} from './shared.js';
-import {entity,visibleOutputs,kind,source,currentSession,leafDeviceIds} from '../app/model.js';
+import {entity,visibleOutputs,kind,source,currentSession,leafDeviceIds,targetStatus} from '../app/model.js';
 
 const navSections=[
- {id:'listen',name:'LISTEN',landing:'listen',items:[['listen','Radio','radio'],['library','Library','library_music'],['history','Recently played','history'],['spotify','Spotify','music_cast']]},
+ {id:'listen',name:'MEDIA',landing:'listen',items:[['listen','Radio','radio'],['library','Library','library_music'],['history','Recently played','history'],['spotify','Spotify','music_cast']]},
  {id:'outputs',name:'OUTPUTS',landing:'outputs',items:[]},
  {id:'system',name:'SYSTEM',landing:'updates',items:[['updates','Updates & maintenance','system_update'],['setup','Set up speaker','add_circle']]}
 ];
@@ -21,12 +21,12 @@ export function sidebar(s){
  const limit=s.expandingOutputs?999:Number(m.ui.sidebarLimit||6),count=outputs.length;
  const detailId=s.view==='device'?(s.detailDeviceId||m.selectedDeviceId):s.view==='group'?s.detailOutputId:null;
  const detailVisible=m.ui.speakerVariant!=='panel'&&!collapsed.outputs&&outputs.slice(0,limit).some(output=>output.id===detailId);
- const sectionCurrent=id=>id==='playbacks'?((s.view==='outputs'||s.view==='sessions')&&m.ui.outputScope==='active'):id==='outputs'?((s.view==='outputs'||s.view==='sessions')&&m.ui.outputScope!=='active'||['device','group'].includes(s.view)&&!detailVisible):!!collapsed[id]&&(sections.find(section=>section.id===id)?.items||[]).some(item=>(Array.isArray(item)?item[0]:item.view)===s.view);
+ const sectionCurrent=id=>id==='playbacks'?(sessions.length>0&&(s.view==='outputs'||s.view==='sessions')&&m.ui.outputScope==='active'):id==='outputs'?((s.view==='outputs'||s.view==='sessions')&&(m.ui.outputScope!=='active'||!sessions.length)||['device','group'].includes(s.view)&&!detailVisible):!!collapsed[id]&&(sections.find(section=>section.id===id)?.items||[]).some(item=>(Array.isArray(item)?item[0]:item.view)===s.view);
  const appContext=['settings','help','lab'].includes(s.view);
  return `<aside class="sidebar ${s.sidebarOpen?'sidebar--open':''}" aria-label="Main navigation">
   <div class="brand"><button class="brand-trigger ${appContext?'is-current':''}" ${appContext?'aria-current="page"':''} data-action="toggle-app-menu" aria-label="ST Reborn menu" aria-haspopup="dialog" aria-expanded="${!!s.appMenuOpen}" aria-controls="app-menu"><span class="brand-icon">${brandMark()}</span><span><strong>ST <em>Reborn</em></strong><small>UI Lab</small></span>${icon('expand_more','brand-chevron')}</button>${action('toggle-sidebar-mobile',icon('close'),'icon-btn sidebar-close','aria-label="Close navigation"')}</div>
   <div class="sidebar-scroll">
-   <section class="pinned-block" data-section="playbacks" aria-label="Playback sessions">${sectionHeading('playbacks','PLAYBACKS','outputs',!!collapsed.playbacks,sessions.length,sectionCurrent('playbacks'))}${!collapsed.playbacks?`<div class="nav-section__content">${sessions.length?sessions.slice(0,3).map(session=>sessionCard(s,session,true)).join(''):'<p class="sidebar-empty">Nothing playing</p>'}</div>`:''}</section>
+   ${sessions.length?`<section class="pinned-block" data-section="playbacks" aria-label="Playback sessions">${sectionHeading('playbacks','PLAYING','outputs',!!collapsed.playbacks,sessions.length||null,sectionCurrent('playbacks'))}${!collapsed.playbacks?`<div class="nav-section__content">${sessions.length?sessions.slice(0,3).map(session=>sessionCard(s,session,true)).join(''):'<p class="sidebar-empty">Nothing playing</p>'}</div>`:''}</section>`:''}
    ${sections.map(sec=>`<section class="nav-section" data-section="${sec.id}">
     ${sectionHeading(sec.id,sec.name,sec.landing,!!collapsed[sec.id],null,sectionCurrent(sec.id))}
     ${!collapsed[sec.id]?`<div class="nav-section__content">${sec.items.map(item=>{const [v,name,i]=Array.isArray(item)?item:[item.view,item.label,item.icon];return action('navigate',icon(i)+`<span>${esc(name)}</span>`,`nav-item ${s.view===v?'active':''}`,`data-value="${v}" ${s.view===v?'aria-current="page"':''}`)}).join('')}
@@ -51,10 +51,12 @@ export function header(s){
  return `<header class="app-header"><div class="header-left">${action('toggle-sidebar-mobile',icon('menu'),'icon-btn mobile-menu','aria-label="Open menu"')}<div class="header-title"><h1>${name}</h1><p>${sub}</p></div></div>${action('toggle-app-menu',brandMark(),'icon-btn mobile-brand','aria-label="ST Reborn menu" aria-haspopup="dialog" aria-controls="app-menu" aria-expanded="'+!!s.appMenuOpen+'"')}</header>`;
 }
 export function player(s){
- const m=s.model,session=currentSession(m),now=source(s.catalog,session?.sourceId),selectedTarget=entity(m,session?.targetId||m.selectedOutputId);
- return `<footer class="player" aria-label="Playback controls"><div class="player__content"><span class="player__art" style="--source-color:${esc(now?.color||'#435064')}">${icon(now?.type==='library'?'album':'radio')}</span><div class="player__label"><strong>${esc(now?.name||'Nothing playing')}</strong><small>${esc(now?.subtitle||'Select music and an output')}</small></div></div>
-  <div class="player__transport">${action('player-toggle',icon(session?.status==='playing'?'pause_circle':'play_circle'),'transport-play',`aria-label="${session?.status==='playing'?'Pause':'Play'}" ${!session?'disabled':''}`)}${action('player-stop',icon('stop'),'icon-btn transport-extra',`${!session?'disabled':''} aria-label="Stop"`)}</div>
-  <div class="player__outputs">${m.sessions.length>1?`<select class="session-select" data-field="session" aria-label="Active playback session">${m.sessions.map(x=>`<option value="${x.id}" ${session?.id===x.id?'selected':''}>${esc(entity(m,x.targetId)?.name||'Unknown')} · ${esc(source(s.catalog,x.sourceId)?.name||'')}</option>`).join('')}</select>`:''}
-   ${action('open-output-picker',typeIcon(kind(m,selectedTarget?.id))+`<span>${esc(selectedTarget?.name||'Choose output')}</span>`+icon('expand_less'),'output-trigger','title="Choose output"')}${icon('volume_up','player__volume-icon')}
-   <input type="range" class="volume-range" min="0" max="100" value="${esc(session?.volume??25)}" data-field="volume" ${!session?'disabled':''} aria-label="Output volume" /><span class="volume-value">${session?.volume??'–'}</span></div></footer>`;
+ const m=s.model,session=currentSession(m);
+ if(!session)return '';
+ const sessions=m.sessions.filter(item=>item.status==='playing'||item.status==='paused'),now=source(s.catalog,session.sourceId),target=entity(m,session.targetId);
+ return `<footer class="player" aria-label="Playback controls"><div class="player__content"><span class="player__art" style="--source-color:${esc(now?.color||'#435064')}">${icon(now?.type==='library'?'album':'radio')}</span><div class="player__label"><strong>${esc(now?.name||'Unknown source')}</strong><small>${session.status==='paused'?'Paused · ':''}${esc(now?.subtitle||'')}</small></div></div>
+ <div class="player__transport">${action('player-toggle',icon(session.status==='playing'?'pause_circle':'play_circle'),'transport-play',`aria-label="${session.status==='playing'?'Pause':'Resume'} ${esc(now?.name)}"`)}${action('player-stop',icon('stop'),'icon-btn transport-extra','aria-label="Stop playback"')}</div>
+ <div class="player__outputs">${sessions.length>1?`<select class="session-select" data-field="session" aria-label="Playback target">${sessions.map(item=>`<option value="${esc(item.id)}" ${session.id===item.id?'selected':''}>${esc(entity(m,item.targetId)?.name||'Unknown target')}${item.status==='paused'?' · Paused':''}</option>`).join('')}</select>`:`<span class="player-target">${typeIcon(kind(m,target?.id))}<span>${esc(target?.name)}</span></span>`}
+ ${action('open-output-picker',icon('music_cast'),'icon-btn output-trigger output-trigger--cast',`title="Play this source elsewhere" aria-label="Play ${esc(now?.name)} on another output"`)}${action('open-volume-controls',icon('volume_up'),'icon-btn volume-details-trigger',`aria-label="Individual volumes for ${esc(target?.name)}" title="Individual device volumes"`)}
+ <input type="range" class="volume-range" min="0" max="100" value="${session.volume??25}" data-field="volume" ${!['online','partial'].includes(targetStatus(m,session.targetId))?'disabled':''} aria-label="Overall volume for ${esc(target?.name)}" aria-valuetext="${session.volume??25} percent"/><span class="volume-value">${session.volume??25} %</span></div></footer>`;
 }

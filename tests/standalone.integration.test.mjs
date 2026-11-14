@@ -27,7 +27,7 @@ test('single file loads, renders and switches views/scenarios without a backend'
  const {ctx,app}=boot();await ready();
  assert(app.innerHTML.includes('Discover stations'));
  assert(!app.innerHTML.includes('Quick presets'));
- assert(app.innerHTML.includes('PLAYBACKS'));
+ assert(app.innerHTML.includes('PLAYING'));
  await vm.runInContext("onAction('navigate',{dataset:{value:'outputs'}})",ctx);await ready();
  assert(app.innerHTML.includes('Outputs &amp; playbacks') || app.innerHTML.includes('Outputs & playbacks'));
  await vm.runInContext("onAction('load-scenario',{dataset:{id:'many'}})",ctx);await ready();
@@ -68,7 +68,7 @@ test('device functions expose the second preset layer and save to its bound devi
  await vm.runInContext("onAction('preset-edit',{dataset:{id:'d1',gesture:'double'}})",ctx);
  const original=vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx);
  const other=vm.runInContext('JSON.stringify(state.model.devices[1].doublePresets)',ctx);
- ctx.document.querySelectorAll=selector=>selector==='[data-preset-index]'?['ndr2','flux','','','',''].map(value=>({value})):[];
+ await vm.runInContext("onAction('preset-source-choose',{dataset:{id:'ndr2'}});onAction('preset-slot',{dataset:{index:'1'}});onAction('preset-source-choose',{dataset:{id:'flux'}})",ctx);
  await vm.runInContext("onAction('preset-save',{dataset:{}})",ctx);
  assert.equal(vm.runInContext('state.model.devices[0].doublePresets[0]',ctx),'ndr2');
  assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx),original);
@@ -94,7 +94,7 @@ test('section overview shortcuts remain available while their contents are colla
  assert(app.innerHTML.includes('aria-label="Manage all outputs"'));
  assert(!app.innerHTML.includes('class="session-card'));
  await vm.runInContext("onAction('navigate',{dataset:{value:'sessions'}})",ctx);
- assert(app.innerHTML.includes('Sources, playback and available functions in one place'));
+ assert(app.innerHTML.includes('aria-label="Output views"'));
  assert.equal(vm.runInContext('state.model.ui.outputScope',ctx),'active');
  await vm.runInContext("onAction('toggle-app-menu',{dataset:{}})",ctx);
  assert(!app.innerHTML.includes('Connections & devices'));
@@ -148,7 +148,7 @@ test('station artwork plays immediately on the player output and preserves indep
 test('unified workspace scopes active outputs and toggles only the named playback',async()=>{
  const {ctx,app}=boot();await ready();
  await vm.runInContext("onAction('navigate',{dataset:{value:'outputs',scope:'active'}})",ctx);
- assert(app.innerHTML.includes('class="targets-grid"'));
+ assert(app.innerHTML.includes('class="targets-grid output-cards"'));
  assert(app.innerHTML.includes('Button presets'));
  assert.equal(vm.runInContext('state.model.ui.outputScope',ctx),'active');
  const before=vm.runInContext("JSON.stringify(state.model.sessions.find(item=>item.id==='s1'))",ctx);
@@ -180,10 +180,80 @@ test('group button selector binds gesture, edits and recall to the chosen physic
  assert.equal(vm.runInContext('state.presetDeviceId',ctx),'d3');
  const other=vm.runInContext('JSON.stringify(state.model.devices[0].doublePresets)',ctx);
  await vm.runInContext("onAction('preset-edit',{dataset:{id:'d3',gesture:'double'}})",ctx);
- ctx.document.querySelectorAll=selector=>selector==='[data-preset-index]'?['ndrinfo','flux','','','',''].map(value=>({value})):[];
+ await vm.runInContext("onAction('preset-source-choose',{dataset:{id:'ndrinfo'}})",ctx);
  await vm.runInContext("onAction('preset-save',{dataset:{}});onAction('preset-play',{dataset:{id:'d3',key:'1',gesture:'double'}})",ctx);
  assert.equal(vm.runInContext("state.model.devices.find(device=>device.id==='d3').doublePresets[0]",ctx),'ndrinfo');
  assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].doublePresets)',ctx),other);
  assert.equal(vm.runInContext("state.model.sessions.find(session=>session.targetId==='g1').sourceId",ctx),'ndrinfo');
  assert.equal(vm.runInContext("state.model.sessions.find(session=>session.targetId==='d4').sourceId",ctx),'ndrinfo');
+});
+
+
+test('typed preset chooser saves drafts, discards cancellation and captures the device source',async()=>{
+ const {ctx,app}=boot();await ready();
+ const original=vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx);
+ await vm.runInContext("onAction('preset-edit',{dataset:{id:'d1',gesture:'single'}});onAction('preset-source-type',{dataset:{value:'library'}});onAction('preset-source-choose',{dataset:{id:'track-demo'}})",ctx);
+ assert(app.innerHTML.includes('Library track'));
+ assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx),original);
+ await vm.runInContext("onAction('close-modal',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].presets)',ctx),original);
+ await vm.runInContext("onAction('preset-edit',{dataset:{id:'d1',gesture:'single'}});onAction('preset-source-choose',{dataset:{id:'track-demo'}});onAction('preset-slot',{dataset:{index:'1'}});onAction('preset-source-choose',{dataset:{id:'spotify-album-demo'}});onAction('preset-slot',{dataset:{index:'2'}});onAction('preset-source-choose',{dataset:{id:'native-demo'}});onAction('preset-slot',{dataset:{index:'3'}});onAction('select-session',{dataset:{id:'s2'}});onAction('preset-use-current',{dataset:{}});onAction('preset-clear',{dataset:{index:'4'}})",ctx);
+ assert.equal(vm.runInContext('state.modal.draft[3]',ctx),'flux');
+ await vm.runInContext("onAction('preset-save',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.model.devices[0].presets[0]',ctx),'track-demo');
+ assert.equal(vm.runInContext('state.model.devices[0].presets[1]',ctx),'spotify-album-demo');
+ assert.equal(vm.runInContext('state.model.devices[0].presets[2]',ctx),'native-demo');
+ assert.equal(vm.runInContext('state.model.devices[0].presets[4]',ctx),null);
+ assert.equal(vm.runInContext('state.model.devices[0].doublePresets[0]',ctx),'album1');
+});
+test('volume lightbox stays bound to its output and separates individual trims from overall volume',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('open-volume-controls',{dataset:{}})",ctx);
+ assert(app.innerHTML.includes('Volume · Downstairs'));
+ assert(app.innerHTML.includes('Volume for Living Room R'));
+ const office=vm.runInContext("state.model.devices.find(d=>d.id==='d4').volume",ctx);
+ await vm.runInContext("onField('dialog-device-volume',{value:'47',dataset:{id:'d2'}})",ctx);
+ assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d2').volume",ctx),47);
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s1').volume",ctx),25);
+ await vm.runInContext("onField('dialog-device-volume',{value:'99',dataset:{id:'d4'}})",ctx);
+ assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d4').volume",ctx),office);
+ await vm.runInContext("onAction('select-session',{dataset:{id:'s2'}});onField('dialog-volume',{value:'30',dataset:{id:'s1'}})",ctx);
+ assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d2').volume",ctx),52);
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s1').volume",ctx),30);
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s2').volume",ctx),28);
+ await vm.runInContext("onAction('close-modal',{dataset:{}});onField('volume',{value:'40'})",ctx);
+ assert.equal(vm.runInContext("state.model.devices.find(d=>d.id==='d4').volume",ctx),40);
+ assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s1').volume",ctx),30);
+});
+
+test('notifications stack, dismiss independently and expire normal messages after eight seconds',async()=>{
+ const {ctx,app}=boot();await ready();
+ const timers=[];ctx.setTimeout=(fn,delay)=>{const timer={fn,delay,unref(){}};timers.push(timer);return timer};ctx.clearTimeout=()=>{};
+ await vm.runInContext("clearToast();toast('First <note>');toast('Second');toast('Problem',{kind:'error'})",ctx);
+ assert.equal(vm.runInContext('state.toasts.length',ctx),3);
+ assert(app.innerHTML.includes('First &lt;note&gt;'));
+ assert.equal(timers.filter(timer=>timer.delay===8000).length,2);
+ timers.find(timer=>timer.delay===8000).fn();
+ assert.equal(vm.runInContext('state.toasts[0].leaving',ctx),true);
+ timers.find(timer=>timer.delay===240).fn();
+ assert.equal(vm.runInContext('state.toasts.length',ctx),2);
+ assert.equal(vm.runInContext('state.toasts[1].kind',ctx),'error');
+ await vm.runInContext("onAction('dismiss-toast',{dataset:{id:state.toasts[1].id}})",ctx);
+ assert.equal(vm.runInContext('state.toasts[1].leaving',ctx),true);
+});
+
+test('stopped playbacks do not render a player or Playing section; paused playback is explicit',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("state.model.sessions.forEach(s=>s.status='stopped');notify()",ctx);
+ assert(!app.innerHTML.includes('<footer class="player"'));assert(!app.innerHTML.includes('data-section="playbacks"'));assert(!app.innerHTML.includes('has-player'));
+ assert(!app.innerHTML.includes('data-action="source-play"'));
+ await vm.runInContext("state.model.sessions[1].status='paused';state.model.selectedSessionId='s1';notify()",ctx);
+ assert(app.innerHTML.includes('<footer class="player"'));assert(app.innerHTML.includes('Paused ·'));assert(app.innerHTML.includes('Office'));
+ assert.equal(vm.runInContext('currentSession(state.model).id',ctx),'s2');
+});
+test('player casting uses its actual source after cancelling another source choice',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('source-select',{dataset:{id:'ndr2'}});onAction('close-modal',{dataset:{}});onAction('open-output-picker',{dataset:{}})",ctx);
+ assert(app.innerHTML.includes('Play FluxFM on'));
+ assert.equal(vm.runInContext('state.speakerPickerFor',ctx),'flux');
 });

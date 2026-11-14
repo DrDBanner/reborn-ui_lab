@@ -23,13 +23,16 @@ The normal Vite version compiles Tailwind and daisyUI. `preview.html` omits thes
 
 ## What can I try?
 
-- **The problem of N:** use the `30 speakers` scenario. Sidebar shows selected/top-level shortcuts; the main **Outputs & playbacks** workspace filters and manages the full list.
+- **The problem of N:** use the `30 speakers` scenario. Sidebar shows selected/top-level shortcuts; the shared workspace offers **Playback targets** for logical outputs and **All devices** for the complete hardware inventory.
 - **Speaker placement A/B:** open **Design Lab** and switch between *A — Player panel* and *B — Sidebar*. Shared playback and group state does not reset.
 - **App menu:** click the ST Reborn logo for connection status, appearance, app settings, scenarios and Design Lab.
 - **Radio filters:** country, language, sorting, minimum bitrate, station health, output compatibility and genre chips all filter the sample catalog. Use the pin button to keep the controls visible while scrolling; its state is remembered.
+- **Volume:** the player slider adjusts its complete output in percent. The volume icon opens individual member levels, including stereo pairs.
+- **Notifications:** notes stack in the top-right corner and disappear after eight seconds; errors remain until dismissed.
 - **Immediate station playback:** hover or focus station artwork to Play on the output named in the bottom player. Touch exposes the same action directly. The separate music-cast button opens output selection.
 - **Button transfer:** in the primary Button presets panel, transfer all occupied or selected Once/Twice keys to devices, pairs or groups. Review per-device conflicts and unsupported gestures; unselected keys remain intact. This is one-time copying, matching the verified STR APIs.
-- **Device functions:** open a device for its supported button presets above the tabs; alarms remain under **Functions**. Groups and pairs expose the same panel with a device selector. Switch **Once / Twice** to configure or recall either button layer. **Device capabilities** demonstrates items without buttons and items with only two single-press keys.
+- **Device functions:** open a device for its supported button presets above the tabs; alarms remain under **Functions**. Groups and pairs expose the same panel with a device selector. Switch **Once / Twice** to configure or recall either button layer. The assignment editor separates keys from searchable, typed Radio / Library / Spotify / Services sources and can capture that device’s current source. **Device capabilities** demonstrates items without buttons and items with only two single-press keys.
+- **Playing / Media:** the sidebar uses these names for playback sessions and source browsing. Playing and the bottom bar hide when no session is running or paused; paused sessions are explicit.
 - **Independent streams:** choose `Several streams`, select a playback in the sidebar or open the shared Outputs workspace with Active only, or use the session selector in the bottom player; select another source and assign it to another output.
 - **Groups and pairs:** select available items on **Outputs & playbacks**, then **Create group** or **Stereo pair**. Manage or dissolve each as one output.
 - **Maintenance states:** select `Maintenance & errors` and advance firmware progress in **Updates & maintenance**.

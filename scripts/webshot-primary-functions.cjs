@@ -4,7 +4,7 @@ module.exports=async({page,log})=>{
  const check=(ok,msg)=>{if(!ok)throw new Error(msg)};
  await page.waitForSelector('.workspace');
  const storeUrl=await page.evaluate(async()=>{const js=await fetch('/src/main.js').then(r=>r.text());return js.match(/from\s*['"]([^'"]*\/app\/store\.js[^'"]*)['"]/)?.[1]||'/src/app/store.js';});
- const route=async(view,id)=>page.evaluate(async(view,id,storeUrl)=>{const {state,notify}=await import(storeUrl);state.view=view;state.detailDeviceId=id;state.detailOutputId=id;state.modal=null;state.toast=null;state.model.ui.deviceTab='overview';notify();document.querySelector('.workspace').scrollTop=0;},view,id,storeUrl);
+ const route=async(view,id)=>page.evaluate(async(view,id,storeUrl)=>{const {state,notify}=await import(storeUrl);state.view=view;state.detailDeviceId=id;state.detailOutputId=id;state.modal=null;state.toasts=[];state.model.ui.deviceTab='overview';notify();document.querySelector('.workspace').scrollTop=0;},view,id,storeUrl);
  const inspect=async()=>page.evaluate(()=>{
   const panel=document.querySelector('.item-key-functions'),tabs=document.querySelector('.detail-tabs'),workspace=document.querySelector('.workspace');
   const cards=[...panel.querySelectorAll('.key-preset')].map(el=>el.getBoundingClientRect());
@@ -22,7 +22,7 @@ module.exports=async({page,log})=>{
   await route('group','g1');await page.select('#preset-device','d3');
   await page.click('.item-key-functions [data-action="preset-gesture"][data-value="double"]');
   check(await page.$eval('[data-action="preset-edit"]',el=>el.dataset.id==='d3'&&el.dataset.gesture==='double'),'Group gesture did not bind Kitchen');
-  await page.click('[data-action="preset-edit"]');await page.select('[data-preset-index="0"]','ndrinfo');await page.click('[data-action="preset-save"]');
+  await page.click('[data-action="preset-edit"]');await page.click('[data-action="preset-source-choose"][data-id="ndrinfo"]');await page.click('[data-action="preset-save"]');
   await page.$eval('[data-action="preset-play"][data-key="1"]',el=>el.scrollIntoView({block:'center'}));
   await page.click('[data-action="preset-play"][data-key="1"]');
   const state=await page.evaluate(async storeUrl=>{const {state}=await import(storeUrl);return {member:state.model.devices.find(d=>d.id==='d3').doublePresets[0],other:state.model.devices.find(d=>d.id==='d1').doublePresets[0],group:state.model.sessions.find(s=>s.targetId==='g1').sourceId,office:state.model.sessions.find(s=>s.targetId==='d4').sourceId};},storeUrl);

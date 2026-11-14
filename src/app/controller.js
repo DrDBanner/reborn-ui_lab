@@ -1,5 +1,5 @@
-import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save} from './store.js';
-import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,renameDevice,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets} from './model.js';
+import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast} from './store.js';
+import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,renameDevice,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume} from './model.js';
 import {esc,icon} from '../components/shared.js';
 
 function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
@@ -7,14 +7,14 @@ function openModal(kind,extras={}){mutate(s=>s.modal={kind,...extras},false)}
 function closeModal(){mutate(s=>s.modal=null,false)}
 function confirmAction(title,description,callback){if(window.confirm(`${title}\n\n${description}`))callback()}
 function exported(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download=name;a.href=url;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-function notifySafe(task){try{task()}catch(err){toast(err?.message||String(err))}}
+function notifySafe(task){try{task()}catch(err){toast(err?.message||String(err),{kind:'error'})}}
 function currentDevice(){return entity(state.model,state.detailDeviceId||state.model.selectedDeviceId)}
 function generic(title,description,body=''){openModal('generic',{title,description,body})}
 
 export async function onAction(action,element){
  const m=state.model,id=element.dataset.id,val=element.dataset.value;
  try{switch(action){
- case 'navigate':if(val==='outputs'&&element.dataset.scope)state.model.ui.outputScope=element.dataset.scope;if(val==='sessions')state.model.ui.outputScope='active';navigate(val==='sessions'?'outputs':val);break;
+ case 'navigate':if(val==='outputs'&&element.dataset.scope){state.model.ui.outputScope=element.dataset.scope;state.model.ui.outputView='outputs';state.model.ui.outputFilter='all';state.outputSearch='';}if(val==='sessions')state.model.ui.outputScope='active';navigate(val==='sessions'?'outputs':val);break;
  case 'toggle-app-menu':mutate(s=>{s.appMenuOpen=!s.appMenuOpen},false);break;
  case 'close-app-menu':mutate(s=>s.appMenuOpen=false,false);break;
  case 'select-session':if(!m.sessions.some(session=>session.id===id))throw new Error('Playback no longer available');mutate(s=>{s.model.selectedSessionId=id;s.sidebarOpen=false});break;
@@ -32,8 +32,9 @@ export async function onAction(action,element){
   const target=entity(m,id),type=kind(m,id);generic(target.name,'Quick actions for this output',`<div class="button-row"><button class="btn-soft" data-action="target-play" data-id="${esc(id)}">${icon('play_circle')} Play selected source</button><button class="btn-soft" data-action="${type==='device'?'device-open':'group-open'}" data-id="${esc(id)}">${icon('tune')} Manage</button></div>`);break;
  }
  case 'target-play':{const src=m.selectedSourceId||currentSession(m)?.sourceId||'flux';mutate(s=>{assignSource(s.model,src,id);s.modal=null;});break}
- case 'open-output-picker':mutate(s=>{s.speakerPickerFor=m.selectedSourceId||currentSession(m)?.sourceId||'flux';s.modal={kind:'picker'}},false);break;
- case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId||m.selectedOutputId;if(element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)].slice(0,20)});toast(`Playing on ${entity(m,targetId)?.name}`);break;}
+ case 'open-volume-controls':{const playback=currentSession(m);if(!playback)throw new Error('Choose a playback first');openModal('volume',{sessionId:playback.id,targetId:playback.targetId});break;}
+ case 'open-output-picker':mutate(s=>{s.speakerPickerFor=currentSession(m)?.sourceId||m.selectedSourceId||'flux';s.modal={kind:'picker'}},false);break;
+ case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId;if(!targetId||element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)].slice(0,20)});toast(`Playing on ${entity(m,targetId)?.name}`);break;}
  case 'source-select':mutate(s=>{s.model.selectedSourceId=id;s.speakerPickerFor=id;s.modal={kind:'picker'}},false);break;
  case 'assign-output':{const src=state.speakerPickerFor||m.selectedSourceId||currentSession(m)?.sourceId||'flux';mutate(s=>{assignSource(s.model,src,id);s.model.history=[src,...s.model.history.filter(x=>x!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null;});toast(`Playing on ${entity(m,id)?.name}`);break}
  case 'source-info':{const d=source(state.catalog,id);generic(d?.name||'Source',`${d?.type||''} · ${d?.country||''} · ${d?.bitrate||''}`,`<div class="key-values"><div><span>Genre</span><strong>${esc(d?.genre)}</strong></div><div><span>Station</span><strong>${esc(d?.subtitle)}</strong></div></div>`);break}
@@ -51,18 +52,29 @@ export async function onAction(action,element){
  case 'preset-edit':{
   const device=entity(m,id||currentDevice()?.id),gesture=element.dataset.gesture||state.presetGesture||'single';
   if(!buttonProfile(device)?.gestures.includes(gesture))throw new Error('This device does not support that button gesture');
-  openModal('preset',{deviceId:device.id,gesture});break;
+  openModal('preset',{deviceId:device.id,gesture,draft:buttonPresets(device,gesture),keyIndex:0,sourceType:'all',query:''});break;
  }
+ case 'preset-slot':if(state.modal?.kind==='preset')mutate(s=>{s.modal.keyIndex=Math.max(0,Math.min(s.modal.draft.length-1,Number(element.dataset.index)||0))},false);break;
+ case 'preset-source-type':if(state.modal?.kind==='preset'&&['all','radio','library','spotify','native'].includes(val))mutate(s=>{s.modal.sourceType=val;s.modal.query=''},false);break;
+ case 'preset-source-choose':case 'preset-use-current':{
+  const modal=state.modal;if(modal?.kind!=='preset')break;
+  const playing=effectiveSessionFor(m,modal.deviceId),sourceId=action==='preset-use-current'&&playing?.status!=='stopped'?playing?.sourceId:action==='preset-source-choose'?id:null;
+  if(!canAssignPresetSource(entity(m,modal.deviceId),source(state.catalog,sourceId)))throw new Error('This source cannot be assigned to the selected device');
+  mutate(s=>s.modal.draft[s.modal.keyIndex]=sourceId,false);break;
+ }
+ case 'preset-clear':if(state.modal?.kind==='preset'){const index=Number(element.dataset.index);if(Number.isInteger(index)&&index>=0&&index<state.modal.draft.length)mutate(s=>{s.modal.draft[index]=null;s.modal.keyIndex=index},false)}break;
  case 'preset-save':{
   const {deviceId,gesture}=state.modal||{},profile=buttonProfile(entity(m,deviceId));
   if(!profile?.gestures.includes(gesture))throw new Error('Preset capability no longer available');
-  const values=[...document.querySelectorAll('[data-preset-index]')].map(element=>element.value||null);
-  if(values.length!==profile.keyCount||values.some(value=>value&&!source(state.catalog,value)))throw new Error('Invalid preset assignments');
+  const values=state.modal.draft;
+  if(!Array.isArray(values))throw new Error('No assignment draft available');
+  if(values.length!==profile.keyCount||values.some((value,index)=>value!==buttonPresets(entity(m,deviceId),gesture)[index]&&value&&!canAssignPresetSource(entity(m,deviceId),source(state.catalog,value))))throw new Error('Invalid preset assignments');
   mutate(s=>{values.forEach((value,index)=>setButtonPreset(s.model,deviceId,index+1,gesture,value));s.modal=null});toast('Button assignments saved (mock data)');break;
  }
  case 'library-server':mutate(s=>s.model.ui.libraryServer=id);break;
  case 'library-folder':generic(val,'Folder contents (simulated)',`<p>In the production application this view will request folders and tracks from the current music server. No playback engine is reimplemented here.</p>`);break;
  case 'spotify-connect':mutate(s=>s.model.spotifyConnected=!s.model.spotifyConnected);break;
+ case 'output-view':if(['outputs','devices'].includes(val))mutate(s=>{s.model.ui.outputView=val;s.model.ui.outputFilter='all'});break;
  case 'filter-output-scope':mutate(s=>s.model.ui.outputScope=s.model.ui.outputScope==='active'?'all':'active');break;
  case 'filter-outputs':mutate(s=>s.model.ui.outputFilter=val);break;
  case 'clear-selected':mutate(s=>s.selectedForComposite=[],false);break;
@@ -115,9 +127,9 @@ export async function onAction(action,element){
  case 'reset-scenario':await loadScenario(state.scenarioId,false,true);break;
  case 'load-scenario':await loadScenario(id);break;
  case 'close-modal':closeModal();break;
- case 'dismiss-toast':mutate(s=>s.toast=null,false);break;
+ case 'dismiss-toast':dismissToast(id);break;
  default:console.warn('Unhandled action:',action);
- }}catch(err){toast(err?.message||String(err))}
+ }}catch(err){toast(err?.message||String(err),{kind:'error'})}
 }
 
 export async function onField(field,target){
@@ -126,6 +138,7 @@ export async function onField(field,target){
  case 'scenario':await loadScenario(val);break;
  case 'button-transfer-key':case 'button-transfer-target':{const key=field==='button-transfer-key'?'keys':'targetIds';if(state.modal?.kind==='button-transfer')mutate(s=>{s.modal[key]=target.checked?[...new Set([...s.modal[key],val])]:s.modal[key].filter(item=>item!==val)},false);break;}
  case 'device-name':if(state.modal?.kind==='rename')state.modal.nameDraft=val;break;
+ case 'preset-search':if(state.modal?.kind==='preset')mutate(s=>s.modal.query=val,false);break;
  case 'preset-device':if(!leafDeviceIds(m,target.dataset.id).includes(val)||!buttonProfile(entity(m,val)))throw new Error('Button device is not part of this output');mutate(s=>s.presetDeviceId=val,false);break;
  case 'speaker-variant':mutate(s=>s.model.ui.speakerVariant=val);break;
  case 'radio-country':case 'radio-language':case 'radio-order':case 'radio-bitrate':case 'radio-genre':case 'radio-output':case 'radio-working':case 'radio-compatible':{
@@ -133,12 +146,14 @@ export async function onField(field,target){
   mutate(s=>s.model.settings[keys[field]]=target.type==='checkbox'?target.checked:field==='radio-bitrate'?Number(val):val);break;
  }
  case 'radio-search':mutate(s=>s.filter=val,false);break;
+ case 'output-type':if(['all','device','pair','group'].includes(val))mutate(s=>s.model.ui.outputFilter=val);break;
  case 'output-search':mutate(s=>s.outputSearch=val,false);break;
  case 'member-select':mutate(s=>{s.selectedForComposite=target.checked?[...new Set([...s.selectedForComposite,val])]:s.selectedForComposite.filter(x=>x!==val)},false);break;
  case 'session':mutate(s=>s.model.selectedSessionId=val);break;
- case 'volume':mutate(s=>{const session=currentSession(s.model);if(session)session.volume=Number(val)});break;
- case 'composite-volume':mutate(s=>{const g=entity(s.model,s.detailOutputId);if(g)g.volume=Number(val)});break;
- case 'member-volume':mutate(s=>{const d=entity(s.model,target.dataset.id);if(d&&d.status==='online')d.volume=Number(val)});break;
+ case 'volume':mutate(s=>{const session=currentSession(s.model);if(session)setOutputVolume(s.model,session.targetId,val)});break;
+ case 'dialog-volume':case 'dialog-device-volume':{const modal=state.modal,session=m.sessions.find(item=>item.id===modal?.sessionId&&item.targetId===modal.targetId);if(modal?.kind!=='volume'||!session)throw new Error('Playback no longer available');if(field==='dialog-device-volume'&&!leafDeviceIds(m,modal.targetId).includes(target.dataset.id))throw new Error('Device is not in this output');mutate(s=>field==='dialog-volume'?setOutputVolume(s.model,modal.targetId,val):setDeviceVolume(s.model,target.dataset.id,val));break;}
+ case 'composite-volume':mutate(s=>setOutputVolume(s.model,s.detailOutputId,val));break;
+ case 'member-volume':mutate(s=>setDeviceVolume(s.model,target.dataset.id,val));break;
  case 'group-persistent':mutate(s=>{const g=entity(s.model,s.detailOutputId);if(g)g.persistent=target.checked});break;
  case 'bass':mutate(s=>currentDevice().bass=Number(val));break;
  case 'start-volume-enabled':mutate(s=>currentDevice().startVolumeEnabled=target.checked);break;
@@ -155,5 +170,5 @@ export async function onField(field,target){
  case 'sidebar-width':mutate(s=>{s.designTokens.sidebarWidth=Number(val);applyDesign()});break;
  case 'font-size':mutate(s=>{s.designTokens.fontSize=Number(val);applyDesign()});break;
  default:console.warn('Unhandled field:',field)
- }}catch(err){toast(err?.message||String(err))}
+ }}catch(err){toast(err?.message||String(err),{kind:'error'})}
 }

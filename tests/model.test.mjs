@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets} from '../src/app/model.js';
+import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume} from '../src/app/model.js';
 const base=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data/scenarios/home.json'),'utf8'));
 const fresh=()=>structuredClone(base);
 test('pair and group resolve to physical speakers',()=>{const m=fresh();assert.deepEqual(leafDeviceIds(m,'p1'),['d1','d2']);assert.deepEqual(leafDeviceIds(m,'g1'),['d1','d2','d3'])});
@@ -138,4 +138,24 @@ test('transfer reports offline and unsupported targets without altering them',()
  target.status='online';target.capabilities={};assert(planPresetTransfer(m,'d1',['d5']).results[0].error.includes('No hardware'));
  assert.throws(()=>planPresetTransfer(m,'d1',['d1']));assert.throws(()=>planPresetTransfer(m,'d1',['d4'],[]));
  m.devices[0].status='offline';assert.throws(()=>planPresetTransfer(m,'d1',['d4']));
+});
+
+
+test('preset source types follow reported capabilities, including library and service sources',()=>{
+ const m=fresh(),device=m.devices[0];
+ for(const type of ['radio','library','spotify','native'])assert(canAssignPresetSource(device,{type}));
+ device.capabilities.buttonPresets.sourceTypes=['radio','library'];
+ assert(!canAssignPresetSource(device,{type:'spotify'}));assert(canAssignPresetSource(device,{type:'library'}));
+ assert(!canAssignPresetSource({capabilities:{}},{type:'radio'}));
+});
+test('overall volume preserves member offsets and unrelated outputs; device trim keeps master unchanged',()=>{
+ const m=fresh(),before=structuredClone(m.devices.find(d=>d.id==='d4'));
+ setDeviceVolume(m,'d2',40);assert.equal(m.sessions.find(s=>s.targetId==='g1').volume,25);
+ setOutputVolume(m,'g1',30);assert.equal(m.devices.find(d=>d.id==='d2').volume,45);
+ assert.equal(m.sessions.find(s=>s.targetId==='g1').volume,30);
+ assert.deepEqual(m.devices.find(d=>d.id==='d4'),before);
+ const offline=m.devices.find(d=>d.id==='d3');offline.status='offline';const volume=offline.volume;
+ setOutputVolume(m,'g1',100);assert.equal(m.devices.find(d=>d.id==='d2').volume,100);assert.equal(offline.volume,volume);
+ assert.throws(()=>setDeviceVolume(m,'d3',50));assert.throws(()=>setOutputVolume(m,'g1',101));
+ setDeviceVolume(m,'d4',12);assert.equal(m.sessions.find(s=>s.targetId==='d4').volume,12);
 });

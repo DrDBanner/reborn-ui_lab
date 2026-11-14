@@ -132,6 +132,7 @@
       "id": "album1",
       "name": "Evening Jazz",
       "type": "library",
+      "kind": "queue",
       "subtitle": "Music Server · 44 tracks",
       "genre": "Jazz",
       "country": "Local",
@@ -142,6 +143,7 @@
       "id": "album2",
       "name": "Quiet Sunday",
       "type": "library",
+      "kind": "folder",
       "subtitle": "NAS · 18 tracks",
       "genre": "Ambient",
       "country": "Local",
@@ -167,6 +169,40 @@
       "country": "Online",
       "bitrate": "Spotify",
       "color": "#336f65"
+    },
+    {
+      "id": "track-demo",
+      "name": "Morning Light · demo",
+      "type": "library",
+      "kind": "track",
+      "subtitle": "Living Room NAS · single track",
+      "genre": "Jazz",
+      "country": "Local",
+      "bitrate": "FLAC",
+      "color": "#795c9f"
+    },
+    {
+      "id": "spotify-album-demo",
+      "name": "Sunday Sessions · demo",
+      "type": "spotify",
+      "kind": "album",
+      "subtitle": "Spotify album",
+      "genre": "Jazz",
+      "country": "Online",
+      "bitrate": "Spotify",
+      "color": "#198c56"
+    },
+    {
+      "id": "native-demo",
+      "name": "Saved service station · demo",
+      "type": "native",
+      "kind": "station",
+      "service": "Native service",
+      "subtitle": "Source saved on the speaker",
+      "genre": "Mixed",
+      "country": "Online",
+      "bitrate": "Native",
+      "color": "#b98260"
     },
     {
       "id": "demo-fr",

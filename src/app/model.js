@@ -60,7 +60,29 @@ export function effectiveSessionFor(model, targetId) {
 }
 
 export function currentSession(model) {
-  return model.sessions.find(x => x.id === model.selectedSessionId) ?? model.sessions[0] ?? null;
+  const active=model.sessions.filter(item=>item.status==='playing'||item.status==='paused');
+  return active.find(item=>item.id===model.selectedSessionId)??active[0]??null;
+}
+
+function volumeValue(value){
+ const number=Number(value);
+ if(!Number.isFinite(number)||number<0||number>100)throw new Error('Volume must be between 0 and 100');
+ return Math.round(number);
+}
+export function setDeviceVolume(model,deviceId,value){
+ const device=model.devices.find(item=>item.id===deviceId);
+ if(!device||device.status!=='online')throw new Error('Device is not available for volume control');
+ device.volume=volumeValue(value);
+ const playback=sessionFor(model,deviceId);if(playback)playback.volume=device.volume;
+}
+export function setOutputVolume(model,targetId,value){
+ const target=entity(model,targetId),status=targetStatus(model,targetId);
+ if(!target||!['online','partial'].includes(status))throw new Error('Output is not available for volume control');
+ const volume=volumeValue(value),playback=sessionFor(model,targetId),previous=playback?.volume??target.volume??25,delta=volume-previous;
+ for(const id of leafDeviceIds(model,targetId)){
+  const device=entity(model,id);if(device.status==='online')device.volume=kind(model,targetId)==='device'?volume:Math.max(0,Math.min(100,Math.round((device.volume??previous)+delta)));
+ }
+ target.volume=volume;if(playback)playback.volume=volume;
 }
 
 export function renameDevice(model,deviceId,name){
@@ -85,6 +107,11 @@ export function buttonPresets(device,gesture='single') {
   if(!profile?.gestures.includes(gesture))return [];
   const bank=gesture==='double'?device.doublePresets:device.presets;
   return Array.from({length:profile.keyCount},(_,index)=>bank?.[index]||null);
+}
+
+export function canAssignPresetSource(device,item){
+ const types=device?.capabilities?.buttonPresets?.sourceTypes;
+ return !!buttonProfile(device)&&!!item&&(!Array.isArray(types)||types.includes(item.type));
 }
 
 export function setButtonPreset(model,deviceId,key,gesture,sourceId) {

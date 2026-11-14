@@ -20,7 +20,7 @@ The sidebar provides **fast access**, not an exhaustive N-device management inte
 6. Speaker settings, firmware, network and diagnostics belong in the main workspace.
 7. System contains only Updates & maintenance and Set up speaker. App-wide controls and Design Lab are reached through the logo menu. Item types use Material icons with screen-reader names, without redundant visible type labels.
 8. Primary key functions appear above device detail tabs, according to reported capabilities, and also project into group/pair details. Radio contains sources and app-wide favorites.
-9. A persistent player presents playback controls, output selection and **multiple sessions**.
+9. A contextual player presents playback controls and **multiple sessions** while any playback is running or paused.
 
 **Variant A:** outputs are accessed from the player panel; navigation-only sidebar. **Variant B:** output shortcuts appear in a collapsible sidebar section. Both variants share the same model, playback sessions and domain actions.
 
@@ -44,7 +44,7 @@ The UI models brand-neutral identity and device capabilities (see DEVICE_CAPABIL
 
 ## Unified outputs and playbacks
 
-Playbacks and Outputs open the same **Outputs & playbacks** workspace. Playbacks applies the Active only projection; Outputs shows all physical devices, pairs and groups for configuration. Each card projects its current source and playback state; inherited playback names its parent. Direct play/pause addresses that exact session, preserving independent streams. Button-capability projections link to the physical member's primary function panel.
+Playbacks and Outputs open the same **Outputs & playbacks** workspace. Playbacks applies the Active only projection; Playback targets shows each standalone speaker or composite once; All devices provides the complete physical device inventory for configuration. Each card projects its current source and playback state; inherited playback in All devices names its parent. Direct play/pause addresses that exact session, preserving independent streams. Button-capability projections link to the physical member's primary function panel.
 
 Sidebar selection represents the current content route, not the chosen bottom-player session. Exactly one navigation context is marked current, even if stale device/group IDs remain in state or the section is collapsed. Stream status uses the accent music-cast indicator without a selected card background. A selected device hidden within a composite or in the player-panel variant marks the Outputs section instead.
 
@@ -55,3 +55,29 @@ The station artwork is an immediate Play action on the output currently named in
 The separate music-cast action opens output selection and waits for an explicit choice. This lets users start independent streams without silently replacing the current one. Device configuration selection never redirects the station shortcut when another playback session is active.
 
 Primary button functions stay visible above the device tabs. Groups and pairs reuse that surface with an explicit physical member selector; editing is bound to the chosen member while playback addresses its logical output. Less frequent functions can remain in configuration tabs.
+
+
+## Playback targets and all devices
+
+An output is an addressable playback target, not a separate hardware type. A standalone speaker is both a device and a target; a group/pair is one logical target whose members remain physical devices. The overview names these task views Playback targets and All devices. Availability and current playback are separate properties. Group members do not disappear from inventory or become another device type.
+
+The shared workspace uses one page heading, a compact view/count switch, search/type/playback filters and equal card structure. Playback targets lists top-level logical outputs once, with expandable members. All devices lists physical endpoints and their parent relationship. Details is the only configuration navigation in each card; the redundant Use output action and large statistic cards are removed. Direct pause/play remains attached to the exact source/session.
+
+## Overall and individual volume
+
+The bottom slider controls the current playback output as a whole. The adjacent volume icon opens a session-bound lightbox with an overall control and individual device levels grouped by stereo pair. Values are percentages; a single speaker has one control. Overall adjustment preserves relative member differences until a value reaches 0 or 100; offline devices remain unchanged. Individual trims do not rewrite a composite master value. A single-device session reflects that device's volume directly. Unrelated sessions and configuration selection do not redirect the lightbox. Real hardware integration still requires adapter acknowledgement and actual volume semantics.
+
+## Notifications
+
+Top-right notifications form a stack. Ordinary notes expire after 8 seconds, with a short exit animation; errors remain until dismissed. IDs keep dismissals independent. Countdown and entry/exit animations respect elapsed time across rerenders and reduced-motion preferences. Notifications are transient and never saved with scenarios.
+
+
+## Idle and paused states
+
+Playing is the sidebar label for playback sessions; Media contains source browsing. The entire Playing section is hidden when no running or paused session exists. The bottom player follows the same rule and gives its height back to the workspace when hidden. A stopped session is not selected as a fallback while another active session exists. A paused session remains resumable and is explicitly labeled Paused. Without an active player context, station artwork does not silently target a remembered device; the music-cast picker provides explicit output selection.
+
+The player shows its source once and its playback target once. Its music-cast action uses the actual player source, even if an unrelated source picker was cancelled earlier. Percent volume and the individual-level lightbox apply to that session's output.
+
+## Visual restraint
+
+Light appearance uses neutral whites and greys. Source placeholders use a shared neutral treatment; selection/action states retain the accent and status colors retain semantic meaning. Surfaces do not use drop shadows. The radio toolbar and station rows share the same responsive horizontal inset, with no nested filter card. Volume uses ordinary rows, percentage values and separators; no decorative hero tile, duplicate single-device slider or oversized count badges.

@@ -20,15 +20,15 @@
   --card-gap: 14px;
 }
 [data-appearance="light"] {
-  --accent: #39689e;
-  --bg: #f3f4f6;
-  --sidebar: #f9fafb;
+  --accent: #3267a8;
+  --bg: #f5f5f5;
+  --sidebar: #fafafa;
   --panel: #ffffff;
-  --panel-hi: #edf0f4;
-  --text: #1b2636;
-  --muted: #566278;
-  --faint: #626f83;
-  --border: #d8dce5;
+  --panel-hi: #eeeeef;
+  --text: #202124;
+  --muted: #5c5e63;
+  --faint: #6e7075;
+  --border: #dedee1;
 }
 [data-density="compact"] { --density: .8; --card-gap: 10px; }
 [data-density="comfortable"] { --density: 1.15; --card-gap: 20px; }

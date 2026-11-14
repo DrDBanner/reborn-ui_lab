@@ -1,3 +1,4 @@
+import {libraryQueueErrors} from './library.js';
 /** Pure domain selectors and state transforms. No DOM, no Wails dependencies. */
 export function entity(model, id) {
   if (!model || !id) return null;
@@ -479,7 +480,7 @@ export function updateMembership(model,groupId,memberId,shouldAdd) {
 
 export function validateScenario(m) {
   if(!m || !Array.isArray(m.devices) || !Array.isArray(m.pairs) || !Array.isArray(m.groups) || !Array.isArray(m.sessions)) return ['Missing arrays: devices, pairs, groups, sessions'];
-  const errors=[];
+  const errors=libraryQueueErrors(m.libraryQueues);
   if(!m.settings || typeof m.settings!=='object') errors.push('Missing settings object');
   if(!m.ui || typeof m.ui!=='object') errors.push('Missing ui object');
   for(const key of ['favorites','history','setupCandidates'])if(!Array.isArray(m[key]))errors.push(`Missing ${key} array`);

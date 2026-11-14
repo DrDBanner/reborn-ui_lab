@@ -24,7 +24,8 @@ export const statusBadge=(status)=>`<span class="device-status device-status--${
 export function targetIcon(type){return type==='pair'?'speaker_group':type==='group'?'hub':'speaker'}
 export const typeIcon=(type,extra='')=>`<span class="entity-type ${esc(extra)}" role="img" aria-label="${type==='pair'?'Stereo pair':type==='group'?'Speaker group':'Speaker'}" title="${type==='pair'?'Stereo pair':type==='group'?'Speaker group':'Speaker'}">${icon(targetIcon(type))}</span>`;
 export function labelForTarget(model,id){return entity(model,id)?.name||'Choose output'}
-export function subline(model,id){const k=kind(model,id);if(k==='device')return `${esc(entity(model,id)?.model||'Speaker')} · ${statusLabel(targetStatus(model,id))}`;return `${leafDeviceIds(model,id).length} speakers`}
+export const deviceProduct=device=>[device?.brand,device?.model].filter(Boolean).join(' · ')||'Speaker';
+export function subline(model,id){const k=kind(model,id);if(k==='device')return `${esc(deviceProduct(entity(model,id)))} · ${statusLabel(targetStatus(model,id))}`;return `${leafDeviceIds(model,id).length} speakers`}
 export function outputItem(model,id,{compact=false,selected=false,extra=''}={}){
  const t=entity(model,id);if(!t)return '';
  const k=kind(model,id),status=targetStatus(model,id),s=sessionFor(model,id);

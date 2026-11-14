@@ -41,6 +41,8 @@ Select a scenario through the logo menu or Design Lab. Reset reloads its shipped
 
 For group nesting, choose **Nested groups → Whole home → Details → Group Members**. [Concept and walkthrough](docs/GROUP_NESTING.md) explain shared playback, opening subgroups, separating and rejoining floors.
 
+Library search selects titles across music servers and adds them to one or several saved queues. Queues persist with the scenario, support ordering and renaming, and can be used for playback or button presets. Collections show their source server.
+
 Design Lab also provides navigation variants, appearance controls, JSON editing and export.
 
 ## Source

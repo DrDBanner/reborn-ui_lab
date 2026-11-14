@@ -133,22 +133,24 @@
       "name": "Evening Jazz",
       "type": "library",
       "kind": "queue",
-      "subtitle": "Music Server · 44 tracks",
+      "subtitle": "8 sample titles",
       "genre": "Jazz",
       "country": "Local",
       "bitrate": "FLAC",
-      "color": "#795c9f"
+      "color": "#795c9f",
+      "serverId": "plex"
     },
     {
       "id": "album2",
       "name": "Quiet Sunday",
       "type": "library",
       "kind": "folder",
-      "subtitle": "NAS · 18 tracks",
+      "subtitle": "6 sample titles",
       "genre": "Ambient",
       "country": "Local",
       "bitrate": "FLAC",
-      "color": "#3f8c9a"
+      "color": "#3f8c9a",
+      "serverId": "nas"
     },
     {
       "id": "discover",
@@ -175,11 +177,13 @@
       "name": "Morning Light · demo",
       "type": "library",
       "kind": "track",
-      "subtitle": "Living Room NAS · single track",
+      "subtitle": "Mira Lane · Quiet Sunday",
       "genre": "Jazz",
       "country": "Local",
       "bitrate": "FLAC",
-      "color": "#795c9f"
+      "color": "#795c9f",
+      "serverId": "nas",
+      "trackId": "library-track-1"
     },
     {
       "id": "spotify-album-demo",
@@ -308,5 +312,147 @@
     "Suomi",
     "Norsk",
     "العربية"
+  ],
+  "tracks": [
+    {
+      "id": "library-track-1",
+      "title": "Morning Light",
+      "artist": "Mira Lane",
+      "album": "Quiet Sunday",
+      "duration": 246,
+      "serverId": "nas",
+      "collectionId": "album2",
+      "genre": "Ambient"
+    },
+    {
+      "id": "library-track-2",
+      "title": "Quiet Sunday",
+      "artist": "Mira Lane",
+      "album": "Quiet Sunday",
+      "duration": 291,
+      "serverId": "nas",
+      "collectionId": "album2",
+      "genre": "Ambient"
+    },
+    {
+      "id": "library-track-3",
+      "title": "Window Seat",
+      "artist": "Mira Lane",
+      "album": "Quiet Sunday",
+      "duration": 223,
+      "serverId": "nas",
+      "collectionId": "album2",
+      "genre": "Ambient"
+    },
+    {
+      "id": "library-track-4",
+      "title": "First Rain",
+      "artist": "Mira Lane",
+      "album": "Quiet Sunday",
+      "duration": 304,
+      "serverId": "nas",
+      "collectionId": "album2",
+      "genre": "Ambient"
+    },
+    {
+      "id": "library-track-5",
+      "title": "Open Water",
+      "artist": "Mira Lane",
+      "album": "Quiet Sunday",
+      "duration": 262,
+      "serverId": "nas",
+      "collectionId": "album2",
+      "genre": "Ambient"
+    },
+    {
+      "id": "library-track-6",
+      "title": "Homeward",
+      "artist": "Mira Lane",
+      "album": "Quiet Sunday",
+      "duration": 278,
+      "serverId": "nas",
+      "collectionId": "album2",
+      "genre": "Ambient"
+    },
+    {
+      "id": "library-track-7",
+      "title": "Evening Lines",
+      "artist": "Northline Trio",
+      "album": "Evening Jazz",
+      "duration": 318,
+      "serverId": "plex",
+      "collectionId": "album1",
+      "genre": "Jazz"
+    },
+    {
+      "id": "library-track-8",
+      "title": "Blue Hour",
+      "artist": "Northline Trio",
+      "album": "Evening Jazz",
+      "duration": 347,
+      "serverId": "plex",
+      "collectionId": "album1",
+      "genre": "Jazz"
+    },
+    {
+      "id": "library-track-9",
+      "title": "Night Market",
+      "artist": "Northline Trio",
+      "album": "Evening Jazz",
+      "duration": 282,
+      "serverId": "plex",
+      "collectionId": "album1",
+      "genre": "Jazz"
+    },
+    {
+      "id": "library-track-10",
+      "title": "Slow Conversation",
+      "artist": "Northline Trio",
+      "album": "Evening Jazz",
+      "duration": 369,
+      "serverId": "plex",
+      "collectionId": "album1",
+      "genre": "Jazz"
+    },
+    {
+      "id": "library-track-11",
+      "title": "Morning Walk",
+      "artist": "Northline Trio",
+      "album": "Evening Jazz",
+      "duration": 256,
+      "serverId": "plex",
+      "collectionId": "album1",
+      "genre": "Jazz"
+    },
+    {
+      "id": "library-track-12",
+      "title": "Last Train",
+      "artist": "Northline Trio",
+      "album": "Evening Jazz",
+      "duration": 333,
+      "serverId": "plex",
+      "collectionId": "album1",
+      "genre": "Jazz"
+    },
+    {
+      "id": "library-track-13",
+      "title": "Soft Focus",
+      "artist": "Northline Trio",
+      "album": "Evening Jazz",
+      "duration": 298,
+      "serverId": "plex",
+      "collectionId": "album1",
+      "genre": "Jazz"
+    },
+    {
+      "id": "library-track-14",
+      "title": "Afterglow",
+      "artist": "Northline Trio",
+      "album": "Evening Jazz",
+      "duration": 312,
+      "serverId": "plex",
+      "collectionId": "album1",
+      "genre": "Jazz"
+    }
   ]
 }

@@ -436,7 +436,7 @@ test('update events create one linked toast per availability/version and never i
  await vm.runInContext("onAction('check-updates',{dataset:{}});onAction('check-updates',{dataset:{}});onAction('navigate',{dataset:{value:'listen'}})",ctx);
  assert.equal(vm.runInContext("state.toasts.filter(t=>t.kind==='update').length",ctx),1);
  await vm.runInContext("onAction('open-updates-notice',{dataset:{id:state.toasts.find(t=>t.kind==='update').id}})",ctx);
- assert.equal(vm.runInContext('state.view',ctx),'updates');assert(app.innerHTML.includes('Update available · 1.6.3'));
+ assert.equal(vm.runInContext('state.view',ctx),'updates');assert(app.innerHTML.includes('aria-label="Update available"'));assert(app.innerHTML.includes('data-icon="release_alert"'));assert(app.innerHTML.includes(' · 1.6.3'));
  assert.equal(vm.runInContext('state.model.devices.some(d=>d.status===\'updating\')',ctx),false);
  assert.equal(vm.runInContext('state.model.ui.collapsed.system',ctx),false);
  assert.equal(vm.runInContext('state.model.appUpdate.version',ctx),'1.6.3');
@@ -526,6 +526,8 @@ test('group alarm actions keep their member binding and validate capabilities ag
  const run=code=>vm.runInContext(code,ctx);
  await run("onAction('group-open',{dataset:{id:'g1'}})");
  await run("onAction('group-tab',{dataset:{value:'functions'}})");
+ assert.equal(run('state.model.ui.groupTab'),'functions');
+ assert(app.innerHTML.includes('Manage alarms'));
  await run("onAction('alarms',{dataset:{id:'d3'}})");
  assert.equal(run('state.modal.title'),'Alarms · Kitchen');
  assert.equal(run('state.view'),'group');assert.equal(run('state.detailOutputId'),'g1');
@@ -566,4 +568,62 @@ test('Playing transport toggles an independent stream without selecting it or na
  assert.equal(run("state.model.sessions.find(s=>s.id==='s2').status"),'playing');
  await run("onAction('select-session',{dataset:{id:'s2'}})");
  assert.equal(run('state.view'),'device');assert.equal(run('state.detailDeviceId'),'d4');
+});
+
+test('Update all starts only ready online speakers and retains running progress and other state',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("state.model.devices.forEach(d=>{d.firmwareAvailable=false});state.model.devices[0].firmwareAvailable=true;state.model.devices[1].firmwareAvailable=true;state.model.devices[1].status='offline';state.model.devices[2].firmwareAvailable=true;state.model.devices[2].status='updating';state.model.devices[2].updateProgress=45;state.model.devices[3].firmwareAvailable=true;onAction('navigate',{dataset:{value:'updates'}})");
+ assert(app.innerHTML.includes('Update all (2)'));
+ const before=run('JSON.stringify(state.model.sessions)');
+ await run("onAction('update-all',{dataset:{}})");
+ assert.equal(run('state.model.devices[0].updateProgress'),5);
+ assert.equal(run('state.model.devices[3].status'),'updating');
+ assert.equal(run('state.model.devices[1].status'),'offline');
+ assert.equal(run('state.model.devices[2].updateProgress'),45);
+ assert.equal(run('JSON.stringify(state.model.sessions)'),before);
+ await run("onAction('update-all',{dataset:{}})");
+ assert.equal(run('state.model.devices[2].updateProgress'),45);
+ for(let i=0;i<4;i++)await run("onAction('advance-updates',{dataset:{}})");
+ assert.equal(run('state.model.devices[0].firmwareAvailable'),false);
+ assert.equal(run('state.model.devices[0].firmware'),run('state.model.devices[0].firmwareLatest'));
+ assert.equal(run('state.model.devices[1].firmwareAvailable'),true);
+});
+
+test('library search persists multiple queues, projects typed sources and isolates cancelled drafts',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('navigate',{dataset:{value:'library'}});onAction('library-search',{dataset:{}})");
+ await run("onField('library-track',{value:'library-track-1',checked:true});onField('library-track',{value:'library-track-7',checked:true});onField('library-new-queue',{value:'Morning'});onAction('library-queue-draft-add',{dataset:{}});onField('library-new-queue',{value:'Evening'});onAction('library-queue-draft-add',{dataset:{}})");
+ assert.equal(run('state.model.libraryQueues?.length||0'),0);
+ await run("onField('library-query',{value:'No match'})");
+ assert.equal(run('state.modal.trackIds.length'),2);
+ await run("onAction('library-queue-append',{dataset:{}})");
+ assert.equal(run('state.model.libraryQueues.length'),2);
+ assert.equal(run('state.modal.kind'),'library-search');assert.equal(run('state.modal.trackIds.length'),0);assert.equal(run('state.modal.queueIds.length'),2);
+ assert.equal(run("state.catalog.sources.filter(s=>s.origin==='saved-library-queue').length"),2);
+ await run("onField('library-track',{value:'library-track-2',checked:true});onAction('library-queue-append',{dataset:{}})");
+ assert.equal(run('state.model.libraryQueues[0].trackIds.length'),3);assert.equal(run('state.model.libraryQueues[1].trackIds.length'),3);
+ await run("onAction('library-queue-open',{dataset:{id:'library-queue-1'}});onAction('library-queue-move',{dataset:{index:'0',value:'1'}});onField('library-queue-name',{value:'My mix'});onAction('library-queue-save',{dataset:{}})");
+ assert.equal(run('state.model.libraryQueues[0].trackIds[0]'),'library-track-7');
+ await run("onAction('preset-edit',{dataset:{id:'d4',gesture:'single'}});onAction('preset-slot',{dataset:{index:'2'}});onAction('preset-source-choose',{dataset:{id:'library-queue-1'}});onAction('preset-save',{dataset:{}})");
+ assert.equal(run('state.model.devices[3].presets[2]'),'library-queue-1');
+ await run("onAction('source-select',{dataset:{id:'library-queue-1'}});onAction('assign-output',{dataset:{id:'d7'}})");
+ assert.equal(run("state.model.sessions.some(s=>s.targetId==='d7'&&s.sourceId==='library-queue-1')"),true);
+ await run("loadScenario('home')");
+ assert.equal(run('state.model.libraryQueues[0].name'),'My mix');
+ assert.equal(run("state.catalog.sources.find(s=>s.id==='library-queue-1').name"),'My mix');
+ await run("onAction('library-search',{dataset:{}});onField('library-new-queue',{value:'Cancelled'});onAction('library-queue-draft-add',{dataset:{}});onAction('close-modal',{dataset:{}})");
+ assert.equal(run('state.model.libraryQueues.length'),2);
+ await run("loadScenario('many',false,true)");
+ assert.equal(run("state.catalog.sources.some(s=>s.origin==='saved-library-queue')"),false);
+});
+
+test('release notes bind firmware/application and version without installing an update',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("state.model.devices[0].firmware='1.0';state.model.devices[0].firmwareLatest='2.0';state.model.devices[0].firmwareReleaseNotes=[{version:'2.0',body:'<script>unsafe</script>',changes:['Latest change'],url:'javascript:alert(1)'},{version:'1.0',body:'Earlier release'}];onAction('release-notes',{dataset:{id:'d1'}})");
+ assert.equal(run('state.modal.version'),'2.0');assert(app.innerHTML.includes('&lt;script&gt;unsafe'));assert(!app.innerHTML.includes('href="javascript:'));
+ await run("onField('release-note-version',{value:'1.0'})");assert(app.innerHTML.includes('Earlier release'));
+ assert.equal(run('state.model.devices[0].firmware'),'1.0');
+ await run("state.model.appUpdate={currentVersion:'1.6.2',version:'1.6.3',releaseNotes:{version:'1.6.3',changes:['Application change']}};onAction('release-notes',{dataset:{id:'application'}})");
+ assert(app.innerHTML.includes('Application change'));assert(app.innerHTML.includes('ST Reborn application'));
+ await run("onField('release-note-version',{value:'1.6.2'})");assert(app.innerHTML.includes('No release notes supplied'));
 });

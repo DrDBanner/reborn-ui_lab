@@ -1,3 +1,4 @@
+import {libraryQueueSources} from './library.js';
 import { validateScenario,normalizeScenario,availableUpdates } from './model.js';
 
 const listeners=new Set();
@@ -9,7 +10,7 @@ export const state={catalog:null,scenarioIndex:[],uiLayout:null,variants:null,sc
   updateChecked:false, radioFiltersOpen:false, appMenuOpen:false, presetGesture:'single', presetDeviceId:null, expandedPresetTargetId:null, expandingOutputs:false, alert:null};
 
 export function subscribe(listener){listeners.add(listener);return()=>listeners.delete(listener)}
-export function notify(){reportAvailableUpdates();for(const fn of listeners)fn(state)}
+export function notify(){if(state.catalog&&state.model)state.catalog.sources=[...state.catalog.sources.filter(item=>item.origin!=='saved-library-queue'),...libraryQueueSources(state.model)];reportAvailableUpdates();for(const fn of listeners)fn(state)}
 function reportAvailableUpdates(){
  if(!state.model)return;
  const updates=availableUpdates(state.model),seen=reportedUpdateKeys.get(state.scenarioId)||new Set(),fresh=updates.filter(update=>!seen.has(update.key));

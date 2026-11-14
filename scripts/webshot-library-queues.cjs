@@ -1,0 +1,47 @@
+module.exports=async({page,log})=>{
+ const fs=require('node:fs/promises'),path=require('node:path'),out=path.resolve(__dirname,'../../project/library-queues/evidence'),results=[];
+ const check=(ok,message)=>{if(!ok)throw new Error(message)};
+ const store=()=>page.evaluate(()=>performance.getEntriesByType('resource').filter(e=>new URL(e.name).pathname==='/src/app/store.js').at(-1).name);
+ await page.waitForSelector('.workspace');let url=await store();
+ const click=async selector=>{await page.$eval(selector,e=>e.scrollIntoView({block:'center'}));await page.click(selector)};
+ const field=(name,value)=>page.$eval(`[data-field="${name}"]`,(e,value)=>{e.value=value;e.dispatchEvent(new Event('input',{bubbles:true}))},value);
+ for(const appearance of ['dark','light'])for(const width of [1440,390]){
+  await page.setViewport({width,height:900,deviceScaleFactor:1,isMobile:width<720,hasTouch:width<720});
+  await page.evaluate(async(url,appearance)=>{const {state,loadScenario,applyDesign,notify}=await import(url);await loadScenario('home',false,true);state.view='library';state.designTokens.appearance=appearance;state.designTokens.sidebarCollapsed=false;applyDesign();state.toasts=[];notify()},url,appearance);
+  check(await page.$eval('.workspace',e=>e.innerText.includes('Collections · Living Room NAS')&&!e.querySelector('[data-action="library-collection-open"][data-id="album1"]')),'Collections lack server scope');
+  await click('[data-action="library-server"][data-id="plex"]');
+  check(await page.$eval('.workspace',e=>e.innerText.includes('Collections · Media Server')&&!!e.querySelector('[data-action="library-collection-open"][data-id="album1"]')),'Server selection did not filter collections');
+  await click('[data-action="library-search"]');
+  check(await page.$eval('#library-track-search',e=>e===document.activeElement),'Search not focused');
+  await page.type('#library-track-search','Morning');
+  check(await page.$$eval('.library-track-choice',e=>e.length===2),'Title search failed');
+  await click('[data-field="library-track"][value="library-track-1"]');await click('[data-field="library-track"][value="library-track-11"]');
+  await page.select('[data-field="library-search-server"]','nas');
+  check(await page.$$eval('.library-track-choice',e=>e.length===1),'Server scope failed');
+  await page.type('#library-new-queue','Morning mix');await click('[data-action="library-queue-draft-add"]');
+  await page.type('#library-new-queue','Evening mix');await click('[data-action="library-queue-draft-add"]');
+  check(await page.evaluate(async url=>{const {state}=await import(url);return !state.model.libraryQueues?.length&&state.modal.trackIds.length===2&&state.modal.newQueues.length===2},url),'Draft persisted early or filtered selection lost');
+  check(await page.$eval('.modal-window',e=>e.scrollWidth<=e.clientWidth+1),'Search modal overflow');
+  await page.screenshot({path:path.join(out,`search-${appearance}-${width}.png`)});
+  await click('[data-action="library-queue-append"]');
+  check(await page.$eval('.library-dialog-notice',e=>e.textContent.includes('4 queue entries added')),'Append did not leave success in open dialog');
+  check(await page.evaluate(async url=>{const {state}=await import(url);return state.modal.kind==='library-search'&&state.modal.trackIds.length===0&&state.modal.queueIds.length===2},url),'Append closed search or lost queue targets');
+  await page.screenshot({path:path.join(out,`appended-${appearance}-${width}.png`)});
+  await click('[data-action="close-modal"]');
+  check(await page.evaluate(async url=>{const {state}=await import(url);return state.model.libraryQueues.length===2&&state.model.libraryQueues.every(q=>q.trackIds.length===2)},url),'Multi-queue append failed');
+  await click('[data-action="library-queue-open"][data-id="library-queue-1"]');
+  await click('[data-action="library-queue-move"][data-index="0"][data-value="1"]');
+  await field('library-queue-name','My saved mix');await click('[data-action="library-queue-save"]');
+  await click('[data-action="source-select"][data-id="library-queue-1"]');await click('[data-action="assign-output"][data-id="d7"]');
+  check(await page.evaluate(async url=>{const {state}=await import(url);return state.model.sessions.some(s=>s.targetId==='d7'&&s.sourceId==='library-queue-1')&&state.model.sessions.some(s=>s.targetId==='g1')&&state.model.libraryQueues[0].trackIds[0]==='library-track-11'},url),'Queue playback or ordering failed');
+  await click('[data-action="library-queue-open"][data-id="library-queue-1"]');
+  page.once('dialog',dialog=>dialog.accept());await click('[data-action="library-queue-delete"]');
+  check(await page.$eval('.library-dialog-error',e=>e.textContent.includes('Stop this queue')),'Used queue deletion not guarded');await click('[data-action="close-modal"]');
+  await page.reload({waitUntil:'load'});await page.waitForSelector('.workspace');url=await store();
+  check(await page.evaluate(async url=>{const {state}=await import(url);return state.model.libraryQueues[0].name==='My saved mix'&&state.catalog.sources.some(s=>s.id==='library-queue-1')},url),'Saved queue lost on reload');
+  await page.evaluate(async url=>{const {state,notify}=await import(url);state.view='library';state.toasts=[];notify()},url);
+  await page.screenshot({path:path.join(out,`saved-${appearance}-${width}.png`)});
+  results.push({appearance,width,scopedCollections:true,searchAndServerFilter:true,multiQueueAtomic:true,playback:true,deletionGuard:true,reload:true});
+ }
+ await fs.writeFile(path.join(out,'browser.json'),JSON.stringify({passed:true,results},null,2)+'\n');log(JSON.stringify({passed:true,cases:results.length}));
+};

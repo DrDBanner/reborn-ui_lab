@@ -1,4 +1,4 @@
-import {esc,icon,action,typeIcon} from './shared.js';
+import {deviceProduct,esc,icon,action,typeIcon} from './shared.js';
 import {entity,kind,visibleOutputs,parentIds,leafDeviceIds,buttonProfile,presetAssignments,planPresetTransfer,source} from '../app/model.js';
 const keyName=item=>`Key ${item.key} · ${item.gesture==='double'?'Twice':'Once'}`;
 export function transferResults(report,catalog){
@@ -13,7 +13,7 @@ export function renderPresetTransfer(s){
  const selectedIds=new Set(targets.flatMap(id=>leafDeviceIds(m,id)));
  const destinationRow=id=>{
   const target=entity(m,id),supported=!!buttonProfile(target),enabled=supported&&target.status==='online',parent=parentIds(m,id).map(id=>entity(m,id)).find(item=>kind(m,item.id)==='pair');
-  return `<label class="transfer-device"><input type="checkbox" data-field="button-transfer-target" value="${esc(id)}" ${selectedIds.has(id)?'checked':''} ${!enabled?'disabled':''}/>${typeIcon('device')}<span><strong>${esc(target.name)}</strong><small>${!supported?'No button presets':target.status!=='online'?esc(target.status):parent?esc(parent.name):esc(target.model||'')}</small></span></label>`;
+  return `<label class="transfer-device"><input type="checkbox" data-field="button-transfer-target" value="${esc(id)}" ${selectedIds.has(id)?'checked':''} ${!enabled?'disabled':''}/>${typeIcon('device')}<span><strong>${esc(target.name)}</strong><small>${!supported?'No button presets':target.status!=='online'?esc(target.status):parent?esc(parent.name):esc(deviceProduct(target))}</small></span></label>`;
  };
  const destinations=visibleOutputs(m).map(output=>{
   const ids=leafDeviceIds(m,output.id).filter(id=>id!==device.id);if(!ids.length)return '';

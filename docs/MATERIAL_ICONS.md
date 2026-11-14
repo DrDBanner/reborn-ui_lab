@@ -16,5 +16,6 @@ Run `python3 scripts/vendor-material-icons.py` to regenerate assets and resolve 
 | `favorite` | Saved favorite; filled pink-red heart |
 | `favorite_border` | Favorite action; pink-red on hover/focus |
 | `expand_more` | Select arrow |
+| `check_circle` / `release_alert` | Firmware current / update available, with tooltip and accessible label |
 
 The select arrow uses the local SVG path through `src/styles/selects.css`; padding reserves its space and centers it vertically. Member Open actions appear on row hover or keyboard focus and stay visible on touch. Remove uses a separate control.

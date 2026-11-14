@@ -16,6 +16,7 @@ let renderedMenuOpen=false;
 let renderedRenameId=null;
 let renderedVolumeId=null;
 let renderedCreateOpen=false;
+let renderedLibraryModalKey='';
 let renderedDetailLayoutKey='';
 let detailBodyHeight=0;
 function render(){
@@ -29,7 +30,7 @@ function render(){
  const detailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.designTokens?.fontSize,state.designTokens?.density,state.designTokens?.sidebarCollapsed].join(':'):'';
  if(!detailView||detailLayoutKey!==renderedDetailLayoutKey)detailBodyHeight=0;
  else detailBodyHeight=Math.max(detailBodyHeight,app.querySelector?.('.detail-body')?.getBoundingClientRect().height||0);
- const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-source-results','.group-settings-body'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
+ const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-source-results','.group-settings-body','.library-search-body','.library-search-results','.library-queue-tracks'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
  const active=document.activeElement;const sidebarToggleFocused=active?.dataset?.action==='toggle-sidebar';const sessionToggleId=active?.classList?.contains('session-card__state')?active.dataset.id:null;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;
  app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''} ${state.designTokens?.sidebarCollapsed?'sidebar-is-collapsed':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
@@ -51,6 +52,10 @@ function render(){
  const createOpen=state.modal?.kind==='create';
  if(createOpen&&!renderedCreateOpen)app.querySelector?.('#composite-name')?.focus({preventScroll:true});
  renderedCreateOpen=createOpen;
+ const libraryModalKey=['library-search','library-queue'].includes(state.modal?.kind)?state.modal.kind+':'+(state.modal.draft?.id||'')+':'+(state.modal.searchRevision||0):'';
+ if(libraryModalKey&&libraryModalKey!==renderedLibraryModalKey)app.querySelector?.(state.modal.kind==='library-search'?'#library-track-search':'#library-queue-name')?.focus({preventScroll:true});
+ if(!libraryModalKey&&renderedLibraryModalKey&&state.view==='library')app.querySelector?.('[data-action=library-search]')?.focus({preventScroll:true});
+ renderedLibraryModalKey=libraryModalKey;
  if(state.appMenuOpen&&!renderedMenuOpen)app.querySelector?.('.app-menu .icon-btn')?.focus({preventScroll:true});
  if(!state.appMenuOpen&&renderedMenuOpen)app.querySelector?.(state.sidebarOpen||globalThis.innerWidth>720&&!state.designTokens?.sidebarCollapsed?'.brand-trigger':'.mobile-brand')?.focus({preventScroll:true});
  renderedMenuOpen=state.appMenuOpen;
@@ -63,9 +68,13 @@ function render(){
 subscribe(render);
 document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();onAction(button.dataset.action,button)}});
 document.addEventListener('change',event=>{const field=event.target.closest('[data-field]');if(field)onField(field.dataset.field,field)});
-document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','composite-name','preset-search','library-name','library-address'].includes(field.dataset.field))onField(field.dataset.field,field)});
+document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','composite-name','preset-search','library-name','library-address','library-query','library-new-queue','library-queue-name'].includes(field.dataset.field))onField(field.dataset.field,field)});
 document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&state.modal?.kind==='rename'&&event.target.dataset?.field==='device-name'){event.preventDefault();onAction('device-rename-save',document.createElement('button'));}
+ if(event.key==='Tab'&&['library-search','library-queue','release-notes'].includes(state.modal?.kind)){
+  const controls=[...document.querySelectorAll('.modal-window button:not(:disabled),.modal-window input:not(:disabled),.modal-window select:not(:disabled),.modal-window a[href]')].filter(el=>el.getClientRects().length);
+  const first=controls[0],last=controls.at(-1);if(controls.length&&(event.shiftKey&&document.activeElement===first||!event.shiftKey&&document.activeElement===last)){event.preventDefault();(event.shiftKey?last:first).focus();}
+ }
  if(event.key==='Tab'&&state.appMenuOpen){
   const controls=[...document.querySelectorAll('.app-menu button:not(:disabled),.app-menu select')];
   const first=controls[0],last=controls.at(-1);

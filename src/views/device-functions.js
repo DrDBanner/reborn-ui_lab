@@ -1,4 +1,4 @@
-import {esc,icon,action,card,empty,sourceTypeLabel,sourceTypeIcon} from '../components/shared.js';
+import {esc,icon,action,card,empty,sourceTypeLabel,sourceTypeIcon,deviceProduct} from '../components/shared.js';
 import {buttonProfile,buttonPresets,presetAssignments,presetPlaybackTarget,entity,source,leafDeviceIds,kind} from '../app/model.js';
 export function renderItemKeyFunctions(s,targetId){
  const devices=leafDeviceIds(s.model,targetId).map(id=>entity(s.model,id)).filter(device=>buttonProfile(device));
@@ -32,5 +32,5 @@ export function groupFunctionDevices(s,targetId){
 
 export function renderGroupFunctions(s,targetId){
  const devices=groupFunctionDevices(s,targetId);
- return card('Alarms','Configure alarms on a member device.',`<div class="function-device-list">${devices.map(device=>`<div class="setting-line">${icon('speaker')}<div class="setting-line__body"><strong>${esc(device.name)}</strong><small>${esc([device.brand,device.model].filter(Boolean).join(' '))}</small></div>${action('alarms','Manage alarms','btn-quiet',`data-id="${esc(device.id)}" aria-label="Manage alarms on ${esc(device.name)}"`)}</div>`).join('')}</div>`);
+ return card('Alarms','Configure alarms on a member device.',`<div class="function-device-list">${devices.map(device=>`<div class="setting-line">${icon('speaker')}<div class="setting-line__body"><strong>${esc(device.name)}</strong><small>${esc(deviceProduct(device))}</small></div>${action('alarms','Manage alarms','btn-quiet',`data-id="${esc(device.id)}" aria-label="Manage alarms on ${esc(device.name)}"`)}</div>`).join('')}</div>`);
 }

@@ -37,6 +37,8 @@ Radio and Recently Played share this picker. Source-change notifications name bo
 
 Music servers → gear manages manual server addresses and the visibility of discovered servers. Draft changes apply on Save; Cancel discards them. Manual sources persist with the scenario. Discovered entries come from the sample catalog; manually added sources have no fetched contents until an adapter supplies them.
 
+Collections show their source server and follow the server selection. Search library filters titles, artists and albums across the visible server catalog. Selected titles can be appended to several named queues in one action; queues created in the dialog remain drafts until confirmation. After adding titles, search stays open with a confirmation, cleared title selection and retained queue destinations. Done closes the dialog. Each queue contains unique ordered track IDs, can span servers and persists with its scenario. Opening a saved queue supports renaming, reordering and removing titles. Saved queues are library sources for playback and preset assignment; deleting a queue used by active playback or presets is blocked with an explanation.
+
 ## Output workspace
 
 Playback targets lists each top-level device, pair or group once. All devices lists every physical endpoint with its parent relationship. Cards share identity, availability, source/state and a Details action. Member lists expand within the card; `open_in_new` opens a member's details.
@@ -84,7 +86,7 @@ Sound-tab and lightbox controls use filled slider tracks and percentage values. 
 
 Notifications stack at the top right. Ordinary notes expire after eight seconds; errors use explicit dismissal. Entry, exit and countdown animations respect elapsed time and reduced-motion preferences. Notification state lasts for the app session.
 
-Reported app/device update availability produces one toast for newly reported targets, naming devices and versions. Its Updates & maintenance link opens that workspace. Installation has its own action there. Runtime fingerprints deduplicate repeated reports per scenario. New versions, returning availability, scenario reset or app restart can produce a fresh notice. Maintenance retains the reported availability after toast dismissal.
+Reported app/device update availability produces one toast for newly reported targets, naming devices and versions. Its Updates & maintenance link opens that workspace. Installation has its own action there. Update all starts all online speakers reporting an available firmware update; existing update progress and unavailable devices remain unchanged. Runtime fingerprints deduplicate repeated reports per scenario. New versions, returning availability, scenario reset or app restart can produce a fresh notice. Maintenance retains the reported availability after toast dismissal.
 
 ## Visual conventions
 

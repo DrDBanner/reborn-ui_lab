@@ -1,6 +1,6 @@
 import {renderItemDetail} from './item-detail.js';
 import {groupFunctionDevices,renderGroupFunctions} from './device-functions.js';
-import {esc,icon,action,card,empty,statusBadge,typeIcon} from '../components/shared.js';
+import {esc,icon,action,card,empty,statusBadge,typeIcon,deviceProduct} from '../components/shared.js';
 import {kind,entity,parentIds,targetStatus,leafDeviceIds,effectiveSessionFor,source,visibleOutputs,buttonProfile} from '../app/model.js';
 
 const filters=[['all','All outputs'],['device','Speakers'],['pair','Stereo pairs'],['group','Groups']];
@@ -9,7 +9,7 @@ function outputCard(s,t){
  const devices=leafDeviceIds(m,t.id).map(id=>entity(m,id)),buttons=devices.filter(device=>buttonProfile(device)),sourceData=source(s.catalog,session?.sourceId),direct=session?.targetId===t.id;
  const detailAction=type==='device'?'device-open':'group-open';
  return `<article class="target-card output-card">
- <header class="target-card__header"><span class="target-card__icon">${typeIcon(type)}</span><div class="target-card__title"><strong>${esc(t.name)}</strong><small>${esc(type==='device'?[t.brand,t.model].filter(Boolean).join(' '):`${devices.length} speakers`)}</small></div>${statusBadge(status)}</header>
+ <header class="target-card__header"><span class="target-card__icon">${typeIcon(type)}</span><div class="target-card__title"><strong>${esc(t.name)}</strong><small>${esc(type==='device'?deviceProduct(t):`${devices.length} speakers`)}</small></div>${statusBadge(status)}</header>
  ${parents.length?`<p class="output-parent">Part of ${esc(entity(m,parents[0])?.name)}</p>`:''}
  <div class="source-projection ${sourceData?'has-playback':''}">${sourceData?`<span class="source-art source-art--sm" style="--source-color:${esc(sourceData.color)}">${icon(sourceData.type==='radio'?'radio':sourceData.type==='library'?'album':'music_cast')}</span><span class="source-projection__body"><strong>${esc(sourceData.name)}</strong><small>${esc(session.status==='playing'?'Playing':session.status==='paused'?'Paused':'Stopped')}${!direct?` · via ${esc(entity(m,session.targetId)?.name)}`:''}</small></span>${direct?action('toggle-output-playback',icon(session.status==='playing'?'pause_circle':'play_circle'),'icon-btn',`data-id="${esc(session.id)}" aria-label="${session.status==='playing'?'Pause':'Play'} ${esc(sourceData.name)} on ${esc(t.name)}"`):''}`:`${icon('music_cast')}<span class="source-projection__body"><strong>Ready to listen</strong><small>Choose a source to start playback</small></span>`}</div>
  ${type!=='device'?`<details class="output-members"><summary>${icon('speaker_group')}<span>${devices.length} member devices</span>${icon('expand_more')}</summary><div>${devices.map(device=>`<div class="output-member-link output-member-row">${typeIcon('device')}<span>${esc(device.name)}</span>${action('device-open',icon('open_in_new'),'icon-btn output-member-open',`data-id="${esc(device.id)}" aria-label="Open details for ${esc(device.name)}"`)}</div>`).join('')}</div></details>`:''}

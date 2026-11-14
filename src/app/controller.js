@@ -1,7 +1,8 @@
+import {releaseNoteVersions} from '../components/release-notes.js';
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast} from './store.js';
 import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,membershipPlan,addToGroup,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback} from './model.js';
 import {esc,icon} from '../components/shared.js';
-import {addLibraryServer,libraryServers} from './library.js';
+import {addLibraryServer,libraryServers,newLibraryQueue,addTracksToLibraryQueues,saveLibraryQueue,deleteLibraryQueue} from './library.js';
 
 function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
 function openModal(kind,extras={}){mutate(s=>s.modal={kind,...extras},false)}
@@ -95,7 +96,16 @@ export async function onAction(action,element){
  }
  case 'library-remove':if(state.modal?.kind==='library-settings')mutate(s=>s.modal.servers=s.modal.servers.filter(server=>server.id!==id),false);break;
  case 'library-settings-save':if(state.modal?.kind==='library-settings'){mutate(s=>{s.model.libraryServers=structuredClone(s.modal.servers);s.model.settings.showDiscoveredLibraries=s.modal.showDiscovered;const servers=libraryServers(s.model,s.catalog);if(!servers.some(server=>server.id===s.model.ui.libraryServer))s.model.ui.libraryServer=servers[0]?.id||null;s.modal=null});toast('Music server settings saved');}break;
- case 'library-folder':generic(val,'Folder contents (simulated)',`<p>In the production application this view will request folders and tracks from the current music server. No playback engine is reimplemented here.</p>`);break;
+ case 'library-search':openModal('library-search',{query:'',serverId:'all',trackIds:[],queueIds:(m.libraryQueues||[]).some(q=>q.id===id)?[id]:[],newQueues:[],newName:'',error:''});break;
+ case 'library-collection-open':{const collection=source(state.catalog,id);if(!collection?.serverId)throw new Error('Collection no longer available');openModal('library-search',{query:collection.name,serverId:collection.serverId,trackIds:[],queueIds:[],newQueues:[],newName:'',error:''});break;}
+ case 'library-folder':if(val==='Saved Queues'){document.getElementById('saved-library-queues')?.scrollIntoView({block:'start'});break;}openModal('library-search',{query:['Albums','Artists','Playlists'].includes(val)?'':val,serverId:id||'all',trackIds:[],queueIds:[],newQueues:[],newName:'',error:''});break;
+ case 'library-queue-draft-add':if(state.modal?.kind==='library-search'){const queue=newLibraryQueue(m,state.catalog,state.modal.newName,state.modal.newQueues);mutate(s=>{s.modal.newQueues.push(queue);s.modal.queueIds.push(queue.id);s.modal.newName='';s.modal.error=''},false);}break;
+ case 'library-queue-append':if(state.modal?.kind==='library-search'){mutate(s=>{const draft=s.modal,report=addTracksToLibraryQueues(s.model,s.catalog,draft.trackIds,draft.queueIds,draft.newQueues);draft.newQueues=draft.newQueues.filter(queue=>!s.model.libraryQueues.some(saved=>saved.id===queue.id));draft.trackIds=[];draft.error='';draft.hasApplied=true;draft.searchRevision=(draft.searchRevision||0)+1;draft.notice=`${report.added} queue entries added to ${report.queues} ${report.queues===1?'queue':'queues'}${report.skipped?' · '+report.skipped+' already present':''}`;});}break;
+ case 'library-queue-open':{const queue=(m.libraryQueues||[]).find(q=>q.id===id);if(!queue)throw new Error('Queue no longer available');openModal('library-queue',{draft:structuredClone(queue),baseline:JSON.stringify(queue),error:''});break;}
+ case 'library-queue-move':if(state.modal?.kind==='library-queue'){const index=Number(element.dataset.index),delta=Number(val),ids=state.modal.draft.trackIds;if(Number.isInteger(index)&&[-1,1].includes(delta)&&index>=0&&index<ids.length&&index+delta>=0&&index+delta<ids.length)mutate(s=>{const tracks=s.modal.draft.trackIds;[tracks[index],tracks[index+delta]]=[tracks[index+delta],tracks[index]]},false);}break;
+ case 'library-queue-track-remove':if(state.modal?.kind==='library-queue')mutate(s=>s.modal.draft.trackIds=s.modal.draft.trackIds.filter(trackId=>trackId!==id),false);break;
+ case 'library-queue-save':if(state.modal?.kind==='library-queue'){if(JSON.stringify((m.libraryQueues||[]).find(q=>q.id===state.modal.draft.id))!==state.modal.baseline)throw new Error('Queue changed; reopen it before saving');mutate(s=>{saveLibraryQueue(s.model,state.catalog,s.modal.draft);s.modal=null});toast('Queue saved');}break;
+ case 'library-queue-delete':if(state.modal?.kind==='library-queue'){const queue=(m.libraryQueues||[]).find(q=>q.id===id);confirmAction(`Delete queue “${queue?.name}”?`,'Removes the saved queue. Music files remain on their servers.',()=>{deleteLibraryQueue(m,id);mutate(s=>s.modal=null);toast('Queue deleted')}); }break;
  case 'spotify-connect':mutate(s=>s.model.spotifyConnected=!s.model.spotifyConnected);break;
  case 'output-view':if(['outputs','devices'].includes(val))mutate(s=>{s.model.ui.outputView=val;s.model.ui.outputFilter='all'});break;
  case 'filter-output-scope':mutate(s=>s.model.ui.outputScope=s.model.ui.outputScope==='active'?'all':'active');break;
@@ -125,7 +135,7 @@ export async function onAction(action,element){
  case 'player-toggle':mutate(s=>{const session=currentSession(s.model);if(session)session.status=session.status==='playing'?'paused':'playing'});break;
  case 'player-stop':mutate(s=>{const session=currentSession(s.model);if(session)session.status='stopped'});break;
  case 'session-prev':case 'session-next':mutate(s=>{const list=s.model.sessions;if(!list.length)return;const ix=list.findIndex(x=>x.id===s.model.selectedSessionId);const next=action==='session-next'?ix+1:ix-1;s.model.selectedSessionId=list[(next+list.length)%list.length].id});break;
- case 'group-tab':if(['overview','sound','advanced'].includes(val))mutate(s=>s.model.ui.groupTab=val);break;
+ case 'group-tab':if(['overview','sound','functions','advanced'].includes(val))mutate(s=>s.model.ui.groupTab=val);break;
  case 'device-tab':mutate(s=>s.model.ui.deviceTab=val);break;
  case 'settings-tab':mutate(s=>s.model.ui.settingsTab=val);break;
  case 'device-info':{const d=currentDevice();generic('Device information',`${d.name} · Data returned by the device.`,`<div class="key-values"><div><span>Model</span><strong>${esc(d.model)}</strong></div><div><span>IP address</span><strong>${esc(d.ip)}</strong></div><div><span>Firmware</span><strong>${esc(d.firmware)}</strong></div><div><span>Network</span><strong>${esc(d.network)}</strong></div></div>`);break}
@@ -140,11 +150,13 @@ export async function onAction(action,element){
  case 'device-reset':confirmAction('Factory reset?',`This is a simulation only. No command will be sent.`,()=>{closeModal();toast('Reset simulation completed')});break;
  case 'alarms':{const device=entity(m,id);if(!device?.capabilities?.alarms)throw new Error('Alarm functions are no longer available on this device');generic('Alarms · '+device.name,'Device function',`<p>${device.alarms?.length||0} saved alarms.</p><p>Alarm editing and scheduling are not connected in this UI Lab.</p>`);break;}
  case 'button-actions':mutate(s=>s.model.ui.deviceTab='functions');break;
+ case 'release-notes':if(id!=='application'&&!entity(m,id))throw new Error('Update target no longer available');openModal('release-notes',{targetId:id,version:releaseNoteVersions(state,id).includes(element.dataset.version)?element.dataset.version:releaseNoteVersions(state,id)[0]||''});break;
  case 'check-updates':mutate(s=>s.updateChecked=true,false);break;
  case 'update-start':mutate(s=>{const d=entity(s.model,id);if(d&&d.status==='online'){d.status='updating';d.updateProgress=5}});break;
+ case 'update-all':{const ready=m.devices.filter(d=>d.status==='online'&&d.firmwareAvailable);if(!ready.length){toast('No speaker updates ready to install');break;}mutate(s=>{for(const device of ready){device.status='updating';device.updateProgress=5}});toast(`Started updates on ${ready.length} ${ready.length===1?'speaker':'speakers'}: ${ready.slice(0,3).map(d=>d.name).join(', ')}${ready.length>3?'…':''}`);break;}
  case 'advance-updates':mutate(s=>s.model.devices.forEach(d=>{if(d.status==='updating'){d.updateProgress=Math.min(100,(d.updateProgress||0)+25);if(d.updateProgress===100){d.status='online';d.firmware=d.firmwareLatest;d.firmwareAvailable=false}}}));break;
  case 'diagnostics':generic('Diagnostics','Simulated diagnostic summary',`<div class="key-values"><div><span>Known speakers</span><strong>${m.devices.length}</strong></div><div><span>Unavailable</span><strong>${m.devices.filter(x=>x.status==='offline').length}</strong></div><div><span>Firmware operations</span><strong>${m.devices.filter(x=>x.status==='updating').length}</strong></div></div>`);break;
- case 'backup':exported('streborn-ui-settings-backup.json',{devices:m.devices.map(d=>({id:d.id,name:d.name,presets:d.presets,doublePresets:d.doublePresets,brand:d.brand,model:d.model,hardwareRevision:d.hardwareRevision,firmware:d.firmware,agentName:d.agentName,agentVersion:d.agentVersion,capabilities:d.capabilities,alarms:d.alarms,buttonActions:d.buttonActions})),settings:m.settings});toast('Downloaded sample settings backup');break;
+ case 'backup':exported('streborn-ui-settings-backup.json',{devices:m.devices.map(d=>({id:d.id,name:d.name,presets:d.presets,doublePresets:d.doublePresets,brand:d.brand,model:d.model,hardwareRevision:d.hardwareRevision,firmware:d.firmware,agentName:d.agentName,agentVersion:d.agentVersion,capabilities:d.capabilities,alarms:d.alarms,buttonActions:d.buttonActions})),settings:m.settings,libraryQueues:m.libraryQueues||[],libraryServers:m.libraryServers||[]});toast('Downloaded sample settings backup');break;
  case 'restore':generic('Restore settings','Choose a backup in the production implementation.','<p>Restoring requires validation against actual speakers and their capabilities. UI Lab does not apply a backup automatically.</p>');break;
  case 'setup-next':if(state.setupStep===0){if(!state.setupSelection)throw new Error('Select a speaker');mutate(s=>s.setupStep=1,false)}else if(state.setupStep===1){const name=document.getElementById('setup-name')?.value.trim()||'New Speaker';const network=document.getElementById('setup-network')?.value||'Home Network';const cand=m.setupCandidates.find(x=>x.id===state.setupSelection);mutate(s=>{const id=`d${Math.max(0,...s.model.devices.map(d=>Number(d.id.replace(/\D/g,''))||0))+1}`;s.model.devices.push({id,name,brand:cand?.brand||null,model:cand?.model||null,hardwareRevision:cand?.hardwareRevision||null,agentName:cand?.agentName||null,agentVersion:cand?.agentVersion||null,capabilities:structuredClone(cand?.capabilities||{}),doublePresets:[],ip:cand?.ip||'192.168.0.221',status:'online',firmware:cand?.firmware||null,firmwareLatest:'27.0.6',firmwareAvailable:false,updateProgress:0,volume:25,bass:0,startVolumeEnabled:false,startVolume:20,language:'English',network,presets:Array(buttonProfile(cand)?.keyCount||0).fill(null),alarms:[],buttonActions:[]});s.model.selectedDeviceId=id;s.model.selectedOutputId=id;s.setupStep=2})}break;
  case 'setup-back':mutate(s=>s.setupStep=Math.max(0,s.setupStep-1),false);break;
@@ -159,13 +171,18 @@ export async function onAction(action,element){
  case 'dismiss-toast':dismissToast(id);break;
  case 'open-updates-notice':dismissToast(id);navigate('updates');mutate(s=>s.model.ui.collapsed.system=false);break;
  default:console.warn('Unhandled action:',action);
- }}catch(err){toast(err?.message||String(err),{kind:'error'})}
+ }}catch(err){if(['library-search','library-queue'].includes(state.modal?.kind))mutate(s=>s.modal.error=err?.message||String(err),false);else toast(err?.message||String(err),{kind:'error'})}
 }
 
 export async function onField(field,target){
  const m=state.model,val=target.value;
  try{switch(field){
+ case 'release-note-version':if(state.modal?.kind==='release-notes'&&releaseNoteVersions(state,state.modal.targetId).includes(val))mutate(s=>s.modal.version=val,false);break;
  case 'library-name':case 'library-address':if(state.modal?.kind==='library-settings')mutate(s=>s.modal[field==='library-name'?'name':'address']=val,false);break;
+ case 'library-query':case 'library-new-queue':if(state.modal?.kind==='library-search')mutate(s=>s.modal[field==='library-query'?'query':'newName']=val,false);break;
+ case 'library-search-server':if(state.modal?.kind==='library-search')mutate(s=>s.modal.serverId=val,false);break;
+ case 'library-track':case 'library-queue-target':if(state.modal?.kind==='library-search')mutate(s=>{const key=field==='library-track'?'trackIds':'queueIds';s.modal[key]=target.checked?[...new Set([...s.modal[key],val])]:s.modal[key].filter(id=>id!==val)},false);break;
+ case 'library-queue-name':if(state.modal?.kind==='library-queue')mutate(s=>s.modal.draft.name=val,false);break;
  case 'library-discovered':if(state.modal?.kind==='library-settings')mutate(s=>s.modal.showDiscovered=target.checked,false);break;
  case 'scenario':await loadScenario(val,false,true);break;
  case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
@@ -213,5 +230,5 @@ export async function onField(field,target){
  case 'sidebar-width':mutate(s=>{s.designTokens.sidebarWidth=Number(val);applyDesign()});break;
  case 'font-size':mutate(s=>{s.designTokens.fontSize=Number(val);applyDesign()});break;
  default:console.warn('Unhandled field:',field)
- }}catch(err){toast(err?.message||String(err),{kind:'error'})}
+ }}catch(err){if(['library-search','library-queue'].includes(state.modal?.kind))mutate(s=>s.modal.error=err?.message||String(err),false);else toast(err?.message||String(err),{kind:'error'})}
 }

@@ -15,7 +15,7 @@ export function renderItemMembers(s,item){
  }).join('');
  const settings=type==='group'?action('group-settings',icon('settings'),'icon-btn group-settings-trigger',`data-id="${esc(item.id)}" title="Group settings" aria-label="Group settings for ${esc(item.name)}"`):'';
  const parentContext=!physical&&parents.length?`<div class="item-parent-context"><span>Part of ${esc(entity(m,parents[0])?.name)}</span>${action('group-open',icon('open_in_new'),'icon-btn',`data-id="${esc(parents[0])}" aria-label="Open parent group"`)}</div>`:'';
- return `<section class="item-membership" aria-label="Group Members"><header class="item-membership__heading"><div><h2>Group Members</h2><p>${description}</p></div><div class="item-membership__actions">${add}${join}${settings}</div></header>${parentContext}${rows?`<div class="item-member-list">${rows}</div>`:''}</section>`;
+ return `<section class="item-membership" aria-label="Group Members"><header class="item-membership__heading"><div><h2>Group Members</h2><p>${description}</p></div><div class="item-membership__actions">${add}${join}${settings}</div></header>${parentContext}<div class="item-member-list" ${rows?'':'aria-hidden="true"'}>${rows}</div></section>`;
 }
 
 // All item kinds share the same visual hierarchy; functions/tabs remain capability-specific.

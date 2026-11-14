@@ -52,6 +52,8 @@ Tabs preserve workspace scroll position within the same item. Changing item or r
 
 ## Group membership
 
+[Group nesting](GROUP_NESTING.md) explains the purpose and walks through the Nested groups scenario.
+
 Add members selects an ungrouped device, pair or group to bring into the current group. Add to existing group selects a destination for the current ungrouped item. The shared review shows the resulting playback and every active source being replaced. Cancel discards the draft. Save binds the reviewed item IDs, session state and physical member lists; changed state requires another review.
 
 Destination playback takes precedence. A silent destination adopts an incoming running or paused session with its status preserved. Silent inputs stay silent. Other streams and per-device preset banks retain their state.

@@ -27,12 +27,15 @@ Select a scenario through the logo menu or Design Lab. Reset reloads its shipped
 | Scenario | Data and behavior |
 |---|---|
 | Everyday use | Seven devices, a stereo pair, a group and two streams |
+| Nested groups | Whole home combines Downstairs and Upstairs; a separate terrace stream keeps playing |
 | Problem of N · 50 devices | 50 physical devices, 38 playback targets, search and filters |
 | Several streams | Four concurrent playback sessions |
 | Maintenance & errors | Updating, offline and setup states |
 | Device capabilities | Different key counts, gesture layers and device functions |
 | First run | Empty inventory and speaker setup |
 | Update notifications | Desktop and device update reports with a linked toast |
+
+For group nesting, choose **Nested groups → Whole home → Details → Group Members**. [Concept and walkthrough](docs/GROUP_NESTING.md) explain shared playback, opening subgroups, separating and rejoining floors.
 
 Design Lab also provides navigation variants, appearance controls, JSON editing and export.
 

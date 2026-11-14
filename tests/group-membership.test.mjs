@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {addToGroup,membershipPlan,membershipError,entity,leafDeviceIds,visibleOutputs,rootOutputId,groupLeaderCandidates,assignSource,validateScenario,removeDevice,dissolveComposite} from '../src/app/model.js';
+import {addToGroup,membershipPlan,membershipError,entity,leafDeviceIds,visibleOutputs,rootOutputId,groupLeaderCandidates,assignSource,updateMembership,validateScenario,removeDevice,dissolveComposite} from '../src/app/model.js';
 const fixture=JSON.parse(fs.readFileSync(new URL('../public/data/scenarios/home.json',import.meta.url),'utf8'));
 const fresh=()=>structuredClone(fixture);
 function secondGroup(m){m.groups.push({id:'g2',name:'Upstairs',memberIds:['d5','d6'],persistent:false,leaderDeviceId:'d5',volume:25});return 'g2'}
@@ -42,4 +42,23 @@ test('membership review also exposes legacy member-level playbacks before collap
  const m=fresh();secondGroup(m);m.sessions.push({id:'legacy-a',targetId:'d5',sourceId:'album1',status:'playing',volume:20},{id:'legacy-b',targetId:'d6',sourceId:'ndr2',status:'playing',volume:21});
  const plan=membershipPlan(m,'g1','g2');assert.equal(plan.playback.targetId,'g1');assert.equal(plan.replacedPlaybacks.length,2);
  addToGroup(m,'g1','g2',plan);assert(!m.sessions.some(s=>['legacy-a','legacy-b'].includes(s.id)));assert(m.sessions.some(s=>s.targetId==='d4'));
+});
+
+
+test('Nested groups scenario supports the documented separate and rejoin walkthrough',()=>{
+ const m=JSON.parse(fs.readFileSync(new URL('../public/data/scenarios/nested-groups.json',import.meta.url),'utf8'));
+ assert.deepEqual(validateScenario(m),[]);
+ assert.deepEqual(visibleOutputs(m).map(item=>item.name),['Whole home','Terrace L','Terrace R']);
+ assert.equal(m.devices.length,7);assert.equal(leafDeviceIds(m,'g3').length,5);
+ assert.equal(entity(m,'g3').memberIds.length,2);assert.equal(entity(m,'g3').leaderDeviceId,'d1');
+ const terrace=structuredClone(m.sessions.find(s=>s.targetId==='d5')),banks=JSON.stringify(m.devices.map(d=>[d.presets,d.doublePresets]));
+ assignSource(m,'1live','g2');assert.equal(m.sessions.find(s=>s.targetId==='g3').sourceId,'1live');
+ updateMembership(m,'g3','g2',false);
+ assert.deepEqual(entity(m,'g2').memberIds,['d4','d7']);assert(visibleOutputs(m).some(item=>item.id==='g2'));
+ assert(!m.sessions.some(s=>s.targetId==='g2'));assert.equal(leafDeviceIds(m,'g3').length,3);
+ assignSource(m,'dl','g2');const plan=membershipPlan(m,'g3','g2');
+ assert.equal(plan.playback.sourceId,'1live');assert.equal(plan.replacedPlaybacks[0].sourceId,'dl');
+ addToGroup(m,'g3','g2',plan);assert.equal(leafDeviceIds(m,'g3').length,5);
+ assert(!m.sessions.some(s=>s.targetId==='g2'));assert.deepEqual(m.sessions.find(s=>s.targetId==='d5'),terrace);
+ assert.equal(JSON.stringify(m.devices.map(d=>[d.presets,d.doublePresets])),banks);assert.deepEqual(validateScenario(m),[]);
 });

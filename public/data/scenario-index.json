@@ -5,6 +5,11 @@
     "description": "7 speakers, one stereo pair, an active group and two streams"
   },
   {
+    "id": "nested-groups",
+    "name": "Nested groups",
+    "description": "Whole home contains Downstairs and Upstairs; open their details, separate and rejoin them"
+  },
+  {
     "id": "many",
     "name": "Problem of N · 50 devices",
     "description": "50 physical devices, 38 playback targets, multiple pairs and groups"

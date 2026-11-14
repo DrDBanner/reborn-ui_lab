@@ -65,6 +65,18 @@ scenarios={}
 base=sample()
 scenarios['home']=base
 
+nested=sample('outputs')
+nested['groups'] += [
+ {'id':'g2','name':'Upstairs','memberIds':['d4','d7'],'persistent':True,'volume':25},
+ {'id':'g3','name':'Whole home','memberIds':['g1','g2'],'persistent':False,'volume':25},
+]
+nested['sessions']=[{'id':'s1','targetId':'g3','sourceId':'flux','status':'playing','volume':25},{'id':'s2','targetId':'d5','sourceId':'ndrinfo','status':'playing','volume':28}]
+nested['selectedOutputId']='g3'
+for d in nested['devices']:
+ d['firmwareAvailable']=False
+ d['firmwareLatest']=d['firmware']
+scenarios['nested-groups']=nested
+
 big=sample('outputs');big['devices']=[device(i, (['Living Room L','Living Room R','Kitchen','Office','Terrace L','Terrace R','Bedroom','Hallway','Guest room','Study','Dining Room','Workshop','Basement','Sauna','Garage','Front Desk','Lobby','Corridor','Conference A','Conference B','Studio','Meeting Room','Warehouse','Patio','Pool','Entrance','Music Room','Reading Room','Server Room','Attic']+[f'Additional speaker {j}' for j in range(31,51)])[i-1]) for i in range(1,51)]
 big['pairs']=[{'id':f'p{i}','name':n,'memberIds':[f'd{2*i-1}',f'd{2*i}'],'persistent':True,'volume':25} for i,n in enumerate(['Living Room','Terrace','Bedroom','Guest Room'],1)]
 big['groups']=[{'id':'g1','name':'Ground Floor','memberIds':['p1','d9','d11','d12'],'persistent':True,'volume':26}, {'id':'g2','name':'Upper Floor','memberIds':['p3','p4','d10'],'persistent':True,'volume':24}, {'id':'g3','name':'Office Wing','memberIds':['d16','d17','d19','d20'],'persistent':False,'volume':30}]
@@ -106,12 +118,15 @@ for scenario in scenarios.values():
    profile=d['capabilities'].setdefault('grouping',{})
    profile['remoteKeys']=['thumbsUp','thumbsDown']
    if d['model']=='SoundTouch 10':profile['stereoFamily']='soundtouch-10'
+ def first_device(item_id):
+  composite=next((item for item in scenario['pairs']+scenario['groups'] if item['id']==item_id),None)
+  return first_device(composite['memberIds'][0]) if composite else item_id
  for group in scenario['groups']:
-  first=next((pair for pair in scenario['pairs'] if pair['id']==group['memberIds'][0]),None)
-  group['leaderDeviceId']=first['memberIds'][0] if first else group['memberIds'][0]
+  group['leaderDeviceId']=first_device(group['memberIds'][0])
 
 indexes=[
  {'id':'home','name':'Everyday use','description':'7 speakers, one stereo pair, an active group and two streams'},
+ {'id':'nested-groups','name':'Nested groups','description':'Whole home contains Downstairs and Upstairs; open their details, separate and rejoin them'},
  {'id':'many','name':'Problem of N · 50 devices','description':'50 physical devices, 38 playback targets, multiple pairs and groups'},
  {'id':'multistream','name':'Several streams','description':'Four independent playback sessions on different outputs'},
  {'id':'maintenance','name':'Maintenance & errors','description':'Updating, offline, and unconfigured devices'},

@@ -550,7 +550,10 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 @media(max-width:720px){.sidebar-toggle{display:none!important}}
 
 /* Collapse lives beside the logo; expand stays in the content header. */
-.sidebar-collapse{align-self:center;border-color:var(--border);width:28px;height:28px;min-height:28px;padding:3px}
+.sidebar-collapse{align-self:center;width:28px;height:28px;min-height:28px;padding:3px;color:var(--faint)}
+.sidebar-collapse,.sidebar-collapse:hover,.sidebar-collapse:focus-visible{border:0;background:transparent;box-shadow:none}
+.sidebar-collapse>.material-symbols-rounded{font-size:18px}
+.sidebar-collapse:hover,.sidebar-collapse:focus-visible{color:var(--text)}
 @media(min-width:721px){
  .sidebar .brand{padding-inline:12px}
  .sidebar .brand-trigger{gap:8px}

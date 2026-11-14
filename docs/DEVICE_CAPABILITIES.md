@@ -41,6 +41,8 @@ The review shows copied, skipped, conflicting and unsupported slots per destinat
 
 ## Stereo and group configuration
 
+[Group membership](GROUP_MEMBERSHIP.md) describes the common controls for multiroom, stereo, persistence and nested groups.
+
 Stereo mode requires two free online physical devices with the same reported `stereoFamily`. SoundTouch 10 fixtures use `soundtouch-10`. Left/right assignment is stored explicitly. Groups can contain a stereo pair or logical subgroup; [Interaction model](INFORMATION_ARCHITECTURE.md) describes membership and playback rules.
 
 Group Members → gear contains Main speaker, Keep group together and Remote group buttons. `leaderDeviceId` identifies the main physical device. A pair contributes its main/left speaker to the candidate list. Removing the main member clears the role for explicit reselection. Title renaming applies to devices, pairs and temporary groups.

@@ -4,6 +4,8 @@ A group can contain other groups. This lets you combine existing rooms or floors
 
 For example, use Downstairs for the kitchen and living room, Upstairs for the office and bedroom, and Whole home when music should follow you through the house. Joining or separating a floor takes one membership change.
 
+Nesting is part of [Group membership](GROUP_MEMBERSHIP.md), the shared interface for multiroom, stereo pairs and temporary or saved groups.
+
 ## Open the example
 
 1. Open the logo menu and choose the **Nested groups** scenario. The same scenario is available in Design Lab → Scenarios.

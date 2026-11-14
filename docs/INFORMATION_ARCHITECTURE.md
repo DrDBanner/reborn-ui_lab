@@ -52,7 +52,7 @@ Tabs preserve workspace scroll position within the same item. Changing item or r
 
 ## Group membership
 
-[Group nesting](GROUP_NESTING.md) explains the purpose and walks through the Nested groups scenario.
+Group membership is the common interaction model for deciding which devices play together. Multiroom, stereo channels, temporary or persistent groups and nested rooms are managed through shared item details. [Group membership](GROUP_MEMBERSHIP.md) explains how these concepts fit together; [Group nesting](GROUP_NESTING.md) walks through the Nested groups scenario.
 
 Add members selects an ungrouped device, pair or group to bring into the current group. Add to existing group selects a destination for the current ungrouped item. The shared review shows the resulting playback and every active source being replaced. Cancel discards the draft. Save binds the reviewed item IDs, session state and physical member lists; changed state requires another review.
 

@@ -20,6 +20,8 @@ Open the URL printed by Vite. Device and source data comes from JSON fixtures; a
 
 Open the standalone HTML directly in a browser. For the module preview, serve the repository over HTTP and open `preview.html`.
 
+Group membership brings multiroom, stereo pairs, temporary/saved groups and nested rooms into the same item details. [Concept and controls](docs/GROUP_MEMBERSHIP.md) explain who plays together and how playback and device functions relate.
+
 ## Scenarios
 
 Select a scenario through the logo menu or Design Lab. Reset reloads its shipped fixture.
@@ -54,6 +56,7 @@ Design Lab also provides navigation variants, appearance controls, JSON editing 
 
 ## Documentation
 
+- [Group membership](docs/GROUP_MEMBERSHIP.md)
 - [Interaction model](docs/INFORMATION_ARCHITECTURE.md)
 - [Device capabilities](docs/DEVICE_CAPABILITIES.md)
 - [View coverage](docs/VIEW_COVERAGE.md)

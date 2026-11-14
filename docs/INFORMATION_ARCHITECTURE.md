@@ -17,6 +17,8 @@ The UI operates on JSON-backed simulation state. Physical device IDs determine s
 
 The sidebar contains Playing, Media, Outputs and System. Category titles and overview icons open the corresponding workspace; chevrons collapse shortcut lists. The logo menu contains connection status, app preferences, scenarios and Design Lab. System contains Updates & maintenance and Set up speaker.
 
+The header toggle collapses the desktop sidebar and restores it. This appearance preference persists across reloads and scenarios. The logo menu remains accessible in the header while collapsed. Mobile navigation uses its independent drawer.
+
 Playing lists running and paused sessions. Selecting one chooses its player context and opens its target details. The current content route determines the selected sidebar item. The bottom session selector changes player context. A device inside a composite is represented by its parent playback target in the sidebar.
 
 Playing and the bottom bar render while a running or paused session exists. The player shows the source, target, transport and overall volume. Play/Pause titles follow session state; Stop has an explicit hover title. Paused sessions are labeled Paused.

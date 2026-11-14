@@ -3,6 +3,7 @@
   "density": "standard",
   "radius": 12,
   "sidebarWidth": 270,
+  "sidebarCollapsed": false,
   "fontSize": 14,
   "appearance": "dark"
 }

@@ -29,6 +29,7 @@ export async function onAction(action,element){
  case 'toggle-preset-details':mutate(s=>s.expandedPresetTargetId=s.expandedPresetTargetId===id?null:id,false);break;
  case 'preset-gesture':if(!buttonProfile(entity(m,id)||currentDevice())?.gestures.includes(val))throw new Error('Unsupported button gesture');mutate(s=>s.presetGesture=val,false);break;
  case 'toggle-section':mutate(s=>{s.model.ui.collapsed[val]=!s.model.ui.collapsed[val]});break;
+ case 'toggle-sidebar':mutate(s=>s.designTokens.sidebarCollapsed=!s.designTokens.sidebarCollapsed);break;
  case 'toggle-sidebar-mobile':mutate(s=>{s.sidebarOpen=!s.sidebarOpen},false);break;
  case 'expand-outputs':mutate(s=>s.expandingOutputs=true,false);break;
  case 'toggle-appearance':mutate(s=>{s.designTokens.appearance=s.designTokens.appearance==='dark'?'light':'dark';applyDesign()});break;

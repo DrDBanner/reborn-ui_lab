@@ -539,3 +539,12 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 .library-add-form label{display:grid;gap:6px;font-size:12px;flex:1 1 200px;min-width:0}
 .library-add-form input{width:100%}
 .library-manual-sources>.danger-text{font-size:12px;line-height:1.6;min-height:1em}
+
+/* Desktop navigation preference leaves the mobile drawer independent. */
+@media(min-width:721px){
+ .app-shell.sidebar-is-collapsed{grid-template-columns:minmax(0,1fr)}
+ .app-shell.sidebar-is-collapsed>.sidebar{display:none}
+ .app-shell.sidebar-is-collapsed .mobile-brand{display:inline-grid;color:var(--muted)}
+ .app-shell.sidebar-is-collapsed+.app-menu-layer .app-menu{left:auto;right:16px}
+}
+@media(max-width:720px){.sidebar-toggle{display:none!important}}

@@ -534,3 +534,21 @@ test('group alarm actions keep their member binding and validate capabilities ag
  assert.equal(run('state.modal'),null);
  assert.equal(run('state.toasts.at(-1).kind'),'error');
 });
+
+test('desktop sidebar preference persists independently of scenario and mobile navigation',async()=>{
+ const {ctx}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ const before=run('JSON.stringify(state.model.sessions)');
+ await run("onAction('toggle-sidebar',{dataset:{}})");
+ assert.equal(run('state.designTokens.sidebarCollapsed'),true);
+ assert.equal(run("JSON.parse(localStorage.getItem('streborn-lab:design')).sidebarCollapsed"),true);
+ assert.equal(run('JSON.stringify(state.model.sessions)'),before);
+ await run("loadScenario('nested-groups',false,true)");
+ assert.equal(run('state.designTokens.sidebarCollapsed'),true);
+ await run("onAction('toggle-sidebar-mobile',{dataset:{}})");
+ assert.equal(run('state.sidebarOpen'),true);
+ assert.equal(run('state.designTokens.sidebarCollapsed'),true);
+ await run('initialize()');
+ assert.equal(run('state.designTokens.sidebarCollapsed'),true);
+ await run("onAction('toggle-sidebar',{dataset:{}})");
+ assert.equal(run('state.designTokens.sidebarCollapsed'),false);
+});

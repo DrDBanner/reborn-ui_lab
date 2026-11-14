@@ -2,10 +2,11 @@
 """Create a single-file preview (no npm, local server or backend needed).
 For review only. The normal Vite build remains the maintained source of truth.
 """
-import json,re,base64
+import json,re,base64,runpy
 from pathlib import Path
 root=Path(__file__).resolve().parent.parent
-files=['src/components/brand.js','src/components/material-icons.js','src/app/model.js','src/app/store.js','src/components/shared.js','src/components/radio-filters.js','src/components/shell.js','src/components/preset-transfer.js','src/components/preset-editor.js','src/components/dialog.js','src/views/device-functions.js','src/views/item-detail.js','src/views/sessions.js','src/views/listen.js','src/views/outputs.js','src/views/management.js','src/views/lab.js','src/app/controller.js','src/main.js']
+runpy.run_path(str(root/'scripts/generate-license-notices.py'),run_name='__main__')
+files=['src/components/license-notices.js','src/components/brand.js','src/components/material-icons.js','src/app/model.js','src/app/store.js','src/components/shared.js','src/components/radio-filters.js','src/components/shell.js','src/components/preset-transfer.js','src/components/preset-editor.js','src/components/dialog.js','src/views/device-functions.js','src/views/item-detail.js','src/views/sessions.js','src/views/listen.js','src/views/outputs.js','src/views/management.js','src/views/lab.js','src/app/controller.js','src/main.js']
 js=[]
 for filename in files:
  text=(root/filename).read_text()

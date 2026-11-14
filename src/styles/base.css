@@ -517,3 +517,5 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 .source-row__actions .icon-btn[data-action=toggle-favorite]:focus-visible{color:var(--favorite)}
 
 .transfer-overwrite{display:flex;align-items:flex-start;gap:10px;margin:14px 0;font-size:12px;cursor:pointer}.transfer-overwrite input{flex-shrink:0;margin-top:2px}.transfer-overwrite strong{font-weight:550}.transfer-overwrite small{display:block;margin-top:4px;font-size:11px;line-height:1.5;color:var(--muted)}.transfer-result .transfer-changes{color:var(--muted);line-height:1.6}
+
+.license-notices{margin-top:20px;font-size:12px}.license-notices summary{cursor:pointer;padding:10px 0}.license-document{border-top:1px solid var(--border)}.license-document pre{font-size:11px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;max-height:280px;overflow:auto;padding:12px;margin:0 0 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px}

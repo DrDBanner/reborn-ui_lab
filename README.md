@@ -2,6 +2,8 @@
 
 Interactive frontend for managing audio sources, devices, stereo pairs, groups and concurrent playback. Built with JavaScript modules, Vite, Tailwind CSS and daisyUI. Inter and Google Material Symbols are bundled locally.
 
+The interface is organized around sources, group membership and reported device capabilities. ST Reborn is the first integration context; future adapters can extend it to other manufacturers and keep devices useful across a longer product lifecycle. [Product direction](docs/PRODUCT_DIRECTION.md).
+
 ## Run
 
 ```sh
@@ -62,3 +64,11 @@ Design Lab also provides navigation variants, appearance controls, JSON editing 
 - [View coverage](docs/VIEW_COVERAGE.md)
 - [Backend integration plan](docs/WAILS_INTEGRATION.md)
 - [Fonts](docs/FONTS.md), [icons](docs/MATERIAL_ICONS.md) and [branding](docs/BRANDING.md)
+
+## Credits and license
+
+UI concept and implementation: [Dr. D. Banner](https://github.com/DrDBanner).
+
+Code and documentation: [Apache License 2.0](LICENSE). Copyright 2026 Dr. D. Banner and UI Lab contributors.
+
+This product includes software developed as STR (SoundTouch Reborn) by Jens Roggenfelder. See [NOTICE](NOTICE) and [third-party notices](THIRD-PARTY-NOTICES.md) for bundled assets and styles. Full licence texts are also available in Help & info → Licenses and attribution, including in the offline standalone.

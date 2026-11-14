@@ -29,6 +29,8 @@ ST Reborn backend
 - Provide network, remote, provisioning, scheduling and maintenance operations.
 - Integrate translations, RTL layouts, keyboard focus and native window conventions.
 
+Future manufacturer adapters use the same source, membership and playback model. They report device functions and interoperability, including the combinations that support synchronized playback. [Product direction](PRODUCT_DIRECTION.md) describes the intended lifecycle.
+
 Manufacturer protocols belong to backend adapters. Views consume the shared model and reported capabilities. Design Lab provides scenario-driven review of the same UI actions.
 
 STR payload mappings and pinned source references are documented in [Device capabilities](DEVICE_CAPABILITIES.md).

@@ -12,7 +12,9 @@ if __name__=='__main__':
         original=response.read()
     (folder/'st-reborn-original.svg').write_bytes(original)
     inline=original.decode().replace('#000000','currentColor').replace('role="img" aria-label="STR SoundTouch Reborn"','class="brand-mark" aria-hidden="true" focusable="false"')
-    (ROOT/'src/components/brand.js').write_text('// Original ST Reborn geometry and red accent; neutral strokes follow the theme.\n// Source and license: docs/BRANDING.md\nexport const brandMark=()=>'+json.dumps(inline)+';\n')
+    (ROOT/'src/components/brand.js').write_text('// Modified for UI Lab: theme-aware neutral strokes and accessible control wrapper.\n// Source and license: docs/BRANDING.md\nexport const brandMark=()=>'+json.dumps(inline)+';\n')
     with urllib.request.urlopen(f'{BASE}/LICENSE',timeout=30) as response:
         (ROOT/'LICENSES/streborn-Apache-2.0.txt').write_bytes(response.read())
+    with urllib.request.urlopen(f"{BASE}/NOTICE",timeout=30) as response:
+        (ROOT/'LICENSES/streborn-NOTICE.txt').write_bytes(response.read())
     print('Vendored original ST Reborn logo:',REVISION)

@@ -62,3 +62,13 @@ test('Nested groups scenario supports the documented separate and rejoin walkthr
  assert(!m.sessions.some(s=>s.targetId==='g2'));assert.deepEqual(m.sessions.find(s=>s.targetId==='d5'),terrace);
  assert.equal(JSON.stringify(m.devices.map(d=>[d.presets,d.doublePresets])),banks);assert.deepEqual(validateScenario(m),[]);
 });
+
+test('Everyday use shows standalone speakers, a standalone pair and a room group together',()=>{
+ const m=fresh(),targets=visibleOutputs(m);
+ assert.equal(m.devices.length,9);assert.equal(targets.length,6);
+ assert(targets.some(item=>item.id==='p2'&&item.name==='Dining Room'));
+ assert(targets.some(item=>item.id==='g1'));assert(targets.some(item=>item.id==='d4'));
+ assert(!m.groups.some(group=>group.memberIds.some(id=>m.groups.some(other=>other.id===id))));
+ assert.deepEqual(leafDeviceIds(m,'p2'),['d8','d9']);
+ assert.equal(m.sessions.length,2);assert.deepEqual(validateScenario(m),[]);
+});

@@ -6,7 +6,7 @@ module.exports=async({page,log})=>{
  const click=async selector=>{await page.$eval(selector,e=>e.scrollIntoView({block:'center'}));await page.click(selector)};
  for(const appearance of ['dark','light'])for(const width of [1440,390]){
   await page.setViewport({width,height:1000,deviceScaleFactor:1,isMobile:width<720,hasTouch:width<720});
-  await page.evaluate(async(url,appearance)=>{const {state,loadScenario,applyDesign,notify}=await import(url);await loadScenario('home',false,true);state.designTokens.appearance=appearance;applyDesign();state.toasts=[];state.model.groups[0].memberIds=['p1','d3','d4','d5','d6','d7'];state.modal={kind:'create',type:'group',persistent:true};state.selectedForComposite=[];notify()},storeUrl,appearance);
+  await page.evaluate(async(url,appearance)=>{const {state,loadScenario,applyDesign,notify}=await import(url);await loadScenario('home',false,true);state.designTokens.appearance=appearance;applyDesign();state.toasts=[];state.model.groups[0].memberIds=['p1','p2','d3','d4','d5','d6','d7'];state.modal={kind:'create',type:'group',persistent:true};state.selectedForComposite=[];notify()},storeUrl,appearance);
   const empty=await page.$eval('.composite-members .empty-line',e=>{const c=getComputedStyle(e),p=getComputedStyle(e.parentElement);return {padding:parseFloat(c.paddingTop),font:parseFloat(c.fontSize),border:parseFloat(p.borderTopWidth),height:e.getBoundingClientRect().height}});
   check(empty.padding===18&&empty.border===0&&empty.font===12&&empty.height>=54,'Empty state styling');
   await page.screenshot({path:path.join(out,`empty-${appearance}-${width}.png`)});

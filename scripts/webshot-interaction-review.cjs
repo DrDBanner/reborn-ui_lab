@@ -39,10 +39,10 @@ module.exports=async({page,log})=>{
   await page.screenshot({path:path.join(out,`volume-lightbox-${width}.png`)});
   await page.keyboard.press('Escape');check(await page.$eval('.volume-details-trigger',el=>document.activeElement===el),'Volume close should restore focus');
   await page.evaluate(async storeUrl=>{const {state,notify}=await import(storeUrl);state.view='outputs';state.model.ui.outputView='outputs';state.model.ui.outputFilter='all';state.model.ui.outputScope='all';notify()},storeUrl);
-  check(await page.$$eval('.output-card',els=>els.length===5),'Logical targets should not duplicate members');
+  check(await page.$$eval('.output-card',els=>els.length===6),'Logical targets should not duplicate members');
   check(await page.$$eval('h1',els=>els.length===1),'Overview heading is redundant');
   await page.screenshot({path:path.join(out,`playback-targets-${width}.png`)});
-  await page.click('[data-action="output-view"][data-value="devices"]');check(await page.$$eval('.output-card',els=>els.length===7),'Physical device view incomplete');
+  await page.click('[data-action="output-view"][data-value="devices"]');check(await page.$$eval('.output-card',els=>els.length===9),'Physical device view incomplete');
   await page.screenshot({path:path.join(out,`all-devices-${width}.png`)});
   await page.evaluate(async storeUrl=>{const {toast,clearToast}=await import(storeUrl);clearToast();toast('Assignments saved');toast('Playing on Downstairs');toast('Kitchen is offline',{kind:'error'})},storeUrl);
   await page.waitForSelector('.toast-message');

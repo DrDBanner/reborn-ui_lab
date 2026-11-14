@@ -103,10 +103,10 @@ test('output overview separates logical outputs from physical devices without re
  const s={model,catalog,outputSearch:'',selectedForComposite:[]};
  let html=renderOutputs(s);
  assert(!html.includes('<h1>'));assert(!html.includes('Use output'));assert(!html.includes('summary-strip'));
- assert.equal((html.match(/<article class="target-card output-card"/g)||[]).length,5);
+ assert.equal((html.match(/<article class="target-card output-card"/g)||[]).length,6);
  assert(!html.includes('Details for Living Room L'));
  model.ui.outputView='devices';html=renderOutputs(s);
- assert.equal((html.match(/<article class="target-card output-card"/g)||[]).length,7);
+ assert.equal((html.match(/<article class="target-card output-card"/g)||[]).length,9);
  assert(html.includes('Details for Living Room L'));assert(!html.includes('Details for Downstairs'));
 });
 

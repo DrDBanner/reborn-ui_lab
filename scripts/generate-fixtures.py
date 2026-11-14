@@ -1,5 +1,5 @@
 """Regenerate the self-contained JSON scenarios: python3 scripts/generate-fixtures.py"""
-import json
+import json,copy
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]/'public/data'
@@ -63,6 +63,11 @@ def sample(ui='listen',n=7):
 
 scenarios={}
 base=sample()
+for i,name in [(8,'Dining Room L'),(9,'Dining Room R')]:
+ d=copy.deepcopy(base['devices'][0]);d.update(id=f'd{i}',name=name,ip=f'192.168.0.{100+i}')
+ if i==8:d['capabilities']['buttonPresets']['gestures']=['single'];d['doublePresets']=[]
+ base['devices'].append(d)
+base['pairs'].append({'id':'p2','name':'Dining Room','memberIds':['d8','d9'],'leftDeviceId':'d8','rightDeviceId':'d9','persistent':True,'volume':25})
 scenarios['home']=base
 
 nested=sample('outputs')
@@ -125,7 +130,7 @@ for scenario in scenarios.values():
   group['leaderDeviceId']=first_device(group['memberIds'][0])
 
 indexes=[
- {'id':'home','name':'Everyday use','description':'7 speakers, one stereo pair, an active group and two streams'},
+ {'id':'home','name':'Everyday use','description':'9 speakers: individual devices, a standalone stereo pair, an active room group and two streams'},
  {'id':'nested-groups','name':'Nested groups','description':'Whole home contains Downstairs and Upstairs; open their details, separate and rejoin them'},
  {'id':'many','name':'Problem of N · 50 devices','description':'50 physical devices, 38 playback targets, multiple pairs and groups'},
  {'id':'multistream','name':'Several streams','description':'Four independent playback sessions on different outputs'},

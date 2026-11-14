@@ -472,6 +472,136 @@
       ],
       "alarms": [],
       "buttonActions": []
+    },
+    {
+      "id": "d8",
+      "name": "Dining Room L",
+      "brand": "Bose",
+      "model": "SoundTouch 10",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single"
+          ]
+        },
+        "grouping": {
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [],
+      "ip": "192.168.0.108",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 25,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "1live",
+        "flux",
+        "ffn",
+        "sw",
+        "dl",
+        "ndrinfo"
+      ],
+      "alarms": [],
+      "buttonActions": []
+    },
+    {
+      "id": "d9",
+      "name": "Dining Room R",
+      "brand": "Bose",
+      "model": "SoundTouch 10",
+      "hardwareRevision": null,
+      "agentName": "STR",
+      "agentVersion": null,
+      "capabilities": {
+        "radio": {
+          "codecs": [
+            "MP3",
+            "AAC",
+            "AAC+",
+            "AACP",
+            "MPEG"
+          ],
+          "hls": true
+        },
+        "sound": true,
+        "network": true,
+        "remote": true,
+        "alarms": true,
+        "buttonPresets": {
+          "keyCount": 6,
+          "gestures": [
+            "single",
+            "double"
+          ]
+        },
+        "grouping": {
+          "stereoFamily": "soundtouch-10",
+          "remoteKeys": [
+            "thumbsUp",
+            "thumbsDown"
+          ]
+        }
+      },
+      "doublePresets": [
+        "album1",
+        "ndr2",
+        null,
+        "discover",
+        null,
+        null
+      ],
+      "ip": "192.168.0.109",
+      "status": "online",
+      "firmware": "27.0.6",
+      "firmwareLatest": "27.0.6",
+      "firmwareAvailable": false,
+      "updateProgress": 0,
+      "volume": 25,
+      "bass": 0,
+      "startVolumeEnabled": false,
+      "startVolume": 20,
+      "language": "English",
+      "network": "Home Network",
+      "presets": [
+        "1live",
+        "flux",
+        "ffn",
+        "sw",
+        "dl",
+        "ndrinfo"
+      ],
+      "alarms": [],
+      "buttonActions": []
     }
   ],
   "pairs": [
@@ -484,6 +614,18 @@
       ],
       "persistent": true,
       "volume": 24
+    },
+    {
+      "id": "p2",
+      "name": "Dining Room",
+      "memberIds": [
+        "d8",
+        "d9"
+      ],
+      "leftDeviceId": "d8",
+      "rightDeviceId": "d9",
+      "persistent": true,
+      "volume": 25
     }
   ],
   "groups": [

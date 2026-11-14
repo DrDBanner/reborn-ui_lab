@@ -13,7 +13,7 @@ test('building pair fails if device already belongs to pair',()=>{const m=fresh(
 test('temporary group from ungrouped devices can be created and dissolved',()=>{const m=fresh();const id=createComposite(m,'group','New',['d4','d5']);assert.deepEqual(leafDeviceIds(m,id),['d4','d5']);dissolveComposite(m,id);assert(!m.groups.some(x=>x.id===id))});
 test('scenario shapes validated',()=>assert.deepEqual(validateScenario(fresh()),[]));
 
-test('removing a device cleans up orphan pairs, groups and sessions',()=>{const m=fresh();removeDevice(m,'d1');assert.equal(m.pairs.length,0);assert.equal(m.groups.length,0);assert.equal(m.sessions.length,1);assert.deepEqual(validateScenario(m),[])})
+test('removing a device cleans up orphan pairs, groups and sessions',()=>{const m=fresh();const otherPair=structuredClone(m.pairs.find(p=>p.id==='p2'));removeDevice(m,'d1');assert(!m.pairs.some(p=>p.id==='p1'));assert.deepEqual(m.pairs.find(p=>p.id==='p2'),otherPair);assert.equal(m.groups.length,0);assert.equal(m.sessions.length,1);assert.deepEqual(validateScenario(m),[])})
 
 test('button banks remain independent and reject unsupported keys or gestures',()=>{
  const m=fresh(),d=m.devices[0],before=[...d.presets];
@@ -184,7 +184,7 @@ test('joining a standalone stereo pair creates a temporary group and replaces on
  const m=fresh();dissolveComposite(m,'g1');const id=assignSource(m,'flux','p1');m.sessions.find(s=>s.id===id).status='paused';
  const independent=assignSource(m,'ndr2','d7'),unrelated=JSON.stringify(m.sessions.find(s=>s.id===independent));
  const output=joinPlayback(m,{sessionId:id,targetId:'p1',sourceId:'flux'},'d4'),group=entityForTest(m,output);
- assert.equal(group.persistent,false);assert.deepEqual(group.memberIds,['p1','d4']);assert.equal(m.pairs.length,1);
+ assert.equal(group.persistent,false);assert.deepEqual(group.memberIds,['p1','d4']);assert.equal(m.pairs.length,2);
  assert.equal(m.sessions.find(s=>s.id===id).status,'paused');assert.equal(m.sessions.find(s=>s.id===id).targetId,output);
  assert(!m.sessions.some(s=>s.targetId==='d4'));assert.equal(JSON.stringify(m.sessions.find(s=>s.id===independent)),unrelated);
  assert.deepEqual(validateScenario(m),[]);

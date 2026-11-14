@@ -30,7 +30,7 @@ Select a scenario through the logo menu or Design Lab. Reset reloads its shipped
 
 | Scenario | Data and behavior |
 |---|---|
-| Everyday use | Seven devices, a stereo pair, a group and two streams |
+| Everyday use | Nine devices: individual speakers, a standalone stereo pair, a room group and two streams |
 | Nested groups | Whole home combines Downstairs and Upstairs; a separate terrace stream keeps playing |
 | Problem of N · 50 devices | 50 physical devices, 38 playback targets, search and filters |
 | Several streams | Four concurrent playback sessions |

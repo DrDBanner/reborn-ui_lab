@@ -58,7 +58,7 @@ Design Lab also provides navigation variants, appearance controls, JSON editing 
 | `src/assets/` | Local fonts and branding |
 | `public/data/` | Scenarios, sources and UI configuration |
 | `tests/` | Automated checks |
-| `scripts/` | Asset generation, validation and browser checks |
+| `scripts/` | Asset generation, scenario validation and standalone build |
 
 ## Documentation
 

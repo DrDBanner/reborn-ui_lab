@@ -11,6 +11,8 @@ Run `python3 scripts/vendor-material-icons.py` to regenerate assets and resolve 
 | `speaker` / `speaker_group` / `hub` | Device, stereo pair and group types |
 | `play_circle` / `pause_circle` | Immediate playback actions |
 | `music_cast` | Output selection and stream indicators |
+| `read_more` | Open the current player's media view |
+| `search_insights` | Radio station information |
 | `add_link` | One-time button-assignment transfer |
 | `open_in_new` | Explicit member-detail navigation |
 | `favorite` | Saved favorite; filled pink-red heart |

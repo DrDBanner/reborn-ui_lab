@@ -23,6 +23,8 @@ Playing lists running and paused sessions. Selecting one chooses its player cont
 
 Playing and the bottom bar render while a running or paused session exists. The player shows the source, target, transport and overall volume. Play/Pause titles follow session state; Stop has an explicit hover title. Paused sessions are labeled Paused.
 
+The quiet `read_more` button beside the player title opens Radio, Library or Spotify for that session's source. Library navigation selects the source's visible music server. Navigation preserves all playback sessions and the selected output. Sources with no corresponding media view have no navigation button.
+
 Variant A accesses outputs through the player panel. Variant B adds sidebar output shortcuts. Both variants share model and playback state.
 
 The app header names each route once. Workspace headings identify concrete items and separate content sections. Page actions use a toolbar without repeating the route title.
@@ -34,6 +36,8 @@ Station artwork starts the source on the target named in the bottom player. Hove
 The `music_cast` action opens output selection. Independent playback is the default. As member joins a free device or pair to the bound session, extending its group or creating a temporary group. The review identifies any replaced source. Selecting a different source applies it to the whole joined target. Confirmation revalidates session, source and destination.
 
 Radio and Recently Played share this picker. Source-change notifications name both values, for example: Playing FluxFM on Downstairs.
+
+Radio rows use `search_insights` to open station information.
 
 Music servers → gear manages manual server addresses and the visibility of discovered servers. Draft changes apply on Save; Cancel discards them. Manual sources persist with the scenario. Discovered entries come from the sample catalog; manually added sources have no fetched contents until an adapter supplies them.
 
@@ -81,6 +85,8 @@ The player slider controls its complete target. The volume icon opens a session-
 Overall adjustment moves online device levels by a shared offset, clamped to 0–100. Individual controls trim their device; composite master values retain their setting. A single-device session reflects that device's level directly.
 
 Sound-tab and lightbox controls use filled slider tracks and percentage values. Sound-tab rows share label, slider and value columns.
+
+Range sliders support mouse-wheel and touchpad adjustment while the pointer is over the control. Vertical scrolling up increases the value; horizontal scrolling right increases it. Small touchpad movements accumulate into steps. Values respect the slider's limits and step; disabled sliders and pinch-to-zoom leave scrolling unchanged.
 
 ## Notifications
 

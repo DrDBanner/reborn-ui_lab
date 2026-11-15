@@ -51,6 +51,60 @@ test('source selection opens an output picker then preserves independent streams
  assert.equal(vm.runInContext("state.model.sessions.some(s=>s.targetId==='d7'&&s.sourceId==='ndr2')",ctx),true);
 });
 
+test('player media navigation follows the selected source without changing any playback',async()=>{
+ const {ctx,app}=boot();await ready();
+ const run=code=>vm.runInContext(code,ctx);
+ for(const [id,view,server] of [['flux','listen',null],['album1','library','plex'],['discover','spotify',null]]){
+  run(`state.model.sessions[0].sourceId=${JSON.stringify(id)};state.model.selectedSessionId='s1';state.view='outputs';notify()`);
+  const before=run('JSON.stringify(state.model.sessions)'),target=run('state.model.selectedOutputId');
+  assert(app.innerHTML.includes('data-icon="read_more"'));
+  assert.equal(run('JSON.stringify(materialIcons.read_more)===JSON.stringify(materialIcons.help)'),false);
+  await run(`onAction('player-source',{dataset:{id:${JSON.stringify(id)},session:'s1'}})`);
+  assert.equal(run('state.view'),view);
+  if(server)assert.equal(run('state.model.ui.libraryServer'),server);
+  assert.equal(run('JSON.stringify(state.model.sessions)'),before);
+  assert.equal(run('state.model.selectedOutputId'),target);
+ }
+ run("state.model.libraryQueues=[{id:'library-queue-1',name:'Morning mix',trackIds:['library-track-1']}];notify();state.model.sessions[0].sourceId='library-queue-1';notify()");
+ await run("onAction('player-source',{dataset:{id:'library-queue-1',session:'s1'}})");
+ assert.equal(run('state.view'),'library');assert(app.innerHTML.includes('Morning mix'));
+ await run("onField('session',{value:'s2'})");
+ await run("onAction('player-source',{dataset:{id:'library-queue-1',session:'s1'}})");
+ assert.equal(run('state.view'),'library');assert.equal(run('state.toasts.at(-1).kind'),'error');
+ run("state.model.sessions.find(s=>s.id==='s2').sourceId='native-demo';notify()");
+ assert(!app.innerHTML.includes('data-action="player-source"'));
+});
+
+test('radio information has an explicit insight action and preserves playback',async()=>{
+ const {ctx,app}=boot();await ready();
+ assert(app.innerHTML.includes('data-icon="search_insights"'));
+ assert.equal(vm.runInContext('JSON.stringify(materialIcons.search_insights)===JSON.stringify(materialIcons.help)',ctx),false);
+ const before=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);
+ await vm.runInContext("onAction('source-info',{dataset:{id:'flux'}})",ctx);
+ assert(app.innerHTML.includes('aria-label="FluxFM"'));
+ assert(app.innerHTML.includes('Alternative'));
+ assert.equal(vm.runInContext('JSON.stringify(state.model.sessions)',ctx),before);
+});
+
+test('range wheel supports mouse and fine touchpad movement with bounds and disabled controls',async()=>{
+ const {ctx}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ run(`var wheelTarget={dataset:{field:'volume'},value:String(currentSession(state.model).volume),min:'0',max:'100',step:'1',disabled:false,focus(){},closest(){return this}};
+ var wheelPrevented=0;var wheel=(deltaY,extras={})=>onRangeWheel({target:wheelTarget,deltaX:0,deltaY,deltaMode:0,preventDefault(){wheelPrevented++},...extras});`);
+ const start=run('currentSession(state.model).volume'),other=run('JSON.stringify(state.model.sessions[1])');
+ run('wheel(-100)');assert.equal(run('currentSession(state.model).volume'),start+1);
+ run('wheel(10);wheel(10);wheel(10)');assert.equal(run('currentSession(state.model).volume'),start+1);
+ run('wheel(10)');assert.equal(run('currentSession(state.model).volume'),start);
+ run('wheel(0,{deltaX:40})');assert.equal(run('currentSession(state.model).volume'),start+1);
+ run("setOutputVolume(state.model,currentSession(state.model).targetId,100);wheelTarget.value='100';wheel(-100)");
+ assert.equal(run('currentSession(state.model).volume'),100);
+ run("setOutputVolume(state.model,currentSession(state.model).targetId,0);wheelTarget.value='0';wheel(3,{deltaMode:1})");
+ assert.equal(run('currentSession(state.model).volume'),0);
+ const prevented=run('wheelPrevented');
+ run('wheelTarget.disabled=true;wheel(-100);wheelTarget.disabled=false;wheel(-100,{ctrlKey:true})');
+ assert.equal(run('currentSession(state.model).volume'),0);assert.equal(run('wheelPrevented'),prevented);
+ assert.equal(run('JSON.stringify(state.model.sessions[1])'),other);
+});
+
 test('Playing opens the matching output detail without changing streams',async()=>{
  const {ctx,app}=boot();await ready();
  const before=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);

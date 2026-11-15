@@ -1,7 +1,7 @@
 import {releaseNoteVersions} from '../components/release-notes.js';
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast} from './store.js';
 import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,membershipPlan,addToGroup,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback} from './model.js';
-import {esc,icon} from '../components/shared.js';
+import {esc,icon,sourceDestination} from '../components/shared.js';
 import {addLibraryServer,libraryServers,newLibraryQueue,addTracksToLibraryQueues,saveLibraryQueue,deleteLibraryQueue} from './library.js';
 
 function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
@@ -13,6 +13,27 @@ function notifySafe(task){try{task()}catch(err){toast(err?.message||String(err),
 function currentDevice(){return entity(state.model,state.detailDeviceId||state.model.selectedDeviceId)}
 function playbackNotice(sourceId,targetId){return `Playing ${source(state.catalog,sourceId)?.name||'selected source'} on ${entity(state.model,targetId)?.name||'selected output'}`;}
 function generic(title,description,body=''){openModal('generic',{title,description,body})}
+
+let rangeWheel={key:'',delta:0,time:0};
+export function onRangeWheel(event){
+ const target=event.target.closest('input[type="range"][data-field]');
+ if(!target||target.disabled||event.ctrlKey||event.metaKey)return;
+ const horizontal=Math.abs(event.deltaX)>Math.abs(event.deltaY),raw=horizontal?-event.deltaX:event.deltaY;
+ if(!Number.isFinite(raw)||!raw)return;
+ event.preventDefault();
+ const key=[target.dataset.field,target.dataset.id,currentSession(state.model)?.id,state.detailDeviceId,state.detailOutputId,state.modal?.kind].join(':'),time=Date.now();
+ const delta=Math.sign(raw)*Math.min(40,Math.abs(raw)*(event.deltaMode===1?16:event.deltaMode===2?40:1));
+ if(key!==rangeWheel.key||time-rangeWheel.time>250||Math.sign(delta)!==Math.sign(rangeWheel.delta))rangeWheel={key,delta:0,time};
+ rangeWheel.delta+=delta;rangeWheel.time=time;
+ const steps=Math.trunc(rangeWheel.delta/40);
+ if(!steps)return;
+ rangeWheel.delta-=steps*40;
+ const value=Number(target.value),step=Number(target.step)>0?Number(target.step):1,min=target.min===''?0:Number(target.min),max=target.max===''?100:Number(target.max);
+ const next=Math.max(min,Math.min(max,Number((value-steps*step).toFixed(8))));
+ if(!Number.isFinite(next)||next===value)return;
+ target.value=String(next);target.focus({preventScroll:true});
+ onField(target.dataset.field,target);
+}
 
 export async function onAction(action,element){
  const m=state.model,id=element.dataset.id,val=element.dataset.value;
@@ -132,6 +153,13 @@ export async function onAction(action,element){
  case 'remove-member':confirmAction('Remove member','The speaker will become available as an individual output.',()=>mutate(s=>updateMembership(s.model,s.detailOutputId,id,false)));break;
  case 'dissolve-group':confirmAction('Dissolve this output?','The member speakers will remain configured and available.',()=>mutate(s=>{dissolveComposite(s.model,s.detailOutputId);s.detailOutputId=null;s.view='outputs'}));break;
  case 'toggle-output-playback':mutate(s=>{const session=s.model.sessions.find(item=>item.id===id);if(session)session.status=session.status==='playing'?'paused':'playing'});break;
+ case 'player-source':{
+  const playback=currentSession(m),item=source(state.catalog,id),destination=sourceDestination(item);
+  if(!playback||playback.id!==element.dataset.session||playback.sourceId!==id)throw new Error('Playback changed; open the current source again');
+  if(!destination)throw new Error('No media view available for this source');
+  if(item.type==='library'&&libraryServers(m,state.catalog).some(server=>server.id===item.serverId))m.ui.libraryServer=item.serverId;
+  navigate(destination.view);break;
+ }
  case 'player-toggle':mutate(s=>{const session=currentSession(s.model);if(session)session.status=session.status==='playing'?'paused':'playing'});break;
  case 'player-stop':mutate(s=>{const session=currentSession(s.model);if(session)session.status='stopped'});break;
  case 'session-prev':case 'session-next':mutate(s=>{const list=s.model.sessions;if(!list.length)return;const ix=list.findIndex(x=>x.id===s.model.selectedSessionId);const next=action==='session-next'?ix+1:ix-1;s.model.selectedSessionId=list[(next+list.length)%list.length].id});break;

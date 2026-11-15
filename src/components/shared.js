@@ -48,6 +48,9 @@ export function sourceTypeIcon(item){
  if(item?.type==='library')return item.kind==='folder'?'folder':item.kind==='track'?'music_note':item.kind==='queue'?'library_music':'album';
  return 'music_cast';
 }
+export function sourceDestination(item){
+ return ({radio:{view:'listen',label:'Radio'},library:{view:'library',label:'Library'},spotify:{view:'spotify',label:'Spotify'}})[item?.type]||null;
+}
 export function sourceTile(s,{active=false,actionName='source-select',cls=''}={}){
  return `<button type="button" class="source-tile ${active?'is-selected':''} ${cls}" data-action="${esc(actionName)}" data-id="${esc(s.id)}" title="Choose output for ${esc(s.name)}">
   <span class="source-art" style="--source-color:${esc(s.color||'#7289ae')}">${icon(s.type==='radio'?'radio':s.type==='spotify'?'music_note':'album')}</span>
@@ -61,7 +64,7 @@ export function sourceRow(s,{favorite=false,playTarget=null,playable=false}={}){
  return `<div class="source-row">${art}<div class="source-row__main"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></div><span class="source-row__genre">${esc(s.genre)}</span><div class="source-row__actions">
    ${action('source-select',icon('music_cast'),'icon-btn',`data-id="${esc(s.id)}" title="Choose output" aria-label="Choose output for ${esc(s.name)}"`)}
    ${action('toggle-favorite',icon(favorite?'favorite':'favorite_border'),'icon-btn',`data-id="${esc(s.id)}" title="Toggle favorite" aria-label="Favorite ${esc(s.name)}" aria-pressed="${favorite}"`)}
-   ${action('source-info',icon('more_horiz'),'icon-btn',`data-id="${esc(s.id)}" title="Station information" aria-label="Information about ${esc(s.name)}"`)}
+   ${action('source-info',icon(s.type==='radio'?'search_insights':'info'),'icon-btn',`data-id="${esc(s.id)}" title="${s.type==='radio'?'Station':'Source'} information" aria-label="Information about ${esc(s.name)}"`)}
  </div></div>`;
 }
 export function card(title,subtitle,body,extra=''){

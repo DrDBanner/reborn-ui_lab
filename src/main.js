@@ -1,5 +1,5 @@
 import {state,initialize,subscribe,clearToast} from './app/store.js';
-import {onAction,onField} from './app/controller.js';
+import {onAction,onField,onRangeWheel} from './app/controller.js';
 import {sidebar,header,player,appMenu} from './components/shell.js';
 import {renderDialog} from './components/dialog.js';
 import {renderListen} from './views/listen.js';
@@ -68,6 +68,7 @@ function render(){
 subscribe(render);
 document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();onAction(button.dataset.action,button)}});
 document.addEventListener('change',event=>{const field=event.target.closest('[data-field]');if(field)onField(field.dataset.field,field)});
+document.addEventListener('wheel',onRangeWheel,{passive:false});
 document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','composite-name','preset-search','library-name','library-address','library-query','library-new-queue','library-queue-name'].includes(field.dataset.field))onField(field.dataset.field,field)});
 document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&state.modal?.kind==='rename'&&event.target.dataset?.field==='device-name'){event.preventDefault();onAction('device-rename-save',document.createElement('button'));}

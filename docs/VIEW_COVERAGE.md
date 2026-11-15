@@ -5,8 +5,8 @@ Actions operate on local JSON simulation state. The table describes the behavior
 | View | Behavior |
 |---|---|
 | Radio | Search, favorites, country/language/genre/bitrate/health/compatibility filters, sorting, pinned controls and output selection |
-| Library | Server selection, manual sources, server-scoped collections, title search and saved queues with multi-target assignment and editing |
-| Recently Played | Source history, favorites and playback/output selection |
+| Library | Individual or combined sources, manual sources, collections with source labels, inline title search and saved queues with multi-target assignment and editing |
+| Recently Played | Searchable source history, media-type filter, favorites and playback/output selection |
 | Spotify | Simulated connection state and source selection |
 | Player | Concurrent session selection, Play/Pause/Stop, output selection and volume |
 | Outputs & playbacks | Target/device projections, search, type/active filters, source state and member details |

@@ -1,3 +1,4 @@
+import {desktopNavigation} from '../components/shell.js';
 import {esc,icon,action,navHeader,tab,typeIcon} from '../components/shared.js';
 import {entity,kind,parentIds,leafDeviceIds} from '../app/model.js';
 import {renderItemKeyFunctions} from './device-functions.js';
@@ -23,7 +24,7 @@ export function renderItemDetail(s,{item,subtitle,tabs,tabId,tabAction,body}){
  const type=kind(s.model,item.id),parent=entity(s.model,parentIds(s.model,item.id)[0]);
  const title=typeIcon(type)+`<span class="device-detail-name">${esc(item.name)}</span>`+action('device-rename',icon('edit'),'icon-btn title-edit',`data-id="${esc(item.id)}" title="Rename ${type==='device'?'device':type==='pair'?'pair':'group'}" aria-label="Rename ${esc(item.name)}"`);
  const parentLink=parent?action('group-open',icon('arrow_back')+` ${esc(parent.name)}`,'btn-quiet item-parent-link',`data-id="${esc(parent.id)}" aria-label="Back to ${esc(parent.name)}" title="Back to ${esc(parent.name)}"`):'';
- return `${navHeader(title,subtitle,parentLink+action('navigate',(parent?'':icon('arrow_back')+' ')+'All outputs','btn-quiet','data-value="outputs"'))}
+ return `${navHeader(title,subtitle,desktopNavigation(s)+parentLink+action('navigate',(parent?'':icon('arrow_back')+' ')+'All outputs','btn-quiet','data-value="outputs"'))}
  ${renderItemKeyFunctions(s,item.id)}
  ${renderItemMembers(s,item)}
  <div class="detail-tabs">${tabs.map(([id,label])=>tab(id,label,tabId===id,tabAction)).join('')}</div><div class="detail-body">${body}</div>`;

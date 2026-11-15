@@ -29,7 +29,7 @@ export function sidebar(s){
  return `<aside id="main-navigation" class="sidebar ${s.sidebarOpen?'sidebar--open':''}" aria-label="Main navigation">
   <div class="brand"><button class="brand-trigger ${appContext?'is-current':''}" ${appContext?'aria-current="page"':''} data-action="toggle-app-menu" aria-label="ST Reborn menu" aria-haspopup="dialog" aria-expanded="${!!s.appMenuOpen}" aria-controls="app-menu"><span class="brand-icon">${brandMark()}</span><span><strong>ST <em>Reborn</em></strong><small>UI Lab</small></span>${icon('expand_more','brand-chevron')}</button>${action('toggle-sidebar',icon('dock_to_left'),'icon-btn sidebar-collapse','aria-label="Collapse sidebar" title="Collapse sidebar" aria-expanded="true" aria-controls="main-navigation"')}${action('toggle-sidebar-mobile',icon('close'),'icon-btn sidebar-close','aria-label="Close navigation"')}</div>
   <div class="sidebar-scroll">
-   ${sessions.length?`<section class="pinned-block" data-section="playbacks" aria-label="Playback sessions">${sectionHeading('playbacks','PLAYING','outputs',!!collapsed.playbacks,sessions.length||null,sectionCurrent('playbacks'))}${!collapsed.playbacks?`<div class="nav-section__content">${sessions.length?sessions.slice(0,3).map(session=>sessionCard(s,session,true)).join(''):'<p class="sidebar-empty">Nothing playing</p>'}</div>`:''}</section>`:''}
+   ${sessions.length?`<section class="pinned-block" data-section="playbacks" aria-label="Playback sessions">${sectionHeading('playbacks','PLAYING','outputs',!!collapsed.playbacks,sessions.length||null,sectionCurrent('playbacks'))}${!collapsed.playbacks?`<div class="nav-section__content">${sessions.map(session=>sessionCard(s,session,true)).join('')}</div>`:''}</section>`:''}
    ${sections.map(sec=>`<section class="nav-section" data-section="${sec.id}">
     ${sectionHeading(sec.id,sec.name,sec.landing,!!collapsed[sec.id],null,sectionCurrent(sec.id))}
     ${!collapsed[sec.id]?`<div class="nav-section__content">${sec.items.map(item=>{const [v,name,i]=Array.isArray(item)?item:[item.view,item.label,item.icon];return action('navigate',icon(i)+`<span>${esc(name)}</span>`,`nav-item ${s.view===v?'active':''}`,`data-value="${v}" ${s.view===v?'aria-current="page"':''}`)}).join('')}
@@ -48,10 +48,36 @@ export function appMenu(s){
  ${action('navigate',icon('help')+'<span>Help & info</span>','menu-row','data-value="help"')}
  <div class="app-menu-lab"><div class="section-eyebrow">UI LAB</div><label for="app-scenario">Scenario</label><select id="app-scenario" class="small-select" data-field="scenario">${s.scenarioIndex.map(x=>`<option value="${x.id}" ${s.scenarioId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select>${action('navigate',icon('science')+'<span>Design Lab</span>','menu-row','data-value="lab"')}<small>Mock data only</small></div></section></div>`;
 }
-export function header(s){
+function routeTitle(s){
  const views={listen:['Radio','Choose music, then choose where it plays'],library:['Library','Local media and network sources'],history:['Recently played','Resume past listening'],spotify:['Spotify','Streams and playlists'],outputs:['Outputs & playbacks','Sources, playback and available functions'],device:['Device details','Identity and available device functions'],group:['Group details','Membership and persistent grouping'],sessions:['Outputs & playbacks','Sources, playback and available functions'],updates:['Updates & maintenance','Firmware, backups and device diagnostics'],setup:['Set up speaker','Guided discovery and configuration'],settings:['App settings','General preferences and appearance'],help:['Help & info','Documentation, support and project links'],lab:['Design Lab','Scenarios, variants and visual tokens']};
- const [name]=(s.uiLayout?.views||views)[s.view]||views[s.view]||['ST Reborn',''];
- return `<header class="app-header"><div class="header-left">${action('toggle-sidebar',icon('dock_to_left'),'icon-btn sidebar-toggle',`title="${s.designTokens?.sidebarCollapsed?'Expand':'Collapse'} sidebar" aria-label="${s.designTokens?.sidebarCollapsed?'Expand':'Collapse'} sidebar" aria-expanded="${!s.designTokens?.sidebarCollapsed}" aria-controls="main-navigation"`)}${action('toggle-sidebar-mobile',icon('menu'),'icon-btn mobile-menu','aria-label="Open menu"')}<div class="header-title"><h1>${esc(name)}</h1></div></div>${action('toggle-app-menu',brandMark(),'icon-btn mobile-brand','aria-label="ST Reborn menu" aria-haspopup="dialog" aria-controls="app-menu" aria-expanded="'+!!s.appMenuOpen+'"')}</header>`;
+ return (s.uiLayout?.views||views)[s.view]?.[0]||views[s.view]?.[0]||'ST Reborn';
+}
+export function desktopNavigation(s){
+ if(!s.designTokens?.sidebarCollapsed)return '';
+ return `<div class="desktop-navigation">${action('toggle-sidebar',icon('dock_to_left'),'icon-btn sidebar-toggle','title="Expand sidebar" aria-label="Expand sidebar" aria-expanded="false" aria-controls="main-navigation"')}${action('toggle-app-menu',brandMark(),'icon-btn desktop-app-menu','aria-label="ST Reborn menu" aria-haspopup="dialog" aria-controls="app-menu" aria-expanded="'+!!s.appMenuOpen+'"')}</div>`;
+}
+function mediaSearch(s,view,field,label,query){
+ return `<label class="search-field media-search">${icon('search')}<input id="${field}" type="search" data-field="${field}" value="${esc(query||'')}" placeholder="${label}" aria-label="${label}"/>${query?action('reset-media-search',icon('close'),'icon-btn',`data-value="${view}" aria-label="Clear ${label.toLowerCase()}" title="Clear search"`):''}</label>`;
+}
+function workspaceActions(s){
+ switch(s.view){
+ case 'listen':return mediaSearch(s,'listen','radio-search','Search radio',s.filter);
+ case 'library':return mediaSearch(s,'library','library-page-search','Search library',s.libraryQuery);
+ case 'history':return mediaSearch(s,'history','history-search','Search history',s.historyQuery);
+ case 'outputs':case 'sessions':return action('start-group-create',icon('group_add')+' Create group','btn-soft');
+ case 'updates':return `${s.updateChecked?'<span class="muted" role="status">Checked just now</span>':''}${action('check-updates',icon('sync')+' Check updates','btn-soft')}`;
+ case 'setup':return action('navigate',icon('close')+' Close','btn-quiet','data-value="outputs"');
+ case 'lab':return action('export-scenario',icon('download')+' Export JSON','btn-soft');
+ default:return '';
+ }
+}
+export function workspaceHeader(s){
+ if(['device','group'].includes(s.view))return '';
+ const actions=workspaceActions(s);
+ return `<div class="workspace-heading ${actions?'workspace-heading--with-actions':''}"><h1>${esc(routeTitle(s))}</h1><div class="workspace-heading__tools">${actions?`<div class="workspace-actions">${actions}</div>`:''}${desktopNavigation(s)}</div></div>`;
+}
+export function header(s){
+ return `<header class="app-header"><div class="header-left">${action('toggle-sidebar-mobile',icon('menu'),'icon-btn mobile-menu','aria-label="Open menu"')}<div class="header-title"><h1>${esc(routeTitle(s))}</h1></div></div>${action('toggle-app-menu',brandMark(),'icon-btn mobile-brand','aria-label="ST Reborn menu" aria-haspopup="dialog" aria-controls="app-menu" aria-expanded="'+!!s.appMenuOpen+'"')}</header>`;
 }
 export function player(s){
  const m=s.model,session=currentSession(m);

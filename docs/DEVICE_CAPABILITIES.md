@@ -66,7 +66,7 @@ Group Members → gear contains Main speaker, Keep group together and Remote gro
 
 Radio filters use country, language, genre, votes/popularity/name/bitrate order, minimum bitrate, last-check success and compatibility output. Compatibility checks the reported codec/HLS capabilities of every physical device in that output. Entries with unknown capability data stay visible for selection.
 
-The UI Lab filters its sample catalog. Reset clears search and restrictions. The pin preference keeps search, filters and genre controls within the workspace while scrolling. The expanded filter panel has its own bounded scroll area.
+The UI Lab filters its sample catalog. Reset clears search and restrictions. The pin preference keeps filters and genre controls within the workspace while scrolling. The expanded filter panel has its own bounded scroll area.
 
 ## STR adapter mapping
 

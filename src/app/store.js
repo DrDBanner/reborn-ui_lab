@@ -5,7 +5,7 @@ const listeners=new Set();
 const reportedUpdateKeys=new Map();
 export const state={catalog:null,scenarioIndex:[],uiLayout:null,variants:null,scenarioId:'home',model:null,
   view:'listen', detailDeviceId:null, detailOutputId:null, selectedSourceId:null,
-  appSettings:{identificationSeconds:30}, identification:null, modal:null, toasts:[], sidebarOpen:false, speakerPickerFor:null, filter:'', outputSearch:'', outputCardOrder:null, selectedForComposite:[],
+  appSettings:{identificationSeconds:30}, identification:null, modal:null, toasts:[], sidebarOpen:false, speakerPickerFor:null, filter:'', historyQuery:'', historyType:'all', libraryQuery:'', librarySearchOpen:false, librarySearchServer:'all', libraryTrackIds:[], outputSearch:'', outputCardOrder:null, selectedForComposite:[],
   setupStep:0, setupSelection:null, designOpen:false, designTokens:null, scenarioEditorOpen:false,
   updateChecked:false, radioFiltersOpen:false, appMenuOpen:false, presetGesture:'single', presetDeviceId:null, expandedPresetTargetId:null, expandingOutputs:false, alert:null};
 
@@ -43,7 +43,7 @@ export function startDeviceIdentification(deviceId,signal){
  identificationTimer=setTimeout(tick,1000);identificationTimer?.unref?.();
  toast(`${device.name}: ${signal==='sound'?'sound':'blinking light'} for ${seconds} seconds · simulated`);
 }
-export function resetUi(){stopDeviceIdentification(false);state.updateChecked=false;state.filter='';state.outputSearch='';state.outputCardOrder=null;state.detailDeviceId=null;state.detailOutputId=null;state.selectedForComposite=[];state.setupStep=0;state.expandingOutputs=false;state.modal=null;clearToast(false);state.scenarioEditorOpen=false;state.appMenuOpen=false;state.radioFiltersOpen=false;state.presetGesture='single';state.presetDeviceId=null;state.expandedPresetTargetId=null;}
+export function resetUi(){stopDeviceIdentification(false);state.updateChecked=false;state.filter='';state.historyQuery='';state.historyType='all';state.libraryQuery='';state.librarySearchOpen=false;state.librarySearchServer='all';state.libraryTrackIds=[];state.outputSearch='';state.outputCardOrder=null;state.detailDeviceId=null;state.detailOutputId=null;state.selectedForComposite=[];state.setupStep=0;state.expandingOutputs=false;state.modal=null;clearToast(false);state.scenarioEditorOpen=false;state.appMenuOpen=false;state.radioFiltersOpen=false;state.presetGesture='single';state.presetDeviceId=null;state.expandedPresetTargetId=null;}
 export async function initialize(){
   const [index,catalog,design,uiLayout,variants]=await Promise.all(['/data/scenario-index.json','/data/catalog.json','/data/design-tokens.json','/data/ui-layout.json','/data/variants.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw new Error(`Failed to load ${url}`);return r.json()})));
   state.catalog=catalog;state.scenarioIndex=index;state.uiLayout=uiLayout;state.variants=variants;state.designTokens=design;

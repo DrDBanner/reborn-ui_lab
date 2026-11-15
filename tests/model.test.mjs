@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume,joinPlayback,playbackJoinError,targetStatus,deviceAddresses,identificationSignals} from '../src/app/model.js';
+import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume,joinPlayback,playbackJoinError,targetStatus,deviceAddresses,identificationSignals,historySources} from '../src/app/model.js';
 const base=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data/scenarios/home.json'),'utf8'));
 const fresh=()=>structuredClone(base);
 test('pair and group resolve to physical speakers',()=>{const m=fresh();assert.deepEqual(leafDeviceIds(m,'p1'),['d1','d2']);assert.deepEqual(leafDeviceIds(m,'g1'),['d1','d2','d3'])});
@@ -291,4 +291,16 @@ test('sample device identities have unique MAC addresses within every scenario',
   const macs=[...m.devices,...m.setupCandidates].map(d=>d.macAddress).filter(Boolean);
   assert.equal(new Set(macs).size,macs.length,name);
  }
+});
+
+test('history search filters 150 sources without changing order, stored IDs or playback',()=>{
+ const model=fresh(),catalog={sources:Array.from({length:150},(_,i)=>({id:'history-'+i,name:i===149?'Été spécial':'Station '+i,subtitle:i===149?'Berlin':'Cologne',type:i%2?'radio':'library',serverId:i%2?null:'nas'})),servers:[{id:'nas',name:'Living Room NAS'}]};
+ model.history=catalog.sources.map(s=>s.id);model.history.splice(30,0,'missing-source');
+ const before=JSON.stringify(model);
+ assert.equal(historySources(model,catalog).length,150);
+ assert.deepEqual(historySources(model,catalog,'ETE berlin').map(s=>s.id),['history-149']);
+ assert.equal(historySources(model,catalog,'nas','library').length,75);
+ assert.equal(historySources(model,catalog,'  ','radio').length,75);
+ assert.equal(historySources(model,catalog,'not found').length,0);
+ assert.deepEqual(historySources(model,catalog).map(s=>s.id),catalog.sources.map(s=>s.id));assert.equal(JSON.stringify(model),before);
 });

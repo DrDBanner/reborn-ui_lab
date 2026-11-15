@@ -817,3 +817,64 @@ test('setup retains discovered MAC and dual-stack addresses on the physical devi
  assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].ipv4Addresses)===JSON.stringify(state.model.setupCandidates[0].ipv4Addresses)',ctx),true);
  assert.equal(vm.runInContext('state.model.devices[0].name',ctx),'New room');
 });
+
+test('history search keeps a 150-item history through playback, filters and scenario reload',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ run("state.catalog.sources.push(...Array.from({length:150},(_,i)=>({id:'history-'+i,name:'History '+i,subtitle:'Archive',type:i%2?'radio':'library'})));state.model.history=Array.from({length:150},(_,i)=>'history-'+i)");
+ await run("onAction('navigate',{dataset:{value:'history'}})");assert.equal((app.innerHTML.match(/class="source-row[ "]/g)||[]).length,150);
+ const playback=run('JSON.stringify(state.model.sessions)');
+ await run("onField('history-search',{value:'History 149'})");assert.equal((app.innerHTML.match(/class="source-row[ "]/g)||[]).length,1);
+ await run("onAction('toggle-favorite',{dataset:{id:'history-149'}})");assert.equal(run('state.historyQuery'),'History 149');assert.equal(run('JSON.stringify(state.model.sessions)'),playback);
+ await run("onAction('source-play',{dataset:{id:'flux',target:'g1'}})");assert.equal(run('state.model.history.length'),151);assert.equal(run('state.model.history[0]'),'flux');assert.equal(run('state.historyQuery'),'History 149');
+ await run("onField('history-type',{value:'library'})");assert(app.innerHTML.includes('No matching history'));
+ await run("onAction('reset-history-search',{dataset:{}})");assert.equal(run('state.historyType'),'all');assert.equal(run('state.historyQuery'),'');assert.equal((app.innerHTML.match(/class="source-row[ "]/g)||[]).length,151);
+ await run("loadScenario('home',false)");assert.equal(run('state.model.history.length'),151);assert.equal(run('state.historyQuery'),'');
+});
+test('library header search shows inline results, preserves selection across server filters and assigns queues',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('navigate',{dataset:{value:'library'}})");assert(app.innerHTML.includes('data-field="library-page-search"'));
+ assert(!app.innerHTML.includes('library-page-tools'));
+ const playback=run('JSON.stringify(state.model.sessions)');
+ await run("onField('library-page-search',{value:'Mira'})");assert.equal(run('state.modal'),null);assert(app.innerHTML.includes('Library titles'));
+ const id=run("state.catalog.tracks.find(track=>track.artist.includes('Mira')).id");
+ await run(`onField('library-page-track',{value:${JSON.stringify(id)},checked:true})`);
+ await run("onField('library-page-server',{value:'plex'})");assert(app.innerHTML.includes('1 outside this filter'));assert.equal(run('state.libraryTrackIds.length'),1);
+ await run("onAction('library-page-queues',{dataset:{}})");assert.equal(run('state.modal.kind'),'library-search');assert.equal(run('state.modal.trackIds.length'),1);
+ await run("onField('library-new-queue',{value:'Inline queue'});onAction('library-queue-draft-add',{dataset:{}});onAction('library-queue-append',{dataset:{}})");
+ assert.equal(run('state.modal.kind'),'library-search');assert.equal(run('state.libraryTrackIds.length'),0);assert.equal(run('state.model.libraryQueues[0].trackIds.length'),1);
+ await run("onAction('close-modal',{dataset:{}})");assert.equal(run('state.libraryQuery'),'Mira');assert.equal(run('JSON.stringify(state.model.sessions)'),playback);
+ await run("onAction('library-page-mode',{dataset:{value:'browse'}})");assert(app.innerHTML.includes('Music servers'));assert.equal(run('state.libraryQuery'),'');
+});
+
+test('Library optionally combines all visible sources and keeps the scope while searching',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('navigate',{dataset:{value:'library'}});onField('library-page-server',{value:'all'})");
+ assert(app.innerHTML.includes('Collections · All sources'));assert(app.innerHTML.includes('Evening Jazz'));assert(app.innerHTML.includes('Quiet Sunday'));
+ assert.equal((app.innerHTML.match(/class="library-source-label"/g)||[]).length,2);
+ await run("onAction('library-settings',{dataset:{}});onAction('library-settings-save',{dataset:{}})");assert.equal(run('state.model.ui.libraryServer'),'all');
+ await run("onField('library-page-search',{value:''})");assert.equal(run('state.librarySearchServer'),'all');
+ assert.equal((app.innerHTML.match(/class="library-track-choice"/g)||[]).length,run('searchLibraryTracks(state.model,state.catalog).length'));
+ await run("onField('library-page-server',{value:'nas'});onAction('library-page-mode',{dataset:{value:'browse'}})");
+ assert(app.innerHTML.includes('Collections · Living Room NAS'));assert(!app.innerHTML.includes('Collections · All sources'));
+ await run("onField('library-page-search',{value:''})");assert.equal(run('state.librarySearchServer'),'nas');
+ assert.equal((app.innerHTML.match(/class="library-track-choice"/g)||[]).length,run("searchLibraryTracks(state.model,state.catalog,{serverId:'nas'}).length"));
+});
+
+test('Playing includes the fourth preset playback and every further running or paused session',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('preset-play',{dataset:{id:'d5',key:'2',gesture:'single'}})");
+ const before=run('JSON.stringify(state.model.sessions)');
+ await run("onAction('group-open',{dataset:{id:'p2'}});onAction('preset-play',{dataset:{id:'d8',key:'1',gesture:'single'}})");
+ assert.equal(run('state.model.sessions.length'),4);
+ const diningId=run("state.model.sessions.find(s=>s.targetId==='p2').id");
+ assert.equal(run("state.model.sessions.find(s=>s.targetId==='p2').sourceId"),'1live');
+ assert.equal(run("JSON.stringify(state.model.sessions.filter(s=>s.targetId!=='p2'))"),before);
+ const shortcuts=()=>[...app.innerHTML.matchAll(/data-action="select-session"[^>]*data-id="([^"]+)"/g)].map(match=>match[1]);
+ assert.equal(shortcuts().length,4);assert(shortcuts().includes(diningId));assert(app.innerHTML.includes('Open playback details for Dining Room'));
+ await run("onAction('preset-play',{dataset:{id:'d7',key:'1',gesture:'single'}})");assert.equal(shortcuts().length,5);
+ await run(`onAction('toggle-output-playback',{dataset:{id:'${diningId}'}})`);assert(shortcuts().includes(diningId));assert(app.innerHTML.includes('Resume 1LIVE on Dining Room'));
+ await run("onAction('toggle-section',{dataset:{value:'playbacks'}})");assert.equal(shortcuts().length,0);
+ await run("onAction('toggle-section',{dataset:{value:'playbacks'}})");assert.equal(shortcuts().length,5);
+ await run(`onAction('select-session',{dataset:{id:'${diningId}'}})`);assert.equal(run('state.detailOutputId'),'p2');assert.equal(run('state.view'),'group');
+ run(`state.model.sessions.find(s=>s.id==='${diningId}').status='stopped';notify()`);assert(!shortcuts().includes(diningId));assert.equal(shortcuts().length,4);
+});

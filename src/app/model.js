@@ -347,6 +347,16 @@ export function source(catalog, sourceId) {
   return catalog?.sources?.find(x => x.id === sourceId) ?? null;
 }
 
+export function historySources(model,catalog,query='',type='all'){
+ const fold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ const words=fold(query).trim().split(/\s+/).filter(Boolean),byId=new Map((catalog?.sources||[]).map(item=>[item.id,item]));
+ return (model.history||[]).map(id=>byId.get(id)).filter(Boolean).filter(item=>{
+  const server=catalog?.servers?.find(server=>server.id===item.serverId);
+  const text=fold([item.name,item.subtitle,item.type,item.kind,item.genre,item.artist,item.album,item.service,server?.name].filter(Boolean).join(' '));
+  return (type==='all'||item.type===type)&&words.every(word=>text.includes(word));
+ });
+}
+
 export function radioOptions(model){
   const settings=model.settings||{};
   return {country:settings.searchCountry||'All',language:settings.searchLanguage||'All',genre:settings.radioGenre||'All',order:settings.radioOrder||'votes',minBitrate:Number(settings.radioMinBitrate)||0,onlyWorking:settings.radioOnlyWorking!==false,onlyCompatible:settings.radioOnlyCompatible!==false,outputId:settings.radioOutputId||model.selectedOutputId||visibleOutputs(model)[0]?.id||''};

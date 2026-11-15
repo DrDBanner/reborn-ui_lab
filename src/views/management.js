@@ -1,7 +1,7 @@
 import {licenseDocuments} from '../components/license-notices.js';
 import {renderItemDetail} from './item-detail.js';
 import {renderDeviceFunctions} from './device-functions.js';
-import {esc,icon,action,card,empty,pageTools,field,statusBadge,tab,typeIcon,deviceProduct,deviceAddressRows} from '../components/shared.js';
+import {esc,icon,action,card,empty,field,statusBadge,tab,typeIcon,deviceProduct,deviceAddressRows} from '../components/shared.js';
 import {entity,kind,identificationSignals,identificationDuration} from '../app/model.js';
 
 function renderDeviceIdentification(s,device){
@@ -40,7 +40,7 @@ export function renderDevice(s){
 
 export function renderUpdates(s){
  const m=s.model,updating=m.devices.filter(d=>d.status==='updating'),ready=m.devices.filter(d=>d.status==='online'&&d.firmwareAvailable);
- return `${pageTools(`${s.updateChecked?'<span class="muted" role="status">Checked just now</span>':''}${action('check-updates',icon('sync')+' Check updates','btn-soft')}`)}
+ return `
  ${card('Application updates','ST Reborn desktop application',`<div class="setting-line application-update"><span class="setting-line__icon">${icon('desktop_windows')}</span><div class="setting-line__body"><strong>ST Reborn · ${esc(m.appUpdate?.currentVersion||'UI Lab')}</strong></div>${m.appUpdate?.available?`<span class="device-status device-status--update"><span class="firmware-update" role="img" aria-label="Update available" title="Update available">${icon('release_alert')}</span>${m.appUpdate.version?' · '+esc(m.appUpdate.version):''}</span>`:'<span class="device-status device-status--online"><i></i>Demo</span>'}${action('release-notes','Release notes','release-notes-link','data-id="application"')}</div>`)}
  <section class="section-wrap"><div class="section-heading"><div><h2>Speaker firmware</h2></div><div class="button-row">${action('update-all',icon('system_update')+` Update all${ready.length?' ('+ready.length+')':''}`,'btn-soft',`aria-label="Update all eligible speakers" ${ready.length?'':'disabled'}`)}${updating.length?action('advance-updates',icon('fast_forward')+' Advance simulation','btn-soft'):''}</div></div>
  <div class="panel panel--flush firmware-list"><div class="firmware-list-heading" aria-hidden="true"><span>Speaker</span><span>Firmware</span><span>Status</span><span></span></div>${m.devices.length?m.devices.map(d=>`<div class="firmware-row"><span class="firmware-row__icon">${icon('speaker')}</span><span class="firmware-row__label"><strong>${esc(d.name)}</strong><small>${esc(deviceProduct(d))}</small></span>
@@ -53,7 +53,7 @@ export function renderUpdates(s){
 export function renderSetup(s){const m=s.model,step=s.setupStep;
  const steps=['Find','Configure','Finish'];
  const choices=m.setupCandidates||[];const candidate=choices.find(x=>x.id===s.setupSelection);
- return `${pageTools(action('navigate',icon('close')+' Close','btn-quiet','data-value="outputs"'))}
+ return `
  <div class="wizard"><div class="wizard-steps">${steps.map((name,i)=>`<div class="wizard-step ${i===step?'active':''} ${i<step?'done':''}"><span>${i+1}</span>${name}</div>`).join('')}</div>
  ${step===0?`<div class="wizard-content"><h2>Find speakers on your network</h2>
    ${choices.map(c=>`<label class="choice-row"><input type="radio" name="setupCandidate" data-field="setup-candidate" value="${c.id}" ${s.setupSelection===c.id?'checked':''}/>${icon('speaker')}<span><strong>${esc(c.name)}</strong><small>${esc(c.ip)} · Ready to configure</small></span></label>`).join('')}

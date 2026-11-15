@@ -19,7 +19,7 @@ The sidebar contains Playing, Media, Outputs and System. Category titles and ove
 
 The button beside the sidebar logo collapses desktop navigation. The header button restores it. This appearance preference persists across reloads and scenarios. The logo menu remains accessible in the header while collapsed. Mobile navigation uses its independent drawer.
 
-Playing lists running and paused sessions. Selecting one chooses its player context and opens its target details. The current content route determines the selected sidebar item. Each Playing shortcut has a separate Play/Pause button: hover or keyboard focus replaces the status icon with transport; touch shows transport directly. Toggling controls only that session and preserves route and player context. The bottom session selector changes player context. A device inside a composite is represented by its parent playback target in the sidebar.
+Playing lists all running and paused sessions in the scrollable sidebar; the count matches the list. Selecting one chooses its player context and opens its target details. The current content route determines the selected sidebar item. Each Playing shortcut has a separate Play/Pause button: hover or keyboard focus replaces the status icon with transport; touch shows transport directly. Toggling controls only that session and preserves route and player context. The bottom session selector changes player context. A device inside a composite is represented by its parent playback target in the sidebar.
 
 Playing and the bottom bar render while a running or paused session exists. The player shows the source, target, transport and overall volume. Play/Pause titles follow session state; Stop has an explicit hover title. Paused sessions are labeled Paused.
 
@@ -27,9 +27,13 @@ The quiet `read_more` button beside the player title opens Radio, Library or Spo
 
 Variant A accesses outputs through the player panel. Variant B adds sidebar output shortcuts. Both variants share model and playback state.
 
-The app header names each route once. Workspace headings identify concrete items and separate content sections. Page actions use a toolbar without repeating the route title.
+Desktop route titles sit directly in the scrolling workspace. Device, pair and group details lead with the item name. Mobile retains a navigation bar with its menu controls. Section headings identify distinct content; page actions sit beside the title and wrap at narrow widths.
 
 ## Media
+
+Radio, Library and Recently played share a search field beside the title. Filters sit below the heading, followed by the results. Recently played searches the complete saved source history and filters by media type. Starting playback retains older history entries.
+
+Library offers Browse and Titles. Its source selector includes All sources alongside individual music servers. The combined view groups folders by server and names each collection’s origin; title search uses the selected scope. Selected titles remain selected across search and source changes. Add to queues opens the queue assignment dialog; adding titles leaves it open.
 
 Station artwork starts the source on the target named in the bottom player. Hover/focus reveals `play_circle`; touch exposes the action directly. The accessible label and tooltip identify source and target. Availability and the bound player context are checked at activation.
 

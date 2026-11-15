@@ -2,9 +2,9 @@ import {releaseNoteVersions} from '../components/release-notes.js';
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast,startDeviceIdentification,stopDeviceIdentification} from './store.js';
 import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,membershipPlan,addToGroup,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback,rootOutputId,targetStatus,compatibleRadioSource,deviceAddresses} from './model.js';
 import {esc,icon,sourceDestination} from '../components/shared.js';
-import {addLibraryServer,libraryServers,newLibraryQueue,addTracksToLibraryQueues,saveLibraryQueue,deleteLibraryQueue} from './library.js';
+import {addLibraryServer,libraryServers,newLibraryQueue,addTracksToLibraryQueues,saveLibraryQueue,deleteLibraryQueue,searchLibraryTracks} from './library.js';
 
-function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.modal=null;s.selectedForComposite=[];});}
+function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.historyQuery='';s.historyType='all';s.libraryQuery='';s.librarySearchOpen=false;s.librarySearchServer='all';s.libraryTrackIds=[];s.modal=null;s.selectedForComposite=[];});}
 function openModal(kind,extras={}){mutate(s=>s.modal={kind,...extras},false)}
 function closeModal(){mutate(s=>s.modal=null,false)}
 function confirmAction(title,description,callback){if(window.confirm(`${title}\n\n${description}`))callback()}
@@ -76,19 +76,30 @@ export async function onAction(action,element){
   const targetId=modal.targetId,item=source(state.catalog,id);
   if(!item||element.dataset.target!==targetId||rootOutputId(m,targetId)!==targetId)throw new Error('Source or output changed; reopen the source selection');
   if(item.type==='radio'&&!compatibleRadioSource(m,item,targetId))throw new Error('This station is incompatible with the output');
-  mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(value=>value!==id)].slice(0,20);s.modal=null});toast(playbackNotice(id,targetId));break;
+  mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(value=>value!==id)];s.modal=null});toast(playbackNotice(id,targetId));break;
  }
  case 'open-output-picker':{const playback=currentSession(m);mutate(s=>{s.speakerPickerFor=playback?.sourceId||m.selectedSourceId||'flux';s.modal={kind:'picker',sourceId:s.speakerPickerFor,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
- case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId;if(!targetId||element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)].slice(0,20)});toast(playbackNotice(id,targetId));break;}
+ case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId;if(!targetId||element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)]});toast(playbackNotice(id,targetId));break;}
  case 'source-select':{const playback=currentSession(m);mutate(s=>{s.model.selectedSourceId=id;s.speakerPickerFor=id;s.modal={kind:'picker',sourceId:id,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
  case 'picker-toggle-search':if(state.modal?.kind==='picker')mutate(s=>{s.modal.searchOpen=!s.modal.searchOpen;if(!s.modal.searchOpen)s.modal.query=''},false);break;
  case 'assign-output':{
   const modal=state.modal,src=modal?.sourceId||state.speakerPickerFor||m.selectedSourceId||currentSession(m)?.sourceId||'flux';
   if(modal?.kind==='picker'&&modal.asMember){
-   let outputId;mutate(s=>{if(!source(state.catalog,src))throw new Error('Source no longer available');if(modal.joinContext)outputId=joinPlayback(s.model,modal.joinContext,id,src);else{assignSource(s.model,src,id);outputId=currentSession(s.model).targetId;}const playback=currentSession(s.model);modal.joinContext={sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId};modal.joinedTargetIds=[...new Set([...(modal.joinedTargetIds||[]),id])];s.model.history=[src,...s.model.history.filter(item=>item!==src)].slice(0,20);});toast(`${source(state.catalog,src)?.name} on ${entity(m,outputId)?.name} · ${entity(m,id)?.name} joined`);
-  }else{mutate(s=>{assignSource(s.model,src,id);s.model.history=[src,...s.model.history.filter(x=>x!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null});toast(playbackNotice(src,id))}break;
+   let outputId;mutate(s=>{if(!source(state.catalog,src))throw new Error('Source no longer available');if(modal.joinContext)outputId=joinPlayback(s.model,modal.joinContext,id,src);else{assignSource(s.model,src,id);outputId=currentSession(s.model).targetId;}const playback=currentSession(s.model);modal.joinContext={sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId};modal.joinedTargetIds=[...new Set([...(modal.joinedTargetIds||[]),id])];s.model.history=[src,...s.model.history.filter(item=>item!==src)];});toast(`${source(state.catalog,src)?.name} on ${entity(m,outputId)?.name} · ${entity(m,id)?.name} joined`);
+  }else{mutate(s=>{assignSource(s.model,src,id);s.model.history=[src,...s.model.history.filter(x=>x!==src)];s.modal=null;s.speakerPickerFor=null});toast(playbackNotice(src,id))}break;
  }
  case 'source-info':{const d=source(state.catalog,id);generic(d?.name||'Source',`${d?.type||''} · ${d?.country||''} · ${d?.bitrate||''}`,`<div class="key-values"><div><span>Genre</span><strong>${esc(d?.genre)}</strong></div><div><span>Station</span><strong>${esc(d?.subtitle)}</strong></div></div>`);break}
+ case 'reset-media-search':{
+  const key=val==='library'?'libraryQuery':val==='history'?'historyQuery':'filter';
+  mutate(s=>s[key]='',false);document.getElementById(val==='library'?'library-page-search':val==='history'?'history-search':'radio-search')?.focus?.({preventScroll:true});break;
+ }
+ case 'library-page-mode':if(['browse','titles'].includes(val))mutate(s=>{if(val==='titles'&&!s.librarySearchOpen)s.librarySearchServer=s.model.ui.libraryServer||libraryServers(s.model,s.catalog)[0]?.id||'all';s.librarySearchOpen=val==='titles';if(val==='browse')s.libraryQuery=''},false);break;
+ case 'library-page-queues':{
+  const available=new Set(searchLibraryTracks(m,state.catalog).map(track=>track.id)),ids=state.libraryTrackIds;
+  if(!ids.length||ids.some(id=>!available.has(id)))throw new Error('Select available library titles first');
+  openModal('library-search',{query:state.libraryQuery,serverId:state.librarySearchServer||'all',trackIds:[...ids],queueIds:[],newQueues:[],newName:'',error:'',fromPage:true});break;
+ }
+ case 'reset-history-search':mutate(s=>{s.historyQuery='';s.historyType='all'},false);document.getElementById('history-search')?.focus?.({preventScroll:true});break;
  case 'toggle-favorite':mutate(s=>{s.model.favorites=s.model.favorites.includes(id)?s.model.favorites.filter(x=>x!==id):[...s.model.favorites,id]});break;
  case 'radio-tab':mutate(s=>{s.model.ui.radioTab=val;s.filter=''});break;
  case 'radio-filter':mutate(s=>s.radioFiltersOpen=!s.radioFiltersOpen,false);break;
@@ -132,12 +143,12 @@ export async function onAction(action,element){
   try{const server=addLibraryServer(state.modal.servers,state.catalog.servers,state.modal.name,state.modal.address);mutate(s=>{s.modal.servers.push(server);s.modal.name='';s.modal.address='';s.modal.error=''},false)}catch(error){mutate(s=>s.modal.error=error.message,false)}break;
  }
  case 'library-remove':if(state.modal?.kind==='library-settings')mutate(s=>s.modal.servers=s.modal.servers.filter(server=>server.id!==id),false);break;
- case 'library-settings-save':if(state.modal?.kind==='library-settings'){mutate(s=>{s.model.libraryServers=structuredClone(s.modal.servers);s.model.settings.showDiscoveredLibraries=s.modal.showDiscovered;const servers=libraryServers(s.model,s.catalog);if(!servers.some(server=>server.id===s.model.ui.libraryServer))s.model.ui.libraryServer=servers[0]?.id||null;s.modal=null});toast('Music server settings saved');}break;
+ case 'library-settings-save':if(state.modal?.kind==='library-settings'){mutate(s=>{s.model.libraryServers=structuredClone(s.modal.servers);s.model.settings.showDiscoveredLibraries=s.modal.showDiscovered;const servers=libraryServers(s.model,s.catalog);if(s.model.ui.libraryServer!=='all'&&!servers.some(server=>server.id===s.model.ui.libraryServer))s.model.ui.libraryServer=servers[0]?.id||null;s.modal=null});toast('Music server settings saved');}break;
  case 'library-search':openModal('library-search',{query:'',serverId:'all',trackIds:[],queueIds:(m.libraryQueues||[]).some(q=>q.id===id)?[id]:[],newQueues:[],newName:'',error:''});break;
  case 'library-collection-open':{const collection=source(state.catalog,id);if(!collection?.serverId)throw new Error('Collection no longer available');openModal('library-search',{query:collection.name,serverId:collection.serverId,trackIds:[],queueIds:[],newQueues:[],newName:'',error:''});break;}
  case 'library-folder':if(val==='Saved Queues'){document.getElementById('saved-library-queues')?.scrollIntoView({block:'start'});break;}openModal('library-search',{query:['Albums','Artists','Playlists'].includes(val)?'':val,serverId:id||'all',trackIds:[],queueIds:[],newQueues:[],newName:'',error:''});break;
  case 'library-queue-draft-add':if(state.modal?.kind==='library-search'){const queue=newLibraryQueue(m,state.catalog,state.modal.newName,state.modal.newQueues);mutate(s=>{s.modal.newQueues.push(queue);s.modal.queueIds.push(queue.id);s.modal.newName='';s.modal.error=''},false);}break;
- case 'library-queue-append':if(state.modal?.kind==='library-search'){mutate(s=>{const draft=s.modal,report=addTracksToLibraryQueues(s.model,s.catalog,draft.trackIds,draft.queueIds,draft.newQueues);draft.newQueues=draft.newQueues.filter(queue=>!s.model.libraryQueues.some(saved=>saved.id===queue.id));draft.trackIds=[];draft.error='';draft.hasApplied=true;draft.searchRevision=(draft.searchRevision||0)+1;draft.notice=`${report.added} queue entries added to ${report.queues} ${report.queues===1?'queue':'queues'}${report.skipped?' · '+report.skipped+' already present':''}`;});}break;
+ case 'library-queue-append':if(state.modal?.kind==='library-search'){mutate(s=>{const draft=s.modal,appliedIds=[...draft.trackIds],report=addTracksToLibraryQueues(s.model,s.catalog,draft.trackIds,draft.queueIds,draft.newQueues);draft.newQueues=draft.newQueues.filter(queue=>!s.model.libraryQueues.some(saved=>saved.id===queue.id));draft.trackIds=[];if(draft.fromPage)s.libraryTrackIds=s.libraryTrackIds.filter(id=>!appliedIds.includes(id));draft.error='';draft.hasApplied=true;draft.searchRevision=(draft.searchRevision||0)+1;draft.notice=`${report.added} queue entries added to ${report.queues} ${report.queues===1?'queue':'queues'}${report.skipped?' · '+report.skipped+' already present':''}`;});}break;
  case 'library-queue-open':{const queue=(m.libraryQueues||[]).find(q=>q.id===id);if(!queue)throw new Error('Queue no longer available');openModal('library-queue',{draft:structuredClone(queue),baseline:JSON.stringify(queue),error:''});break;}
  case 'library-queue-move':if(state.modal?.kind==='library-queue'){const index=Number(element.dataset.index),delta=Number(val),ids=state.modal.draft.trackIds;if(Number.isInteger(index)&&[-1,1].includes(delta)&&index>=0&&index<ids.length&&index+delta>=0&&index+delta<ids.length)mutate(s=>{const tracks=s.modal.draft.trackIds;[tracks[index],tracks[index+delta]]=[tracks[index+delta],tracks[index]]},false);}break;
  case 'library-queue-track-remove':if(state.modal?.kind==='library-queue')mutate(s=>s.modal.draft.trackIds=s.modal.draft.trackIds.filter(trackId=>trackId!==id),false);break;
@@ -229,6 +240,10 @@ export async function onField(field,target){
  case 'output-source-search':if(state.modal?.kind==='source-picker')mutate(s=>s.modal.query=val,false);break;
  case 'release-note-version':if(state.modal?.kind==='release-notes'&&releaseNoteVersions(state,state.modal.targetId).includes(val))mutate(s=>s.modal.version=val,false);break;
  case 'library-name':case 'library-address':if(state.modal?.kind==='library-settings')mutate(s=>s.modal[field==='library-name'?'name':'address']=val,false);break;
+ case 'library-page-search':mutate(s=>{if(!s.librarySearchOpen)s.librarySearchServer=s.model.ui.libraryServer||libraryServers(s.model,s.catalog)[0]?.id||'all';s.libraryQuery=val;s.librarySearchOpen=true},false);break;
+ case 'library-page-server':if(val!=='all'&&!libraryServers(m,state.catalog).some(server=>server.id===val))throw new Error('Music server unavailable');mutate(s=>{s.librarySearchServer=val;s.model.ui.libraryServer=val});break;
+ case 'library-page-track':if(!searchLibraryTracks(m,state.catalog).some(track=>track.id===val))throw new Error('Title unavailable');mutate(s=>s.libraryTrackIds=target.checked?[...new Set([...s.libraryTrackIds,val])]:s.libraryTrackIds.filter(id=>id!==val),false);break;
+ case 'history-type':if(['all','radio','library','spotify','native'].includes(val))mutate(s=>s.historyType=val,false);break;
  case 'library-query':case 'library-new-queue':if(state.modal?.kind==='library-search')mutate(s=>s.modal[field==='library-query'?'query':'newName']=val,false);break;
  case 'library-search-server':if(state.modal?.kind==='library-search')mutate(s=>s.modal.serverId=val,false);break;
  case 'library-track':case 'library-queue-target':if(state.modal?.kind==='library-search')mutate(s=>{const key=field==='library-track'?'trackIds':'queueIds';s.modal[key]=target.checked?[...new Set([...s.modal[key],val])]:s.modal[key].filter(id=>id!==val)},false);break;
@@ -252,6 +267,7 @@ export async function onField(field,target){
   const keys={'radio-country':'searchCountry','radio-language':'searchLanguage','radio-order':'radioOrder','radio-bitrate':'radioMinBitrate','radio-genre':'radioGenre','radio-output':'radioOutputId','radio-working':'radioOnlyWorking','radio-compatible':'radioOnlyCompatible'};
   mutate(s=>s.model.settings[keys[field]]=target.type==='checkbox'?target.checked:field==='radio-bitrate'?Number(val):val);break;
  }
+ case 'history-search':mutate(s=>s.historyQuery=val,false);break;
  case 'radio-search':mutate(s=>s.filter=val,false);break;
  case 'output-type':if(['all','device','pair','group'].includes(val))mutate(s=>s.model.ui.outputFilter=val);break;
  case 'output-search':mutate(s=>s.outputSearch=val,false);break;

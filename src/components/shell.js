@@ -1,3 +1,4 @@
+import {materialIcons} from './material-icons.js';
 import {brandMark} from './brand.js';
 import {esc,icon,action,statusLabel,outputItem,typeIcon,sourceDestination,sourceArtAttributes,sourceMediumLabel} from './shared.js';
 import {entity,visibleOutputs,kind,source,currentSession,leafDeviceIds,targetStatus} from '../app/model.js';
@@ -79,12 +80,18 @@ export function workspaceHeader(s){
 export function header(s){
  return `<header class="app-header"><div class="header-left">${action('toggle-sidebar-mobile',icon('menu'),'icon-btn mobile-menu','aria-label="Open menu"')}<div class="header-title"><h1>${esc(routeTitle(s))}</h1></div></div>${action('toggle-app-menu',brandMark(),'icon-btn mobile-brand','aria-label="ST Reborn menu" aria-haspopup="dialog" aria-controls="app-menu" aria-expanded="'+!!s.appMenuOpen+'"')}</header>`;
 }
+function playerTransportIcon(playing){
+ const name=playing?'pause_circle':'play_circle',symbol=materialIcons[name],path=symbol.paths[0];
+ // Keep Google's center glyph; expose its circular outline as an animated stroke.
+ const glyph=path.slice(0,path.indexOf(playing?'ZM480-80':'Zm54 250')+1);
+ return `<span class="material-symbols-rounded" data-icon="${name}" aria-hidden="true"><svg viewBox="${symbol.viewBox}" fill="currentColor" focusable="false"><circle class="transport-ring" cx="480" cy="-480" r="360" fill="none" stroke="currentColor" stroke-width="80" pathLength="100" transform="rotate(-90 480 -480)"/><path d="${esc(glyph)}"/></svg></span>`;
+}
 export function player(s){
  const m=s.model,session=currentSession(m);
  if(!session)return '';
  const sessions=m.sessions.filter(item=>item.status==='playing'||item.status==='paused'),now=source(s.catalog,session.sourceId),target=entity(m,session.targetId),destination=sourceDestination(now);
  return `<footer class="player" aria-label="Playback controls"><div class="player__content"><span class="player__art" ${sourceArtAttributes(now)}>${icon(now?.type==='spotify'?'spotify':now?.type==='library'?'album':'radio')}</span><div class="player__label"><strong>${esc(now?.name||'Unknown source')}</strong><small>${session.status==='paused'?'Paused · ':''}${esc(now?.subtitle||'')}</small></div>${destination?action('player-source',icon('read_more'),'icon-btn player-source-link',`data-id="${esc(now.id)}" data-session="${esc(session.id)}" title="Open ${destination.label} · ${esc(now.name)}" aria-label="Open ${destination.label} for ${esc(now.name)}"`):''}</div>
- <div class="player__transport">${action('player-toggle',icon(session.status==='playing'?'pause_circle':'play_circle'),'transport-play',`data-session="${esc(session.id)}" data-status="${esc(session.status)}" title="${session.status==='playing'?'Pause':'Play'}" aria-label="${session.status==='playing'?'Pause':'Resume'} ${esc(now?.name)}"`)}${action('player-stop',icon('stop'),'icon-btn transport-extra','title="Stop" aria-label="Stop playback"')}</div>
+ <div class="player__transport">${action('player-toggle',playerTransportIcon(session.status==='playing'),'transport-play',`data-session="${esc(session.id)}" data-status="${esc(session.status)}" title="${session.status==='playing'?'Pause':'Play'}" aria-label="${session.status==='playing'?'Pause':'Resume'} ${esc(now?.name)}"`)}${action('player-stop',icon('stop'),'icon-btn transport-extra','title="Stop" aria-label="Stop playback"')}</div>
  <div class="player__outputs">${sessions.length>1?`<select class="session-select" data-field="session" aria-label="Playback target">${sessions.map(item=>`<option value="${esc(item.id)}" ${session.id===item.id?'selected':''}>${esc(entity(m,item.targetId)?.name||'Unknown target')}${item.status==='paused'?' · Paused':''}</option>`).join('')}</select>`:`<span class="player-target">${typeIcon(kind(m,target?.id))}<span>${esc(target?.name)}</span></span>`}
  ${action('open-output-picker',icon('music_cast'),'icon-btn output-trigger output-trigger--cast',`title="Play this source elsewhere" aria-label="Play ${esc(now?.name)} on another output"`)}${action('open-volume-controls',icon('volume_up'),'icon-btn volume-details-trigger',`aria-label="Individual volumes for ${esc(target?.name)}" title="Individual device volumes"`)}
  <input type="range" class="volume-range" min="0" max="100" value="${session.volume??25}" data-field="volume" ${!['online','partial'].includes(targetStatus(m,session.targetId))?'disabled':''} aria-label="Overall volume for ${esc(target?.name)}" aria-valuetext="${session.volume??25} percent"/><span class="volume-value">${session.volume??25} %</span></div></footer>`;

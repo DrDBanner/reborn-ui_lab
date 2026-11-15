@@ -22,3 +22,5 @@ Run `python3 scripts/vendor-material-icons.py` to regenerate assets and resolve 
 | `check_circle` / `release_alert` | Firmware current / update available, with tooltip and accessible label |
 
 The select arrow uses the local SVG path through `src/styles/selects.css`; padding reserves its space and centers it vertically. Member Open actions appear on row hover or keyboard focus and stay visible on touch. Remove uses a separate control.
+
+The bottom player retains the Material Play/Pause center glyph and renders its circular outline as an SVG stroke with the same bounds and weight. On playback-context changes, a gap travels around that ring before it returns to a complete circle. Clicks briefly pulse only the ring. Reduced-motion preferences keep the outline still.

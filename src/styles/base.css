@@ -907,12 +907,12 @@ code{overflow-wrap:anywhere}
 
 .source-row .source-art[data-source-type=spotify]{background:var(--panel-hi);border-radius:.4375rem;justify-items:center}
 
-/* Brief feedback for playback state and context changes. */
-.transport-play{position:relative}
-.transport-play:is(.is-transport-changing,.is-transport-pulsing)::after{content:"";position:absolute;inset:0.125rem;border:1px solid currentColor;border-radius:50%;pointer-events:none;animation:transport-ring-pulse .32s ease-out both}
-.transport-play.is-transport-changing::after{inset:-.1875rem;border-width:.125rem;border-color:transparent;border-top-color:currentColor;animation:transport-ring-orbit .64s ease-in-out both}
-@keyframes transport-ring-orbit{0%{opacity:0;transform:rotate(-90deg)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:rotate(270deg)}}
-@keyframes transport-ring-pulse{from{opacity:.45;transform:scale(.82)}to{opacity:0;transform:scale(1.22)}}
-@media(prefers-reduced-motion:reduce){.transport-play:is(.is-transport-changing,.is-transport-pulsing)::after{display:none;animation:none}}
+/* The icon's own ring moves; its center glyph stays still. */
+.transport-ring{stroke-dasharray:100 0;stroke-dashoffset:0}
+.transport-play.is-transport-changing .transport-ring{animation:transport-ring-orbit .72s ease-in-out}
+.transport-play.is-transport-pulsing .transport-ring{transform-box:fill-box;transform-origin:center;animation:transport-ring-pulse .32s ease-out}
+@keyframes transport-ring-orbit{0%{stroke-dasharray:100 0;stroke-dashoffset:-16.667}20%{stroke-dasharray:83.333 16.667;stroke-dashoffset:-16.667}80%{stroke-dasharray:83.333 16.667;stroke-dashoffset:-116.667}100%{stroke-dasharray:100 0;stroke-dashoffset:-116.667}}
+@keyframes transport-ring-pulse{0%{scale:1}40%{scale:.9}70%{scale:1.04}100%{scale:1}}
+@media(prefers-reduced-motion:reduce){.transport-play:is(.is-transport-changing,.is-transport-pulsing) .transport-ring{animation:none}}
 
 .nav-item .brand-symbol{color:inherit}

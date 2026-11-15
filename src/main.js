@@ -44,6 +44,7 @@ function render(){
  const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-slot-list','.preset-source-results','.group-settings-body','.library-search-body','.library-search-results','.library-queue-tracks'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
  const active=document.activeElement;const sidebarToggleFocused=active?.dataset?.action==='toggle-sidebar';const sessionToggleId=active?.classList?.contains('session-card__state')?active.dataset.id:null;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;
+ const identifyFocus=active?.dataset?.action==='device-identify'?{id:active.dataset.id,signal:active.dataset.signal}:null;
  const outputTransportId=active?.dataset?.action==='toggle-output-playback'?active.dataset.id:null;
  app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''} ${state.designTokens?.sidebarCollapsed?'sidebar-is-collapsed':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
  const dialogKey=state.modal?[state.modal.kind,state.modal.deviceId,state.modal.targetId,state.modal.sessionId,state.modal.draft?.groupId].join(':'):'';
@@ -57,6 +58,7 @@ function render(){
  renderedDetailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.designTokens?.fontSize,state.designTokens?.density,state.designTokens?.sidebarCollapsed].join(':'):'';
  for(const {selector,top} of scrollPositions){const element=app.querySelector?.(selector);if(element&&(selector!=='.workspace'||viewKey===renderedViewKey))element.scrollTop=top;}
  renderedViewKey=viewKey;
+ if(identifyFocus)[...app.querySelectorAll?.('[data-action=device-identify]')||[]].find(button=>button.dataset.id===identifyFocus.id&&button.dataset.signal===identifyFocus.signal)?.focus({preventScroll:true});
  if(outputTransportId)Array.from(app.querySelectorAll?.('.output-transport')||[]).find(button=>button.dataset.id===outputTransportId)?.focus({preventScroll:true});
  for(const checkbox of app.querySelectorAll?.('.transfer-target-heading input[aria-checked="mixed"]')||[])checkbox.indeterminate=true;
  const renameId=state.modal?.kind==='rename'?state.modal.deviceId:null;

@@ -304,16 +304,37 @@ export function transferButtonPresets(model,sourceId,targetIds,tokens=null,optio
   return report;
 }
 
+// Keep all reported addresses; the existing ip field remains the endpoint fallback.
+export function deviceAddresses(device,family){
+ const values=device?.[family+'Addresses'];
+ if(Array.isArray(values))return values.filter(value=>typeof value==='string'&&value.trim());
+ const ip=device?.ip;
+ return typeof ip==='string'&&ip.trim()&&(family==='ipv6'?ip.includes(':'):!ip.includes(':'))?[ip]:[];
+}
+export function identificationDuration(settings){
+ const seconds=settings?.identificationSeconds;
+ return Number.isInteger(seconds)&&seconds>=1&&seconds<=300?seconds:30;
+}
+export function identificationSignals(device){
+ const signals=device?.capabilities?.identification;
+ return Array.isArray(signals)?['sound','blink'].filter(signal=>signals.includes(signal)):[];
+}
+
 export function normalizeScenario(model,fixture=null) {
-  for(const device of model.devices||[]){
-    const original=fixture?.devices?.find(item=>item.id===device.id);
+  for(const collection of ['devices','setupCandidates'])for(const device of model[collection]||[]){
+    const original=fixture?.[collection]?.find(item=>item.id===device.id);
     // Migrate only known sample identities; unknown devices keep unknown capabilities.
-    for(const key of ['brand','hardwareRevision','agentName','agentVersion','capabilities']){
+    for(const key of ['brand','hardwareRevision','macAddress','agentName','agentVersion','capabilities']){
       if(device[key]===undefined)device[key]=original?.[key]===undefined?(key==='capabilities'?{}:null):structuredClone(original[key]);
     }
+    for(const family of ['ipv4','ipv6']){
+      const key=family+'Addresses';
+      if(device[key]===undefined)device[key]=structuredClone((device.ip===original?.ip?original?.[key]:undefined)??deviceAddresses(device,family));
+    }
+    if(device.capabilities&&device.capabilities.identification===undefined&&original?.capabilities?.identification)device.capabilities.identification=structuredClone(original.capabilities.identification);
     if(device.capabilities&&device.capabilities.grouping===undefined&&original?.capabilities?.grouping)device.capabilities.grouping=structuredClone(original.capabilities.grouping);
     if(device.capabilities?.grouping&&device.capabilities.grouping.remoteKeys===undefined&&original?.capabilities?.grouping?.remoteKeys)device.capabilities.grouping.remoteKeys=structuredClone(original.capabilities.grouping.remoteKeys);
-    if(device.doublePresets===undefined)device.doublePresets=[];
+    if(collection==='devices'&&device.doublePresets===undefined)device.doublePresets=[];
   }
   for(const group of model.groups||[]){
    const original=fixture?.groups?.find(item=>item.id===group.id);
@@ -505,6 +526,9 @@ export function validateScenario(m) {
   }
   for(const s of m.sessions) if(!ids.includes(s.targetId))errors.push(`${s.id}: missing output ${s.targetId}`);
   for(const d of m.devices){
+    if(d.macAddress!=null&&(typeof d.macAddress!=='string'||!/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/i.test(d.macAddress)))errors.push(`${d.id}: invalid MAC address`);
+    for(const family of ['ipv4','ipv6']){const addresses=d[family+'Addresses'];if(addresses!=null&&(!Array.isArray(addresses)||addresses.some(address=>typeof address!=='string'||!address.trim()||(family==='ipv6'?!address.includes(':'):address.includes(':')))))errors.push(`${d.id}: invalid ${family} addresses`);}
+    if(d.capabilities?.identification!==undefined&&(!Array.isArray(d.capabilities.identification)||d.capabilities.identification.some(signal=>!['sound','blink'].includes(signal))))errors.push(`${d.id}: invalid identification capabilities`);
     const remoteKeys=d.capabilities?.grouping?.remoteKeys;
     if(remoteKeys!==undefined&&(!Array.isArray(remoteKeys)||remoteKeys.some(key=>!['thumbsUp','thumbsDown'].includes(key))))errors.push(`${d.id}: invalid remote group keys`);
     const family=d.capabilities?.grouping?.stereoFamily;

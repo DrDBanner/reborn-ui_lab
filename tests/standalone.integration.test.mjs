@@ -794,3 +794,26 @@ test('holding a preset opens its exact device, key and gesture without changing 
  await run("onAction('preset-edit',{dataset:{id:'d1',gesture:'single',key:'99'}})");
  assert.equal(run('state.modal'),null);assert.equal(run('state.toasts.at(-1).kind'),'error');
 });
+test('identification duration persists across scenarios and reloads and validates edits',async()=>{
+ const {ctx,app}=boot();await ready();
+ await vm.runInContext("onAction('navigate',{dataset:{value:'settings'}})",ctx);
+ assert(app.innerHTML.includes('Identification duration'));assert.match(app.innerHTML,/value="30" data-field="identification-duration"/);
+ vm.runInContext("onField('identification-duration',{value:'45'})",ctx);
+ assert.equal(vm.runInContext('state.appSettings.identificationSeconds',ctx),45);
+ assert.equal(vm.runInContext("JSON.parse(localStorage.getItem('streborn-lab:app-settings')).identificationSeconds",ctx),45);
+ await vm.runInContext("loadScenario('many',false,true)",ctx);assert.equal(vm.runInContext('state.appSettings.identificationSeconds',ctx),45);
+ vm.runInContext("onField('identification-duration',{value:'0'})",ctx);assert.equal(vm.runInContext('state.appSettings.identificationSeconds',ctx),45);
+ vm.runInContext('state.appSettings.identificationSeconds=30',ctx);await vm.runInContext('initialize()',ctx);assert.equal(vm.runInContext('state.appSettings.identificationSeconds',ctx),45);
+ vm.runInContext("onAction('device-identify',{dataset:{id:'d1',signal:'blink'}})",ctx);
+ assert.equal(vm.runInContext('state.identification.duration',ctx),45000);
+ vm.runInContext("onAction('device-identify',{dataset:{id:'d1',signal:'blink'}})",ctx);assert.equal(vm.runInContext('state.identification',ctx),null);
+});
+test('setup retains discovered MAC and dual-stack addresses on the physical device',async()=>{
+ const {ctx}=boot();await ready();await vm.runInContext("loadScenario('first-run',false,true)",ctx);
+ ctx.document.getElementById=id=>({value:id==='setup-name'?'New room':'Home Network'});
+ vm.runInContext("state.setupStep=1;state.setupSelection=state.model.setupCandidates[0].id;onAction('setup-next',{dataset:{}})",ctx);
+ assert.equal(vm.runInContext('state.model.devices[0].macAddress===state.model.setupCandidates[0].macAddress',ctx),true);
+ assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].ipv6Addresses)===JSON.stringify(state.model.setupCandidates[0].ipv6Addresses)',ctx),true);
+ assert.equal(vm.runInContext('JSON.stringify(state.model.devices[0].ipv4Addresses)===JSON.stringify(state.model.setupCandidates[0].ipv4Addresses)',ctx),true);
+ assert.equal(vm.runInContext('state.model.devices[0].name',ctx),'New room');
+});

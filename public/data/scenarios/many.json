@@ -36,7 +36,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -67,7 +71,15 @@
         "ndrinfo"
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:01",
+      "ipv4Addresses": [
+        "192.168.0.101"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::1",
+        "fe80::1%en0"
+      ]
     },
     {
       "id": "d2",
@@ -105,7 +117,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -136,7 +152,15 @@
         "ndrinfo"
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:02",
+      "ipv4Addresses": [
+        "192.168.0.102"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::2",
+        "fe80::2%en0"
+      ]
     },
     {
       "id": "d3",
@@ -173,7 +197,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -204,7 +232,15 @@
         "ndrinfo"
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:03",
+      "ipv4Addresses": [
+        "192.168.0.103"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::3",
+        "fe80::3%en0"
+      ]
     },
     {
       "id": "d4",
@@ -241,7 +277,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.104",
@@ -265,7 +305,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:04",
+      "ipv4Addresses": [
+        "192.168.0.104"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::4",
+        "fe80::4%en0"
+      ]
     },
     {
       "id": "d5",
@@ -303,7 +351,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -334,7 +386,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:05",
+      "ipv4Addresses": [
+        "192.168.0.105"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::5",
+        "fe80::5%en0"
+      ]
     },
     {
       "id": "d6",
@@ -371,7 +431,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -402,7 +466,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:06",
+      "ipv4Addresses": [
+        "192.168.0.106"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::6",
+        "fe80::6%en0"
+      ]
     },
     {
       "id": "d7",
@@ -440,7 +512,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -471,7 +547,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:07",
+      "ipv4Addresses": [
+        "192.168.0.107"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::7",
+        "fe80::7%en0"
+      ]
     },
     {
       "id": "d8",
@@ -508,7 +592,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.108",
@@ -532,7 +620,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:08",
+      "ipv4Addresses": [
+        "192.168.0.108"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::8",
+        "fe80::8%en0"
+      ]
     },
     {
       "id": "d9",
@@ -569,7 +665,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -600,7 +700,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:09",
+      "ipv4Addresses": [
+        "192.168.0.109"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::9",
+        "fe80::9%en0"
+      ]
     },
     {
       "id": "d10",
@@ -638,7 +746,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -669,7 +781,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:0A",
+      "ipv4Addresses": [
+        "192.168.0.110"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::a",
+        "fe80::a%en0"
+      ]
     },
     {
       "id": "d11",
@@ -707,7 +827,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -738,7 +862,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:0B",
+      "ipv4Addresses": [
+        "192.168.0.111"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::b",
+        "fe80::b%en0"
+      ]
     },
     {
       "id": "d12",
@@ -774,7 +906,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.112",
@@ -798,7 +934,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:0C",
+      "ipv4Addresses": [
+        "192.168.0.112"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::c",
+        "fe80::c%en0"
+      ]
     },
     {
       "id": "d13",
@@ -836,7 +980,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -867,7 +1015,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:0D",
+      "ipv4Addresses": [
+        "192.168.0.113"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::d",
+        "fe80::d%en0"
+      ]
     },
     {
       "id": "d14",
@@ -905,7 +1061,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -936,7 +1096,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:0E",
+      "ipv4Addresses": [
+        "192.168.0.114"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::e",
+        "fe80::e%en0"
+      ]
     },
     {
       "id": "d15",
@@ -973,7 +1141,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1004,7 +1176,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:0F",
+      "ipv4Addresses": [
+        "192.168.0.115"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::f",
+        "fe80::f%en0"
+      ]
     },
     {
       "id": "d16",
@@ -1041,7 +1221,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.116",
@@ -1065,7 +1249,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:10",
+      "ipv4Addresses": [
+        "192.168.0.116"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::10",
+        "fe80::10%en0"
+      ]
     },
     {
       "id": "d17",
@@ -1103,7 +1295,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1134,7 +1330,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:11",
+      "ipv4Addresses": [
+        "192.168.0.117"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::11",
+        "fe80::11%en0"
+      ]
     },
     {
       "id": "d18",
@@ -1171,7 +1375,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1202,7 +1410,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:12",
+      "ipv4Addresses": [
+        "192.168.0.118"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::12",
+        "fe80::12%en0"
+      ]
     },
     {
       "id": "d19",
@@ -1240,7 +1456,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1271,7 +1491,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:13",
+      "ipv4Addresses": [
+        "192.168.0.119"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::13",
+        "fe80::13%en0"
+      ]
     },
     {
       "id": "d20",
@@ -1308,7 +1536,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.120",
@@ -1332,7 +1564,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:14",
+      "ipv4Addresses": [
+        "192.168.0.120"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::14",
+        "fe80::14%en0"
+      ]
     },
     {
       "id": "d21",
@@ -1369,7 +1609,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1400,7 +1644,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:15",
+      "ipv4Addresses": [
+        "192.168.0.121"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::15",
+        "fe80::15%en0"
+      ]
     },
     {
       "id": "d22",
@@ -1438,7 +1690,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1469,7 +1725,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:16",
+      "ipv4Addresses": [
+        "192.168.0.122"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::16",
+        "fe80::16%en0"
+      ]
     },
     {
       "id": "d23",
@@ -1507,7 +1771,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1538,7 +1806,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:17",
+      "ipv4Addresses": [
+        "192.168.0.123"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::17",
+        "fe80::17%en0"
+      ]
     },
     {
       "id": "d24",
@@ -1574,7 +1850,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.124",
@@ -1598,7 +1878,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:18",
+      "ipv4Addresses": [
+        "192.168.0.124"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::18",
+        "fe80::18%en0"
+      ]
     },
     {
       "id": "d25",
@@ -1636,7 +1924,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1667,7 +1959,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:19",
+      "ipv4Addresses": [
+        "192.168.0.125"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::19",
+        "fe80::19%en0"
+      ]
     },
     {
       "id": "d26",
@@ -1705,7 +2005,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1736,7 +2040,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:1A",
+      "ipv4Addresses": [
+        "192.168.0.126"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::1a",
+        "fe80::1a%en0"
+      ]
     },
     {
       "id": "d27",
@@ -1773,7 +2085,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1804,7 +2120,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:1B",
+      "ipv4Addresses": [
+        "192.168.0.127"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::1b",
+        "fe80::1b%en0"
+      ]
     },
     {
       "id": "d28",
@@ -1841,7 +2165,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.128",
@@ -1865,7 +2193,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:1C",
+      "ipv4Addresses": [
+        "192.168.0.128"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::1c",
+        "fe80::1c%en0"
+      ]
     },
     {
       "id": "d29",
@@ -1903,7 +2239,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -1934,7 +2274,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:1D",
+      "ipv4Addresses": [
+        "192.168.0.129"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::1d",
+        "fe80::1d%en0"
+      ]
     },
     {
       "id": "d30",
@@ -1971,7 +2319,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2002,7 +2354,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:1E",
+      "ipv4Addresses": [
+        "192.168.0.130"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::1e",
+        "fe80::1e%en0"
+      ]
     },
     {
       "id": "d31",
@@ -2039,7 +2399,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2070,7 +2434,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:1F",
+      "ipv4Addresses": [
+        "192.168.0.131"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::1f",
+        "fe80::1f%en0"
+      ]
     },
     {
       "id": "d32",
@@ -2107,7 +2479,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2138,7 +2514,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:20",
+      "ipv4Addresses": [
+        "192.168.0.132"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::20",
+        "fe80::20%en0"
+      ]
     },
     {
       "id": "d33",
@@ -2175,7 +2559,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2206,7 +2594,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:21",
+      "ipv4Addresses": [
+        "192.168.0.133"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::21",
+        "fe80::21%en0"
+      ]
     },
     {
       "id": "d34",
@@ -2243,7 +2639,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2274,7 +2674,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:22",
+      "ipv4Addresses": [
+        "192.168.0.134"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::22",
+        "fe80::22%en0"
+      ]
     },
     {
       "id": "d35",
@@ -2311,7 +2719,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2342,7 +2754,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:23",
+      "ipv4Addresses": [
+        "192.168.0.135"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::23",
+        "fe80::23%en0"
+      ]
     },
     {
       "id": "d36",
@@ -2379,7 +2799,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2410,7 +2834,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:24",
+      "ipv4Addresses": [
+        "192.168.0.136"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::24",
+        "fe80::24%en0"
+      ]
     },
     {
       "id": "d37",
@@ -2447,7 +2879,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2478,7 +2914,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:25",
+      "ipv4Addresses": [
+        "192.168.0.137"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::25",
+        "fe80::25%en0"
+      ]
     },
     {
       "id": "d38",
@@ -2515,7 +2959,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2546,7 +2994,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:26",
+      "ipv4Addresses": [
+        "192.168.0.138"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::26",
+        "fe80::26%en0"
+      ]
     },
     {
       "id": "d39",
@@ -2583,7 +3039,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2614,7 +3074,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:27",
+      "ipv4Addresses": [
+        "192.168.0.139"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::27",
+        "fe80::27%en0"
+      ]
     },
     {
       "id": "d40",
@@ -2651,7 +3119,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2682,7 +3154,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:28",
+      "ipv4Addresses": [
+        "192.168.0.140"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::28",
+        "fe80::28%en0"
+      ]
     },
     {
       "id": "d41",
@@ -2719,7 +3199,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2750,7 +3234,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:29",
+      "ipv4Addresses": [
+        "192.168.0.141"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::29",
+        "fe80::29%en0"
+      ]
     },
     {
       "id": "d42",
@@ -2787,7 +3279,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2818,7 +3314,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:2A",
+      "ipv4Addresses": [
+        "192.168.0.142"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::2a",
+        "fe80::2a%en0"
+      ]
     },
     {
       "id": "d43",
@@ -2855,7 +3359,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2886,7 +3394,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:2B",
+      "ipv4Addresses": [
+        "192.168.0.143"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::2b",
+        "fe80::2b%en0"
+      ]
     },
     {
       "id": "d44",
@@ -2923,7 +3439,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -2954,7 +3474,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:2C",
+      "ipv4Addresses": [
+        "192.168.0.144"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::2c",
+        "fe80::2c%en0"
+      ]
     },
     {
       "id": "d45",
@@ -2991,7 +3519,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -3022,7 +3554,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:2D",
+      "ipv4Addresses": [
+        "192.168.0.145"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::2d",
+        "fe80::2d%en0"
+      ]
     },
     {
       "id": "d46",
@@ -3059,7 +3599,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -3090,7 +3634,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:2E",
+      "ipv4Addresses": [
+        "192.168.0.146"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::2e",
+        "fe80::2e%en0"
+      ]
     },
     {
       "id": "d47",
@@ -3127,7 +3679,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -3158,7 +3714,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:2F",
+      "ipv4Addresses": [
+        "192.168.0.147"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::2f",
+        "fe80::2f%en0"
+      ]
     },
     {
       "id": "d48",
@@ -3195,7 +3759,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -3226,7 +3794,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:30",
+      "ipv4Addresses": [
+        "192.168.0.148"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::30",
+        "fe80::30%en0"
+      ]
     },
     {
       "id": "d49",
@@ -3263,7 +3839,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -3294,7 +3874,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:31",
+      "ipv4Addresses": [
+        "192.168.0.149"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::31",
+        "fe80::31%en0"
+      ]
     },
     {
       "id": "d50",
@@ -3331,7 +3919,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -3362,7 +3954,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:32",
+      "ipv4Addresses": [
+        "192.168.0.150"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::32",
+        "fe80::32%en0"
+      ]
     }
   ],
   "pairs": [
@@ -3554,9 +4154,21 @@
             "single",
             "double"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
-      "ip": "192.168.0.220"
+      "ip": "192.168.0.220",
+      "macAddress": "02:00:00:00:01:01",
+      "ipv4Addresses": [
+        "192.168.0.220"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:1::1",
+        "fe80::1%en0"
+      ]
     }
   ]
 }

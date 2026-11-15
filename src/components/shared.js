@@ -1,4 +1,4 @@
-import {entity,kind,targetStatus,source,sessionFor,leafDeviceIds} from '../app/model.js';
+import {entity,kind,targetStatus,source,sessionFor,leafDeviceIds,deviceAddresses} from '../app/model.js';
 import {materialIcons} from './material-icons.js';
 export const esc=(x)=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 // Local Google Material Symbols SVGs work in every preview, including offline.
@@ -26,6 +26,9 @@ export const typeIcon=(type,extra='')=>`<span class="entity-type ${esc(extra)}" 
 export function labelForTarget(model,id){return entity(model,id)?.name||'Choose output'}
 export const deviceProduct=device=>[device?.brand,device?.model].filter(Boolean).join(' · ')||'Speaker';
 export function subline(model,id){const k=kind(model,id);if(k==='device')return `${esc(deviceProduct(entity(model,id)))} · ${statusLabel(targetStatus(model,id))}`;return `${leafDeviceIds(model,id).length} speakers`}
+export function deviceAddressRows(device){
+ return ['ipv4','ipv6'].map(family=>`<div class="device-address-row device-address-row--${family}"><span>${family==='ipv4'?'IPv4':'IPv6'}</span><strong>${deviceAddresses(device,family).map(address=>`<span class="device-address">${esc(address)}</span>`).join('')||'Not reported'}</strong></div>`).join('');
+}
 export function outputItem(model,id,{compact=false,selected=false,extra=''}={}){
  const t=entity(model,id);if(!t)return '';
  const k=kind(model,id),status=targetStatus(model,id),s=sessionFor(model,id);

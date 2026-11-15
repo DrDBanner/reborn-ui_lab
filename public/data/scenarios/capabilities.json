@@ -36,7 +36,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -67,7 +71,15 @@
         "ndrinfo"
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:01",
+      "ipv4Addresses": [
+        "192.168.0.101"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::1",
+        "fe80::1%en0"
+      ]
     },
     {
       "id": "d11",
@@ -90,7 +102,10 @@
         "sound": true,
         "network": true,
         "remote": false,
-        "alarms": false
+        "alarms": false,
+        "identification": [
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.111",
@@ -107,7 +122,15 @@
       "network": "Home Network",
       "presets": [],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:0B",
+      "ipv4Addresses": [
+        "192.168.0.111"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::b",
+        "fe80::b%en0"
+      ]
     },
     {
       "id": "d12",
@@ -127,7 +150,10 @@
           "gestures": [
             "single"
           ]
-        }
+        },
+        "identification": [
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.112",
@@ -147,7 +173,15 @@
         "dl"
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:0C",
+      "ipv4Addresses": [
+        "192.168.0.112"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::c",
+        "fe80::c%en0"
+      ]
     }
   ],
   "pairs": [],
@@ -245,9 +279,21 @@
             "single",
             "double"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
-      "ip": "192.168.0.220"
+      "ip": "192.168.0.220",
+      "macAddress": "02:00:00:00:01:01",
+      "ipv4Addresses": [
+        "192.168.0.220"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:1::1",
+        "fe80::1%en0"
+      ]
     }
   ]
 }

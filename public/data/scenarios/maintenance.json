@@ -36,7 +36,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -67,7 +71,15 @@
         "ndrinfo"
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:01",
+      "ipv4Addresses": [
+        "192.168.0.101"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::1",
+        "fe80::1%en0"
+      ]
     },
     {
       "id": "d2",
@@ -105,7 +117,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -136,7 +152,15 @@
         "ndrinfo"
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:02",
+      "ipv4Addresses": [
+        "192.168.0.102"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::2",
+        "fe80::2%en0"
+      ]
     },
     {
       "id": "d3",
@@ -173,7 +197,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -204,7 +232,15 @@
         "ndrinfo"
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:03",
+      "ipv4Addresses": [
+        "192.168.0.103"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::3",
+        "fe80::3%en0"
+      ]
     },
     {
       "id": "d4",
@@ -241,7 +277,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [],
       "ip": "192.168.0.104",
@@ -265,7 +305,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:04",
+      "ipv4Addresses": [
+        "192.168.0.104"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::4",
+        "fe80::4%en0"
+      ]
     },
     {
       "id": "d5",
@@ -303,7 +351,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -334,7 +386,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:05",
+      "ipv4Addresses": [
+        "192.168.0.105"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::5",
+        "fe80::5%en0"
+      ]
     },
     {
       "id": "d6",
@@ -371,7 +431,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -402,7 +466,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:06",
+      "ipv4Addresses": [
+        "192.168.0.106"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::6",
+        "fe80::6%en0"
+      ]
     },
     {
       "id": "d7",
@@ -440,7 +512,11 @@
             "thumbsUp",
             "thumbsDown"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
       "doublePresets": [
         "album1",
@@ -471,7 +547,15 @@
         null
       ],
       "alarms": [],
-      "buttonActions": []
+      "buttonActions": [],
+      "macAddress": "02:00:00:00:00:07",
+      "ipv4Addresses": [
+        "192.168.0.107"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:0::7",
+        "fe80::7%en0"
+      ]
     }
   ],
   "pairs": [
@@ -585,9 +669,21 @@
             "single",
             "double"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
-      "ip": "192.168.0.220"
+      "ip": "192.168.0.220",
+      "macAddress": "02:00:00:00:01:01",
+      "ipv4Addresses": [
+        "192.168.0.220"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:1::1",
+        "fe80::1%en0"
+      ]
     }
   ]
 }

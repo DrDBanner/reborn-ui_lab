@@ -19,7 +19,7 @@ ST Reborn backend
 ## Adapter responsibilities
 
 - Map action payloads to verified Go method signatures and event shapes.
-- Supply discovery, identity, capabilities, availability, membership and playback state.
+- Supply discovery, identity (including reported MAC and all IPv4/IPv6 addresses), capabilities, availability, membership and playback state.
 - Apply confirmed values after acknowledgement and surface failures per target.
 - Identify desktop updates, speaker agent software and device firmware separately.
 - Validate membership, pairing compatibility and physical session overlap.
@@ -39,3 +39,7 @@ STR payload mappings and pinned source references are documented in [Device capa
 ## Release notes
 
 Application updates provide `appUpdate.releaseNotes`; firmware reports provide `device.firmwareReleaseNotes`. Each accepts one record or an array of records with `version`, optional plain-text `body`, `changes` string array, `publishedAt` and HTTP(S) `url`. The lightbox matches the selected reported version and identifies application versus physical device. Missing notes produce an explicit empty state. Reading notes does not install software.
+
+## Device identification
+
+Adapters report supported location signals through `capabilities.identification` and implement device-scoped start/stop operations with the requested bounded duration (30 seconds by default, configurable from 1 to 300 seconds in App settings). Enforce the timeout on the device/backend, acknowledge the running signal and report completion or failure. Starting another identification or cancelling stops the previous signal. Identification must preserve active playback and volume; advertise only signals for which that behavior is supported. The UI Lab supplies the countdown and simulated state.

@@ -1,8 +1,20 @@
 import {licenseDocuments} from '../components/license-notices.js';
 import {renderItemDetail} from './item-detail.js';
 import {renderDeviceFunctions} from './device-functions.js';
-import {esc,icon,action,card,empty,pageTools,field,statusBadge,tab,typeIcon,deviceProduct} from '../components/shared.js';
-import {entity,kind} from '../app/model.js';
+import {esc,icon,action,card,empty,pageTools,field,statusBadge,tab,typeIcon,deviceProduct,deviceAddressRows} from '../components/shared.js';
+import {entity,kind,identificationSignals,identificationDuration} from '../app/model.js';
+
+function renderDeviceIdentification(s,device){
+ const signals=identificationSignals(device);
+ if(!signals.length)return '';
+ const run=s.identification?.deviceId===device.id?s.identification:null,seconds=identificationDuration(s.appSettings);
+ return `<div class="button-row device-identification">${signals.map(signal=>{
+  const active=run?.signal===signal,remaining=active?Math.max(0,Math.ceil((run.endsAt-Date.now())/1000)):0;
+  const label=signal==='sound'?'Play sound':'Blink light';
+  const content=active?`Stop · ${remaining} s`:label;
+  return action('device-identify',icon(active?'stop':signal==='sound'?'volume_up':'lightbulb')+`<span>${content}</span>`,'btn-soft identify-button'+(active?' is-identifying':''),`data-id="${esc(device.id)}" data-signal="${signal}" aria-label="${active?`Stop ${signal==='sound'?'sound':'blinking light'} on ${esc(device.name)} · ${remaining} seconds remaining`:`${label} on ${esc(device.name)} for ${seconds} seconds`}" ${device.status!=='online'?'disabled':''} ${active?`style="--identify-duration:${run.duration||run.endsAt-run.startedAt}ms;--identify-elapsed:-${Math.max(0,Date.now()-run.startedAt)}ms"`:''}`);
+ }).join('')}</div>`;
+}
 
 export function renderDevice(s){
  const m=s.model,d=entity(m,s.detailDeviceId||m.selectedDeviceId);
@@ -11,7 +23,7 @@ export function renderDevice(s){
  const tabId=tabs.some(([id])=>id===m.ui.deviceTab)?m.ui.deviceTab:'overview';
  let contents='';
  if(tabId==='overview')contents=`<div class="two-col two-col--wide">
- ${card('Device identity','',`<div class="key-values"><div><span>Status</span>${statusBadge(d.status)}</div><div><span>Brand</span><strong>${esc(d.brand||'Not reported')}</strong></div><div><span>Model</span><strong>${esc(d.model||'Not reported')}</strong></div><div><span>Hardware revision</span><strong>${esc(d.hardwareRevision||'Not reported')}</strong></div><div><span>IP address</span><strong>${esc(d.ip)}</strong></div><div><span>Firmware</span><strong>${esc(d.firmware||'Not reported')}</strong></div>${d.agentName?`<div><span>${esc(d.agentName)} agent</span><strong>${esc(d.agentVersion||'Not reported')}</strong></div>`:''}<div><span>Last seen</span><strong>${d.status==='offline'?'Unavailable':'Just now · simulated'}</strong></div></div>${action('device-info',icon('info')+' More details','btn-soft mt-4')}`)}
+ ${card('Device identity','',`<div class="key-values"><div><span>Status</span>${statusBadge(d.status)}</div><div><span>Brand</span><strong>${esc(d.brand||'Not reported')}</strong></div><div><span>Model</span><strong>${esc(d.model||'Not reported')}</strong></div><div><span>Hardware revision</span><strong>${esc(d.hardwareRevision||'Not reported')}</strong></div><div><span>MAC address</span><strong class="device-mac-address">${esc(d.macAddress||'Not reported')}</strong></div><div><span>Firmware</span><strong>${esc(d.firmware||'Not reported')}</strong></div>${d.agentName?`<div><span>${esc(d.agentName)} agent</span><strong>${esc(d.agentVersion||'Not reported')}</strong></div>`:''}<div><span>Last seen</span><strong>${d.status==='offline'?'Unavailable':'Just now · simulated'}</strong></div></div>${renderDeviceIdentification(s,d)}`)}
  ${d.capabilities?.remote?card('Remote & quick actions','',`<div class="remote-box">${icon('phone_iphone')}<div><strong>Phone remote</strong><p>Open the speaker's remote-control endpoint or show a QR code.</p></div></div><div class="button-row">${action('remote-preview','Remote preview','btn-soft')}${action('remote-qr','Show QR code','btn-quiet')}</div>`):card('Available functions','',`<div class="button-row">${tabs.filter(([id])=>!['overview','advanced'].includes(id)).map(([id,label])=>action('device-tab',esc(label),'btn-soft',`data-value="${id}"`)).join('')||'<p>No optional functions reported.</p>'}</div>`)}
  </div>`;
  if(tabId==='sound')contents=`${card('Sound','',
@@ -19,7 +31,7 @@ export function renderDevice(s){
  ${field('Fixed startup volume',`<label class="switch-row"><input type="checkbox" data-field="start-volume-enabled" ${d.startVolumeEnabled?'checked':''} /><span>${d.startVolumeEnabled?'On':'Off'}</span></label>`, 'Otherwise the speaker uses its normal startup behavior.')}
  ${d.startVolumeEnabled?field('Startup volume',`<div class="range-row"><input type="range" min="0" max="100" value="${d.startVolume}" data-field="start-volume"/><strong>${d.startVolume}</strong></div>`):''}`)}
  `;
- if(tabId==='network')contents=`<div class="two-col two-col--wide">${card('Current connection','',`<div class="key-values"><div><span>SSID</span><strong>${esc(d.network)}</strong></div><div><span>IP address</span><strong>${esc(d.ip)}</strong></div><div><span>Connectivity</span>${statusBadge(d.status)}</div></div>${action('wifi-change',icon('wifi')+' Change Wi-Fi…','btn-soft mt-4')}`)}
+ if(tabId==='network')contents=`<div class="two-col two-col--wide">${card('Current connection','',`<div class="key-values"><div><span>SSID</span><strong>${esc(d.network)}</strong></div>${deviceAddressRows(d)}<div><span>Connectivity</span>${statusBadge(d.status)}</div></div>${action('wifi-change',icon('wifi')+' Change Wi-Fi…','btn-soft mt-4')}`)}
  ${card('Connectivity','',`${action('device-ping',icon('network_check')+' Check connection','btn-soft mt-4')}`)}</div>`;
  if(tabId==='functions')contents=renderDeviceFunctions(s,d);
  if(tabId==='advanced')contents=` <section class="section-wrap"><div class="section-heading"><h2>Maintenance</h2></div><div class="panel panel--flush">${action('navigate',icon('system_update')+'<span>Software on speaker</span><span class="row-trailing">'+esc(d.firmware)+' '+icon('chevron_right')+'</span>','menu-row','data-value="updates"')}${action('backup',icon('settings_backup_restore')+'<span>Backup and restore</span><span class="row-trailing">Presets & favorites '+icon('chevron_right')+'</span>','menu-row')}${action('device-maintenance',icon('build')+'<span>Other maintenance actions</span><span class="row-trailing">Restart, remove, reset '+icon('chevron_right')+'</span>','menu-row')}</div></section>`;
@@ -53,6 +65,7 @@ export function renderSettings(s){
  const m=s.model,tabId=m.ui.settingsTab||'general',tabs=[['general','General'],['appearance','Appearance'],['advanced','Advanced']];
  let body='';
  if(tabId==='general')body=card('Application','',`${field('Language',`<select data-field="language" class="small-select">${s.catalog.languages.map(l=>`<option ${m.settings.language===l?'selected':''}>${esc(l)}</option>`).join('')}</select>`)}
+ ${field('Identification duration',`<div class="identification-duration"><input id="identification-duration" aria-label="Identification duration in seconds" class="text-input" type="number" min="1" max="300" step="1" value="${identificationDuration(s.appSettings)}" data-field="identification-duration"/><span>seconds</span></div>`,'Sound or blinking light when locating a device · 1–300 seconds.')}
  ${field('Restore last session',`<input type="checkbox" role="switch" data-field="restore-session" ${m.settings.restoreSession?'checked':''}/>`)}
  ${field('Check app updates automatically',`<input type="checkbox" role="switch" data-field="auto-update" ${m.settings.autoUpdate?'checked':''}/>`)}
  ${field('Anonymous telemetry',`<input type="checkbox" role="switch" data-field="telemetry" ${m.settings.telemetry?'checked':''}/>`,'Disabled by default in this demo.')}`);

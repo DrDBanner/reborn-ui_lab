@@ -2,12 +2,19 @@
 
 ## Identity and reported functions
 
-Physical devices carry `brand`, `model`, `hardwareRevision`, `firmware` and optional `agentName` / `agentVersion`. Identity fields are nullable. Pairs and groups have their own identity and refer to physical member IDs.
+Physical devices carry `brand`, `model`, `hardwareRevision`, `macAddress`, `firmware` and optional `agentName` / `agentVersion`. Identity fields are nullable. Pairs and groups have their own identity and refer to physical member IDs.
+
+Device identity shows the reported MAC address. Network shows separate IPv4 / IPv6 rows. `ipv4Addresses` and `ipv6Addresses` contain all reported addresses, including IPv6 interface scopes. Empty values show “Not reported”. The existing `ip` field remains the connection endpoint and supplies the address-family fallback for older data. Internal device IDs stay stable when network addresses change. Scenario MAC addresses are locally administered examples; IPv6 examples use the documentation prefix and sample link-local addresses.
+
+### Locate a device
+
+`capabilities.identification: ['sound', 'blink']` exposes Play sound and Blink light beneath Device identity. Devices may report either signal or both. Starting a signal runs a countdown (30 seconds by default) and a fill from right to left inside the button; pressing it again stops the signal. Only one identification runs at a time. Completion, loss of availability or a scenario reset clears the transient state. App settings → Identification duration sets the duration from 1 to 300 seconds. The preference persists across scenarios and browser reloads; changes apply to the next run. In the UI Lab the signal is simulated, with a notice naming the device. Playback and volume settings are preserved.
 
 The UI reads function availability from `capabilities`:
 
 | Field | UI behavior |
 |---|---|
+| `identification` | Available device-location signals (`sound`, `blink`) |
 | `sound` | Sound controls |
 | `network` | Network configuration |
 | `remote` | Remote endpoint controls |

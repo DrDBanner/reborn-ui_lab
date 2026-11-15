@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume,joinPlayback,playbackJoinError,targetStatus} from '../src/app/model.js';
+import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume,joinPlayback,playbackJoinError,targetStatus,deviceAddresses,identificationSignals} from '../src/app/model.js';
 const base=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data/scenarios/home.json'),'utf8'));
 const fresh=()=>structuredClone(base);
 test('pair and group resolve to physical speakers',()=>{const m=fresh();assert.deepEqual(leafDeviceIds(m,'p1'),['d1','d2']);assert.deepEqual(leafDeviceIds(m,'g1'),['d1','d2','d3'])});
@@ -255,4 +255,40 @@ test('reported device errors remain visible on the output and prevent playback',
  assert.throws(()=>assignSource(m,'flux','g1'),/device error/);
  assert.deepEqual(m.sessions,before);
  assert.equal(targetStatus(m,'d4'),'online');
+});
+
+test('reported identity survives migration; unknown addresses remain unknown',()=>{
+ const m=fresh(),d=m.devices[0];
+ delete d.macAddress;delete d.ipv4Addresses;delete d.ipv6Addresses;delete d.capabilities.identification;
+ const explicit=m.devices[1];explicit.macAddress=null;explicit.ipv4Addresses=[];explicit.ipv6Addresses=['fe80::1234%wlan0'];explicit.capabilities.identification=[];
+ m.devices.push({id:'external',ip:'2001:db8::99',presets:[]});
+ const topology=JSON.stringify([m.pairs,m.groups,m.sessions]);
+ delete m.setupCandidates[0].macAddress;delete m.setupCandidates[0].ipv6Addresses;
+ normalizeScenario(m,base);
+ assert.equal(m.setupCandidates[0].macAddress,base.setupCandidates[0].macAddress);assert.deepEqual(m.setupCandidates[0].ipv6Addresses,base.setupCandidates[0].ipv6Addresses);
+ assert.equal(d.macAddress,base.devices[0].macAddress);
+ assert.deepEqual(deviceAddresses(d,'ipv4'),[d.ip]);
+ assert.deepEqual(deviceAddresses(d,'ipv6'),base.devices[0].ipv6Addresses);
+ assert.deepEqual(identificationSignals(d),['sound','blink']);
+ assert.equal(explicit.macAddress,null);assert.deepEqual(deviceAddresses(explicit,'ipv4'),[]);
+ assert.deepEqual(deviceAddresses(explicit,'ipv6'),['fe80::1234%wlan0']);
+ assert.deepEqual(identificationSignals(explicit),[]);
+ const external=m.devices.at(-1);assert.equal(external.macAddress,null);
+ assert.deepEqual(deviceAddresses(external,'ipv4'),[]);assert.deepEqual(deviceAddresses(external,'ipv6'),['2001:db8::99']);
+ assert.deepEqual(identificationSignals(external),[]);
+ assert.equal(JSON.stringify([m.pairs,m.groups,m.sessions]),topology);
+ const changed=fresh();changed.devices[0].ip='192.0.2.50';delete changed.devices[0].ipv4Addresses;delete changed.devices[0].ipv6Addresses;
+ normalizeScenario(changed,base);assert.deepEqual(deviceAddresses(changed.devices[0],'ipv4'),['192.0.2.50']);assert.deepEqual(deviceAddresses(changed.devices[0],'ipv6'),[]);
+});
+test('identity validation rejects malformed addresses and identification capabilities',()=>{
+ const m=fresh(),d=m.devices[0];d.macAddress=42;d.ipv6Addresses='fe80::1';d.capabilities.identification=['flash-all'];
+ const errors=validateScenario(m);assert(errors.some(e=>e.includes('invalid MAC address')));assert(errors.some(e=>e.includes('invalid ipv6 addresses')));assert(errors.some(e=>e.includes('invalid identification capabilities')));
+});
+test('sample device identities have unique MAC addresses within every scenario',()=>{
+ const dir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data/scenarios');
+ for(const name of fs.readdirSync(dir).filter(name=>name.endsWith('.json'))){
+  const m=JSON.parse(fs.readFileSync(path.join(dir,name),'utf8'));
+  const macs=[...m.devices,...m.setupCandidates].map(d=>d.macAddress).filter(Boolean);
+  assert.equal(new Set(macs).size,macs.length,name);
+ }
 });

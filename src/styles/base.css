@@ -715,3 +715,21 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 .output-transport:not(:disabled):is(:hover,:focus-visible) .output-playback-status,.session-card:is(:hover,:focus-within) .session-card__status-icon{display:inline-flex;opacity:0}
 .output-transport:not(:disabled):is(:hover,:focus-visible) .output-playback-control,.session-card:is(:hover,:focus-within) .session-card__transport-icon{display:inline-flex;opacity:1}
 @media(prefers-reduced-motion:reduce){.overlay.is-entering .modal-window,.overlay.is-entering .overlay-backdrop{animation:none}*,*::before,*::after{transition:none!important}}
+
+/* Device identity keeps long IPv6 addresses readable at narrow widths. */
+.key-values .device-address-row{align-items:flex-start}
+.device-address-row>span{flex:0 0 auto}
+.device-address-row>strong{display:grid;gap:5px}
+.device-address{font-variant-numeric:tabular-nums}
+.device-mac-address{font-variant-numeric:tabular-nums}
+.device-identification{margin-top:18px;flex-wrap:wrap}
+.identify-button{position:relative;isolation:isolate;overflow:hidden;min-width:138px;font-variant-numeric:tabular-nums}
+.identify-button::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:color-mix(in srgb,var(--accent) 20%,transparent);transform:scaleX(0);transform-origin:right center}
+.identify-button.is-identifying::before{animation:identify-fill var(--identify-duration,30000ms) linear both;animation-delay:var(--identify-elapsed,0ms)}
+@keyframes identify-fill{to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){.identify-button.is-identifying::before{animation-timing-function:steps(10,end)}}
+
+.identification-duration{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px}
+.identification-duration input{width:88px;text-align:right;font-variant-numeric:tabular-nums}
+
+@media(max-width:480px){.key-values .device-address-row--ipv6{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}.device-address-row--ipv6>strong{text-align:left}}

@@ -146,3 +146,22 @@ test('group Functions resolves supported physical members once and hides unavail
  assert(renderGroup(s).includes('data-action="alarms" data-id="d1"'));
  assert(!renderGroup(s).includes('data-action="alarms" data-id="d2"'));
 });
+
+test('device identity keeps MAC and location controls; network owns both address families',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8')),d=model.devices[0];
+ model.ui.deviceTab='overview';
+ const s={model,catalog,detailDeviceId:d.id,designTokens:tokens};
+ let html=renderDevice(s);
+ assert(html.includes(d.macAddress));assert(!html.includes('IPv4'));assert(!html.includes('IPv6'));
+ model.ui.deviceTab='network';html=renderDevice(s);assert(html.includes('IPv4'));assert(html.includes('IPv6'));
+ for(const address of [...d.ipv4Addresses,...d.ipv6Addresses])assert(html.includes(address));
+ model.ui.deviceTab='overview';html=renderDevice(s);
+ assert(!html.includes('data-action="device-info"'));assert(!html.includes('More details'));
+ assert(html.includes('data-signal="sound"'));assert(html.includes('data-signal="blink"'));
+ d.macAddress=null;d.ipv4Addresses=[];d.ipv6Addresses=[];d.capabilities.identification=['blink'];
+ html=renderDevice(s);assert(html.includes('Not reported'));assert(!html.includes('data-signal="sound"'));
+ d.ipv6Addresses=['fe80::1%<unsafe>'];model.ui.deviceTab='network';html=renderDevice(s);assert(html.includes('fe80::1%&lt;unsafe&gt;'));assert(!html.includes('%<unsafe>'));
+ model.ui.deviceTab='overview';s.identification={deviceId:d.id,signal:'blink',startedAt:Date.now(),endsAt:Date.now()+10000};
+ html=renderDevice(s);assert(html.includes('Stop · 10 s'));assert(html.includes('is-identifying'));
+ d.status='offline';html=renderDevice(s);assert.match(html,/data-signal="blink"[^>]*disabled/);
+});

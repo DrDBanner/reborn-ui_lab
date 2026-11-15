@@ -70,9 +70,21 @@
             "single",
             "double"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
-      "ip": "192.168.0.220"
+      "ip": "192.168.0.220",
+      "macAddress": "02:00:00:00:01:01",
+      "ipv4Addresses": [
+        "192.168.0.220"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:1::1",
+        "fe80::1%en0"
+      ]
     },
     {
       "id": "found2",
@@ -101,9 +113,21 @@
             "single",
             "double"
           ]
-        }
+        },
+        "identification": [
+          "sound",
+          "blink"
+        ]
       },
-      "ip": "192.168.0.221"
+      "ip": "192.168.0.221",
+      "macAddress": "02:00:00:00:01:02",
+      "ipv4Addresses": [
+        "192.168.0.221"
+      ],
+      "ipv6Addresses": [
+        "2001:db8:1::2",
+        "fe80::2%en0"
+      ]
     }
   ]
 }

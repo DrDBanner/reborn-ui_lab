@@ -6,7 +6,7 @@ import json,re,base64,runpy
 from pathlib import Path
 root=Path(__file__).resolve().parent.parent
 runpy.run_path(str(root/'scripts/generate-license-notices.py'),run_name='__main__')
-files=['src/components/license-notices.js','src/components/brand.js','src/components/material-icons.js','src/app/model.js','src/app/library.js','src/app/store.js','src/components/shared.js','src/components/radio-filters.js','src/components/shell.js','src/components/preset-transfer.js','src/components/preset-editor.js','src/components/release-notes.js','src/components/library-search.js','src/components/library-settings.js','src/components/dialog.js','src/views/device-functions.js','src/views/item-detail.js','src/views/sessions.js','src/views/listen.js','src/views/outputs.js','src/views/management.js','src/views/lab.js','src/app/controller.js','src/main.js']
+files=['src/components/license-notices.js','src/components/brand.js','src/components/material-icons.js','src/app/model.js','src/app/library.js','src/app/store.js','src/components/shared.js','src/components/radio-filters.js','src/components/shell.js','src/components/preset-transfer.js','src/components/preset-editor.js','src/components/source-picker.js','src/components/release-notes.js','src/components/library-search.js','src/components/library-settings.js','src/components/dialog.js','src/views/device-functions.js','src/views/item-detail.js','src/views/sessions.js','src/views/listen.js','src/views/outputs.js','src/views/management.js','src/views/lab.js','src/app/controller.js','src/app/preset-press.js','src/app/output-masonry.js','src/main.js']
 js=[]
 for filename in files:
  text=(root/filename).read_text()

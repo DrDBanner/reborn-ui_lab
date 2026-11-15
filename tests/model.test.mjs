@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume,joinPlayback,playbackJoinError} from '../src/app/model.js';
+import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume,joinPlayback,playbackJoinError,targetStatus} from '../src/app/model.js';
 const base=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data/scenarios/home.json'),'utf8'));
 const fresh=()=>structuredClone(base);
 test('pair and group resolve to physical speakers',()=>{const m=fresh();assert.deepEqual(leafDeviceIds(m,'p1'),['d1','d2']);assert.deepEqual(leafDeviceIds(m,'g1'),['d1','d2','d3'])});
@@ -243,4 +243,16 @@ test('overwrite retains offline devices and unsupported gesture assignments',()=
  target.status='offline';const offline=JSON.stringify(target);
  assert(transferButtonPresets(m,'d1',['d4'],null,{overwrite:true}).results[0].error.includes('offline'));
  assert.equal(JSON.stringify(target),offline);
+});
+
+
+test('reported device errors remain visible on the output and prevent playback',()=>{
+ const m=fresh(),before=structuredClone(m.sessions);
+ m.devices.find(d=>d.id==='d1').status='error';
+ assert.equal(targetStatus(m,'d1'),'error');
+ assert.equal(targetStatus(m,'p1'),'error');
+ assert.equal(targetStatus(m,'g1'),'error');
+ assert.throws(()=>assignSource(m,'flux','g1'),/device error/);
+ assert.deepEqual(m.sessions,before);
+ assert.equal(targetStatus(m,'d4'),'online');
 });

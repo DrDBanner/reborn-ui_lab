@@ -15,6 +15,18 @@ const scenarios=JSON.parse(fs.readFileSync(path.join(root,'scenario-index.json')
 const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
 const tokens=JSON.parse(fs.readFileSync(path.join(root,'design-tokens.json'),'utf8'));
 const renderers={listen:renderListen,library:renderListen,history:renderListen,spotify:renderListen,outputs:renderOutputs,group:renderGroup,device:renderDevice,updates:renderUpdates,settings:renderSettings,setup:renderSetup,help:renderHelp,lab:renderLab,sessions:renderSessions};
+test('output card order survives playback changes and filtering within the workspace',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
+ const s={model,catalog,outputSearch:''};
+ const ids=()=>[...renderOutputs(s).matchAll(/data-output-id="([^"]+)"/g)].map(match=>match[1]);
+ const before=ids();
+ model.sessions.forEach(session=>session.status='stopped');
+ model.sessions.push({id:'new-playback',targetId:'d7',sourceId:'fluxfm',status:'playing'});
+ assert.deepEqual(ids(),before);
+ s.outputSearch='Terrace';assert.deepEqual(ids(),before.filter(id=>['d5','d6'].includes(id)));
+ s.outputSearch='';assert.deepEqual(ids(),before);
+ s.outputCardOrder=null;assert.equal(ids()[0],'d7');
+});
 for(const scenario of scenarios){
  const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios',`${scenario.id}.json`),'utf8'));
  test(`all views render under scenario ${scenario.id}`,()=>{

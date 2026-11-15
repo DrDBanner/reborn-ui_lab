@@ -19,9 +19,9 @@ export const action=(name,label,cls='btn',props='')=>{
  const accessibleLabel=iconOnly&&!props.includes('aria-label=')?`aria-label="${esc(props.match(/title="([^"]+)"/)?.[1]||name.replace(/-/g,' '))}"`:'';
  return `<button type="button" class="${daisyRole[cls.split(' ')[0]]||''} ${cls}" data-action="${esc(name)}" ${props} ${accessibleLabel}>${label}</button>`;
 };
-export const statusLabel=(status)=>({online:'Online',offline:'Offline',updating:'Updating',partial:'Partly offline',needs_setup:'Needs setup',unknown:'Unknown'})[status]||esc(status);
+export const statusLabel=(status)=>({online:'Online',offline:'Offline',updating:'Updating',error:'Device error',partial:'Partly offline',needs_setup:'Needs setup',unknown:'Unknown'})[status]||esc(status);
 export const statusBadge=(status)=>`<span class="device-status device-status--${esc(status)}"><i></i>${statusLabel(status)}</span>`;
-export function targetIcon(type){return type==='pair'?'speaker_group':type==='group'?'hub':'speaker'}
+export function targetIcon(type){return type==='pair'?'speaker_group':type==='group'?'lan':'speaker'}
 export const typeIcon=(type,extra='')=>`<span class="entity-type ${esc(extra)}" role="img" aria-label="${type==='pair'?'Stereo pair':type==='group'?'Speaker group':'Speaker'}" title="${type==='pair'?'Stereo pair':type==='group'?'Speaker group':'Speaker'}">${icon(targetIcon(type))}</span>`;
 export function labelForTarget(model,id){return entity(model,id)?.name||'Choose output'}
 export const deviceProduct=device=>[device?.brand,device?.model].filter(Boolean).join(' · ')||'Speaker';
@@ -51,16 +51,19 @@ export function sourceTypeIcon(item){
 export function sourceDestination(item){
  return ({radio:{view:'listen',label:'Radio'},library:{view:'library',label:'Library'},spotify:{view:'spotify',label:'Spotify'}})[item?.type]||null;
 }
+export function sourceArtAttributes(item){
+ return `data-source-type="${esc(item?.type||'')}" style="--source-color:${esc(item?.type==='radio'?'var(--muted)':item?.color||'#7289ae')}"`;
+}
 export function sourceTile(s,{active=false,actionName='source-select',cls=''}={}){
  return `<button type="button" class="source-tile ${active?'is-selected':''} ${cls}" data-action="${esc(actionName)}" data-id="${esc(s.id)}" title="Choose output for ${esc(s.name)}">
-  <span class="source-art" style="--source-color:${esc(s.color||'#7289ae')}">${icon(s.type==='radio'?'radio':s.type==='spotify'?'music_note':'album')}</span>
+  <span class="source-art" ${sourceArtAttributes(s)}>${icon(s.type==='radio'?'radio':s.type==='spotify'?'music_note':'album')}</span>
   <span class="source-tile__content"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></span>${icon('music_cast','source-tile__cast')}
  </button>`;
 }
 export function sourceRow(s,{favorite=false,playTarget=null,playable=false}={}){
  const artwork=icon(s.type==='radio'?'radio':s.type==='spotify'?'music_note':'album');
  const playLabel=playTarget?`Play ${s.name} on ${playTarget.name}`:`Choose an output before playing ${s.name}`;
- const art=playTarget?action('source-play',`<span class="source-art__identity">${artwork}</span>${icon('play_circle','source-art__play')}`,'source-art source-art--sm source-art--play',`style="--source-color:${esc(s.color)}" data-id="${esc(s.id)}" data-target="${esc(playTarget.id)}" title="${esc(playLabel)}" aria-label="${esc(playLabel)}" ${playable?'':'disabled'}`):`<span class="source-art source-art--sm" style="--source-color:${esc(s.color)}">${artwork}</span>`;
+ const art=playTarget?action('source-play',`<span class="source-art__identity">${artwork}</span>${icon('play_circle','source-art__play')}`,'source-art source-art--sm source-art--play',`${sourceArtAttributes(s)} data-id="${esc(s.id)}" data-target="${esc(playTarget.id)}" title="${esc(playLabel)}" aria-label="${esc(playLabel)}" ${playable?'':'disabled'}`):`<span class="source-art source-art--sm" ${sourceArtAttributes(s)}>${artwork}</span>`;
  return `<div class="source-row">${art}<div class="source-row__main"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></div><span class="source-row__genre">${esc(s.genre)}</span><div class="source-row__actions">
    ${action('source-select',icon('music_cast'),'icon-btn',`data-id="${esc(s.id)}" title="Choose output" aria-label="Choose output for ${esc(s.name)}"`)}
    ${action('toggle-favorite',icon(favorite?'favorite':'favorite_border'),'icon-btn',`data-id="${esc(s.id)}" title="Toggle favorite" aria-label="Favorite ${esc(s.name)}" aria-pressed="${favorite}"`)}

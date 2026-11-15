@@ -90,6 +90,7 @@ export function targetStatus(model, targetId) {
   const ids = leafDeviceIds(model, targetId);
   if (!ids.length) return 'unknown';
   const statuses = ids.map(id => entity(model, id)?.status);
+  if (statuses.some(s => s === 'error')) return 'error';
   if (statuses.every(s => s === 'offline')) return 'offline';
   if (statuses.some(s => s === 'needs_setup')) return 'needs_setup';
   if (statuses.some(s => s === 'updating')) return 'updating';
@@ -113,9 +114,10 @@ export function currentSession(model) {
   return active.find(item=>item.id===model.selectedSessionId)??active[0]??null;
 }
 
-export function outputsByPlayback(model,targets){
+export function outputsByPlayback(model,targets,previousIds=[]){
  const rank=target=>({playing:0,paused:1})[effectiveSessionFor(model,target.id)?.status]??2;
- return targets.map((target,index)=>({target,index,rank:rank(target)})).sort((a,b)=>a.rank-b.rank||a.index-b.index).map(item=>item.target);
+ const positions=new Map(previousIds.map((id,index)=>[id,index]));
+ return targets.map((target,index)=>({target,index,rank:rank(target),position:positions.get(target.id)??Infinity})).sort((a,b)=>(a.position===b.position?0:a.position-b.position)||a.rank-b.rank||a.index-b.index).map(item=>item.target);
 }
 
 export function availableUpdates(model){
@@ -367,6 +369,7 @@ export function assignSource(model, sourceId, targetId) {
   if (targetStatus(model, targetId) === 'offline') throw new Error('Output is offline');
   if (targetStatus(model, targetId) === 'needs_setup') throw new Error('Complete setup first');
   if (targetStatus(model, targetId) === 'updating') throw new Error('Wait for the firmware update');
+  if (targetStatus(model, targetId) === 'error') throw new Error('Output reports a device error');
   const existing = new Set(conflictingSessionIds(model, targetId));
   model.sessions = model.sessions.filter(x => !existing.has(x.id));
   const id = `s${Date.now()}${Math.floor(Math.random() * 1000)}`;

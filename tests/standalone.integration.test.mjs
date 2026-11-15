@@ -50,6 +50,28 @@ test('source selection opens an output picker then preserves independent streams
  assert.equal(vm.runInContext("state.model.sessions.some(s=>s.targetId==='d4')",ctx),true);
  assert.equal(vm.runInContext("state.model.sessions.some(s=>s.targetId==='d7'&&s.sourceId==='ndr2')",ctx),true);
 });
+test('Ready to listen opens a target-bound source chooser and preserves other streams',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('navigate',{dataset:{value:'outputs'}})");
+ assert(app.innerHTML.includes('data-action="output-source-open"'));
+ assert(!app.innerHTML.includes('output-capability'));
+ const before=run('JSON.stringify(state.model.sessions)');
+ await run("onAction('output-source-open',{dataset:{id:'d6'}})");
+ assert.equal(run('state.modal.targetId'),'d6');assert(app.innerHTML.includes('Play on Terrace R'));
+ assert.equal(run('JSON.stringify(state.model.sessions)'),before);
+ await run("onAction('output-source-type',{dataset:{value:'library'}});onField('output-source-search',{value:'Morning Light'})");
+ assert(app.innerHTML.includes('Morning Light'));assert(!app.innerHTML.includes('Play FluxFM on Terrace R'));
+ await run("onAction('close-modal',{dataset:{}})");assert.equal(run('JSON.stringify(state.model.sessions)'),before);
+ await run("onAction('output-source-open',{dataset:{id:'d6'}});onAction('output-source-choose',{dataset:{id:'flux',target:'d7'}})");
+ assert.equal(run('JSON.stringify(state.model.sessions)'),before);assert.equal(run('state.toasts.at(-1).kind'),'error');
+ await run("onAction('output-source-choose',{dataset:{id:'track-demo',target:'d6'}})");
+ assert.equal(run('state.modal'),null);assert.equal(run('state.model.sessions.length'),3);
+ assert.equal(run("JSON.stringify(state.model.sessions.filter(s=>s.targetId!=='d6'))"),before);
+ assert.equal(run("state.model.sessions.find(s=>s.targetId==='d6').sourceId"),'track-demo');
+ assert(run('state.toasts.at(-1).message').includes('Morning Light'));
+ await run("onAction('output-source-open',{dataset:{id:'d1'}})");
+ assert.equal(run('state.modal.targetId'),'g1');assert(app.innerHTML.includes('Play on Downstairs'));
+});
 
 test('player media navigation follows the selected source without changing any playback',async()=>{
  const {ctx,app}=boot();await ready();
@@ -237,7 +259,7 @@ test('unified workspace scopes active outputs and toggles only the named playbac
  const {ctx,app}=boot();await ready();
  await vm.runInContext("onAction('navigate',{dataset:{value:'outputs',scope:'active'}})",ctx);
  assert(app.innerHTML.includes('class="targets-grid output-cards"'));
- assert(app.innerHTML.includes('Button presets'));
+ assert(!app.innerHTML.includes('output-capability'));
  assert.equal(vm.runInContext('state.model.ui.outputScope',ctx),'active');
  const before=vm.runInContext("JSON.stringify(state.model.sessions.find(item=>item.id==='s1'))",ctx);
  await vm.runInContext("onAction('toggle-output-playback',{dataset:{id:'s2'}})",ctx);
@@ -384,7 +406,7 @@ test('presets start compact with direct Once/Twice and reveal configuration only
  const {ctx,app}=boot();await ready();
  await vm.runInContext("onAction('device-open',{dataset:{id:'d1'}})",ctx);
  assert(app.innerHTML.includes('preset-compact-grid'));
- assert(!app.innerHTML.includes('data-action="preset-edit"'));
+ assert(!app.innerHTML.includes(' Edit assignments'));
  assert(!app.innerHTML.includes('data-action="button-transfer-open"'));
  const before=vm.runInContext('JSON.stringify(state.model.sessions)',ctx);
  await vm.runInContext("onAction('preset-gesture',{dataset:{id:'d1',value:'double'}})",ctx);
@@ -421,6 +443,24 @@ test('capture explicitly selects among simultaneous outputs without redirecting 
  await vm.runInContext("onAction('preset-use-current',{dataset:{session:'s2',source:'flux'}})",ctx);
  assert.equal(vm.runInContext('state.toasts.at(-1).kind',ctx),'error');
  assert.equal(vm.runInContext('state.modal.draft[2]',ctx),'ndrinfo');
+});
+test('preset capture hides empty playback controls and directly assigns the only playback',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ run("state.model.sessions=state.model.sessions.filter(session=>session.id==='s2')");
+ const original=run('JSON.stringify([state.model.sessions,state.model.devices])');
+ await run("onAction('preset-edit',{dataset:{id:'d1',gesture:'double',key:'3'}})");
+ assert(!app.innerHTML.includes('id="preset-playback"'));assert(app.innerHTML.includes('Playing on Office'));
+ assert(app.innerHTML.includes('aria-label="Assign NDR Info to key 3"'));
+ await run("onAction('preset-use-current',{dataset:{session:'s2',source:'ndrinfo'}})");
+ assert.equal(run('state.modal.draft[2]'),'ndrinfo');
+ assert.equal(run('JSON.stringify([state.model.sessions,state.model.devices])'),original);
+ await run("onAction('close-modal',{dataset:{}});onAction('preset-edit',{dataset:{id:'d1',gesture:'double',key:'3'}})");
+ run("state.model.sessions[0].sourceId='flux';notify()");
+ await run("onAction('preset-use-current',{dataset:{session:'s2',source:'ndrinfo'}})");
+ assert.equal(run('state.toasts.at(-1).kind'),'error');assert.equal(run('state.modal.draft[2]'),null);
+ await run("onAction('close-modal',{dataset:{}})");run('state.model.sessions=[]');
+ await run("onAction('preset-edit',{dataset:{id:'d1',gesture:'double'}})");
+ assert(!app.innerHTML.includes('preset-current-source'));assert(!app.innerHTML.includes('data-action="preset-use-current"'));
 });
 test('transfer destination tree de-duplicates groups and allows deselecting one member',async()=>{
  const {ctx,app}=boot();await ready();
@@ -738,4 +778,19 @@ test('release notes bind firmware/application and version without installing an 
  await run("state.model.appUpdate={currentVersion:'1.6.2',version:'1.6.3',releaseNotes:{version:'1.6.3',changes:['Application change']}};onAction('release-notes',{dataset:{id:'application'}})");
  assert(app.innerHTML.includes('Application change'));assert(app.innerHTML.includes('ST Reborn application'));
  await run("onField('release-note-version',{value:'1.6.2'})");assert(app.innerHTML.includes('No release notes supplied'));
+});
+
+
+test('holding a preset opens its exact device, key and gesture without changing playback or assignments',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ const before=run('JSON.stringify([state.model.sessions,state.model.devices])');
+ for(const [gesture,key] of [['single',4],['double',6]]){
+  await run(`onAction('preset-edit',{dataset:{id:'d1',gesture:'${gesture}',key:'${key}'}})`);
+  assert.equal(run('state.modal.deviceId'),'d1');assert.equal(run('state.modal.gesture'),gesture);
+  assert.equal(run('state.modal.keyIndex'),key-1);assert(app.innerHTML.includes('Source for key '+key));
+  assert.equal(run('JSON.stringify([state.model.sessions,state.model.devices])'),before);
+  await run("onAction('close-modal',{dataset:{}})");
+ }
+ await run("onAction('preset-edit',{dataset:{id:'d1',gesture:'single',key:'99'}})");
+ assert.equal(run('state.modal'),null);assert.equal(run('state.toasts.at(-1).kind'),'error');
 });

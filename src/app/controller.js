@@ -1,6 +1,6 @@
 import {releaseNoteVersions} from '../components/release-notes.js';
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast} from './store.js';
-import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,membershipPlan,addToGroup,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback} from './model.js';
+import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,membershipPlan,addToGroup,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback,rootOutputId,targetStatus,compatibleRadioSource} from './model.js';
 import {esc,icon,sourceDestination} from '../components/shared.js';
 import {addLibraryServer,libraryServers,newLibraryQueue,addTracksToLibraryQueues,saveLibraryQueue,deleteLibraryQueue} from './library.js';
 
@@ -65,6 +65,19 @@ export async function onAction(action,element){
  }
  case 'target-play':{const src=m.selectedSourceId||currentSession(m)?.sourceId||'flux';mutate(s=>{assignSource(s.model,src,id);s.modal=null;});break}
  case 'open-volume-controls':{const playback=currentSession(m);if(!playback)throw new Error('Choose a playback first');openModal('volume',{sessionId:playback.id,targetId:playback.targetId});break;}
+ case 'output-source-open':{
+  const targetId=rootOutputId(m,id)||id;
+  if(!entity(m,targetId)||!['online','partial'].includes(targetStatus(m,targetId)))throw new Error('This output is unavailable');
+  openModal('source-picker',{targetId,sourceType:'all',query:''});break;
+ }
+ case 'output-source-type':if(state.modal?.kind==='source-picker'&&['all','radio','library','spotify','native'].includes(val))mutate(s=>{s.modal.sourceType=val;s.modal.query=''},false);break;
+ case 'output-source-choose':{
+  const modal=state.modal;if(modal?.kind!=='source-picker')break;
+  const targetId=modal.targetId,item=source(state.catalog,id);
+  if(!item||element.dataset.target!==targetId||rootOutputId(m,targetId)!==targetId)throw new Error('Source or output changed; reopen the source selection');
+  if(item.type==='radio'&&!compatibleRadioSource(m,item,targetId))throw new Error('This station is incompatible with the output');
+  mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(value=>value!==id)].slice(0,20);s.modal=null});toast(playbackNotice(id,targetId));break;
+ }
  case 'open-output-picker':{const playback=currentSession(m);mutate(s=>{s.speakerPickerFor=playback?.sourceId||m.selectedSourceId||'flux';s.modal={kind:'picker',sourceId:s.speakerPickerFor,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
  case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId;if(!targetId||element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)].slice(0,20)});toast(playbackNotice(id,targetId));break;}
  case 'source-select':{const playback=currentSession(m);mutate(s=>{s.model.selectedSourceId=id;s.speakerPickerFor=id;s.modal={kind:'picker',sourceId:id,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
@@ -90,14 +103,16 @@ export async function onAction(action,element){
  case 'preset-edit':{
   const device=entity(m,id||currentDevice()?.id),gesture=element.dataset.gesture||state.presetGesture||'single';
   if(!buttonProfile(device)?.gestures.includes(gesture))throw new Error('This device does not support that button gesture');
-  const playback=effectiveSessionFor(m,device.id);
-  openModal('preset',{deviceId:device.id,gesture,draft:buttonPresets(device,gesture),keyIndex:0,sourceType:'all',query:'',captureSessionId:playback?.status!=='stopped'&&canAssignPresetSource(device,source(state.catalog,playback?.sourceId))?playback.id:null});break;
+  const playback=effectiveSessionFor(m,device.id),draft=buttonPresets(device,gesture),key=Number(element.dataset.key||1);
+  if(!Number.isInteger(key)||key<1||key>draft.length)throw new Error('This button is no longer available');
+  openModal('preset',{deviceId:device.id,gesture,draft,keyIndex:key-1,sourceType:'all',query:'',captureSessionId:playback?.status!=='stopped'&&canAssignPresetSource(device,source(state.catalog,playback?.sourceId))?playback.id:null});break;
  }
  case 'preset-slot':if(state.modal?.kind==='preset')mutate(s=>{s.modal.keyIndex=Math.max(0,Math.min(s.modal.draft.length-1,Number(element.dataset.index)||0))},false);break;
  case 'preset-source-type':if(state.modal?.kind==='preset'&&['all','radio','library','spotify','native'].includes(val))mutate(s=>{s.modal.sourceType=val;s.modal.query=''},false);break;
  case 'preset-source-choose':case 'preset-use-current':{
   const modal=state.modal;if(modal?.kind!=='preset')break;
-  const playing=m.sessions.find(session=>session.id===modal.captureSessionId&&session.status!=='stopped'),sourceId=action==='preset-use-current'?playing?.sourceId:action==='preset-source-choose'?id:null;
+  const playbacks=m.sessions.filter(session=>session.status!=='stopped'&&canAssignPresetSource(entity(m,modal.deviceId),source(state.catalog,session.sourceId)));
+  const playing=playbacks.length===1?playbacks[0]:playbacks.find(session=>session.id===modal.captureSessionId),sourceId=action==='preset-use-current'?playing?.sourceId:action==='preset-source-choose'?id:null;
   if(action==='preset-use-current'&&(!playing||element.dataset.session&&element.dataset.session!==playing.id||element.dataset.source&&element.dataset.source!==playing.sourceId))throw new Error('Playback changed; choose the source again');
   if(!canAssignPresetSource(entity(m,modal.deviceId),source(state.catalog,sourceId)))throw new Error('This source cannot be assigned to the selected device');
   mutate(s=>s.modal.draft[s.modal.keyIndex]=sourceId,false);break;
@@ -207,6 +222,7 @@ export async function onField(field,target){
  const m=state.model,val=target.value;
  try{switch(field){
  case 'picker-query':if(state.modal?.kind==='picker')mutate(s=>s.modal.query=val,false);break;
+ case 'output-source-search':if(state.modal?.kind==='source-picker')mutate(s=>s.modal.query=val,false);break;
  case 'release-note-version':if(state.modal?.kind==='release-notes'&&releaseNoteVersions(state,state.modal.targetId).includes(val))mutate(s=>s.modal.version=val,false);break;
  case 'library-name':case 'library-address':if(state.modal?.kind==='library-settings')mutate(s=>s.modal[field==='library-name'?'name':'address']=val,false);break;
  case 'library-query':case 'library-new-queue':if(state.modal?.kind==='library-search')mutate(s=>s.modal[field==='library-query'?'query':'newName']=val,false);break;

@@ -910,8 +910,8 @@ code{overflow-wrap:anywhere}
 /* Brief feedback for playback state and context changes. */
 .transport-play{position:relative}
 .transport-play:is(.is-transport-changing,.is-transport-pulsing)::after{content:"";position:absolute;inset:0.125rem;border:1px solid currentColor;border-radius:50%;pointer-events:none;animation:transport-ring-pulse .32s ease-out both}
-.transport-play.is-transport-changing::after{border-color:transparent;border-top-color:currentColor;border-right-color:currentColor;animation:transport-ring-orbit .4s ease-in-out both}
-@keyframes transport-ring-orbit{0%{opacity:0;transform:rotate(-90deg)}25%{opacity:.65}75%{opacity:.65}100%{opacity:0;transform:rotate(270deg)}}
+.transport-play.is-transport-changing::after{inset:-.1875rem;border-width:.125rem;border-color:transparent;border-top-color:currentColor;animation:transport-ring-orbit .64s ease-in-out both}
+@keyframes transport-ring-orbit{0%{opacity:0;transform:rotate(-90deg)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:rotate(270deg)}}
 @keyframes transport-ring-pulse{from{opacity:.45;transform:scale(.82)}to{opacity:0;transform:scale(1.22)}}
 @media(prefers-reduced-motion:reduce){.transport-play:is(.is-transport-changing,.is-transport-pulsing)::after{display:none;animation:none}}
 

@@ -70,6 +70,10 @@ Hold a preset for 700 ms to open assignment editing with that device, key and ge
 
 Assignment editing shows a compact key list next to the source browser. The gesture layer appears in the dialog heading. A single available playback shows its source and output with a direct Assign action; several playbacks offer a selector, and no playback hides that section. Assignment updates remain drafts until saved.
 
+On narrow screens, keys and source selection follow each other at their natural height in one scrollable work area. The dialog heading and Save/Cancel footer remain visible.
+
+The mobile player uses two fixed control rows with touch-sized playback, cast and volume actions. It reserves space for the device's bottom safe area. Tab strips keep horizontal scrolling and keyboard navigation with their scrollbar hidden.
+
 In the output overview, Choose source or clicking the current source opens source selection bound to that playback target. Source types and search cover radio, library, Spotify and services. Choosing a source starts playback on that target; other independent streams continue. Cards show the speaker count once in their heading and offer Members and the details icon for further information.
 
 Item details link directly to their parent by name next to All outputs. A device opens its pair or group; a nested group opens the next enclosing group. Each step follows the current membership hierarchy.

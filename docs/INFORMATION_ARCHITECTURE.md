@@ -35,7 +35,7 @@ Station artwork starts the source on the target named in the bottom player. Hove
 
 The `music_cast` action opens output selection. Radio options choose Separate playback (the default) or As member, naming the bound output inline. As member joins a free device or pair to the bound session, extending its group or creating a temporary group. The review identifies any replaced source. Selecting a different source applies it to the whole joined target. Confirmation revalidates session, source and destination.
 
-Member additions leave the picker open for further outputs; added rows stay visible and disabled. Done closes it after the changes have applied. Without a current playback, Play together starts the source on the first chosen output; subsequent additions form or extend a temporary group. Separate playback starts an independent session and closes the picker.
+Member additions leave the picker open for further outputs; added rows stay visible and disabled. Done closes it after the changes have applied. Without a current playback, Play together starts the source on the first chosen output; subsequent additions form a temporary group or extend an existing group. Separate playback starts an independent session and closes the picker.
 
 Radio and Recently Played share this picker. Source-change notifications name both values, for example: Playing FluxFM on Downstairs.
 
@@ -81,6 +81,8 @@ Each item has at most one parent. Membership forms a tree with unique physical d
 Create group selects free devices/pairs, a name and persistence. Stereo mode requires exactly two online physical devices with matching reported `stereoFamily` values. Left/right assignment is stored in `leftDeviceId`, `rightDeviceId` and ordered `memberIds`.
 
 The gear beside Add members contains Main speaker, Keep group together and Remote group buttons. The main speaker is identified in the member list. Remote assignments store templates on the selected receiving device.
+
+Member tiles use quiet borders and aligned heights. Remote group buttons use independent switches for Thumbs up and Thumbs down; both can form/dissolve the same group.
 
 For STR integration, the adapter expands the logical hierarchy into unique physical devices and sends one master plus followers. It owns compatibility checks, saved/live state reconciliation and execution acknowledgement. Child-group settings describe that group's standalone configuration; joined playback uses the root configuration.
 

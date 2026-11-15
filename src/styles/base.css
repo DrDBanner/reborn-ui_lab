@@ -450,10 +450,10 @@ input[role=switch]:checked{background:var(--accent);border-color:var(--accent)}i
 .remote-group-settings h3{font-size:14px;margin:0}
 .remote-group-settings>p{font-size:11px;line-height:1.5;color:var(--muted);margin:8px 0 16px}
 .remote-group-key-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
-.remote-group-key{display:flex;gap:10px;align-items:center;padding:12px 0;font-size:12px}
+.remote-group-key{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:12px 0;font-size:12px;border-bottom:1px solid var(--border);cursor:pointer}.remote-group-key>span{flex:1;min-width:0}.remote-group-key:has(:disabled){opacity:.5;cursor:default}
 .remote-group-key small{display:block;color:var(--muted);font-size:11px;line-height:1.5;margin-top:5px;overflow-wrap:anywhere}
 @media(max-width:400px){.remote-group-key-list{grid-template-columns:1fr;gap:0}.group-settings-body{gap:18px}}
-.item-member{display:flex;align-items:flex-start;gap:10px;min-width:0;border-top:1px solid var(--border);padding:12px 0 0;cursor:default}.item-member__label{flex:1;min-width:0}.item-member__label strong{font-size:12px;font-weight:500;overflow-wrap:anywhere}.item-member__label small{display:block;font-size:11px;color:var(--muted);margin-top:4px}.item-member>.entity-type{font-size:20px}.item-member__open{opacity:0;transition:opacity .15s ease;color:var(--muted)}.item-member__open .material-symbols-rounded{font-size:18px}.item-member:hover .item-member__open,.item-member:focus-within .item-member__open{opacity:1}.item-member__open:hover,.item-member__open:focus-visible{color:var(--accent)}
+.item-member{display:flex;align-items:flex-start;gap:10px;min-width:0;min-height:94px;border:1px solid var(--border);border-radius:8px;padding:12px;cursor:default}.item-member__label{flex:1;min-width:0}.item-member__label strong{font-size:12px;font-weight:500;overflow-wrap:anywhere}.item-member__label small{display:block;font-size:11px;color:var(--muted);margin-top:4px}.item-member>.entity-type{font-size:20px}.item-member__open{opacity:0;transition:opacity .15s ease;color:var(--muted)}.item-member__open .material-symbols-rounded{font-size:18px}.item-member:hover .item-member__open,.item-member:focus-within .item-member__open{opacity:1}.item-member__open:hover,.item-member__open:focus-visible{color:var(--accent)}.item-member__open,.item-member__remove{align-self:center}
 @media(hover:none),(pointer:coarse){.item-member__open{opacity:1}}
 @media(prefers-reduced-motion:reduce){.item-member__open{transition:none}}
 /* Context selectors stay visible. The gear reveals only configuration tools. */
@@ -579,7 +579,7 @@ select.small-select,select.session-select,input.text-input{height:var(--control-
 .session-card>.session-card__state:hover,.session-card>.session-card__state:focus-visible{color:var(--accent)}
 @media(hover:none),(pointer:coarse){.session-card .session-card__status-icon{display:none}.session-card .session-card__transport-icon{display:inline-flex}}
 
-.item-member-list{min-height:76px}
+.item-member-list{min-height:94px;gap:12px}
 
 .library-page-tools{display:flex;justify-content:flex-end;margin-bottom:18px}
 .library-saved-queue{display:flex;align-items:center;gap:12px;padding:4px 16px;border-bottom:1px solid var(--border)}

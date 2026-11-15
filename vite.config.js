@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 function licenseFiles(){
   const root=new URL('./',import.meta.url);
   return {name:'license-files',generateBundle(){
-    const paths=['LICENSE','NOTICE','THIRD-PARTY-NOTICES.md',...fs.readdirSync(new URL('LICENSES/',root)).filter(name=>name.endsWith('.txt')).map(name=>'LICENSES/'+name)];
+    const paths=['LICENSE','NOTICE','THIRD-PARTY-NOTICES.md','BRAND-NOTICES.md',...fs.readdirSync(new URL('LICENSES/',root)).filter(name=>name.endsWith('.txt')).map(name=>'LICENSES/'+name)];
     for(const fileName of paths)this.emitFile({type:'asset',fileName,source:fs.readFileSync(fileURLToPath(new URL(fileName,root)))});
   }};
 }

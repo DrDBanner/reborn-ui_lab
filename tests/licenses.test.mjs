@@ -5,7 +5,7 @@ import {licenseDocuments} from '../src/components/license-notices.js';
 import {renderHelp} from '../src/views/management.js';
 const root=new URL('../',import.meta.url);
 test('offline licence bundle preserves every repository licence and attribution verbatim',()=>{
- const expected=['LICENSE','NOTICE','THIRD-PARTY-NOTICES.md',...fs.readdirSync(new URL('LICENSES/',root)).filter(name=>name.endsWith('.txt')).map(name=>'LICENSES/'+name)];
+ const expected=['LICENSE','NOTICE','THIRD-PARTY-NOTICES.md','BRAND-NOTICES.md',...fs.readdirSync(new URL('LICENSES/',root)).filter(name=>name.endsWith('.txt')).map(name=>'LICENSES/'+name)];
  assert.deepEqual(licenseDocuments.map(doc=>doc.path).sort(),expected.sort());
  for(const doc of licenseDocuments)assert.equal(doc.text,fs.readFileSync(new URL(doc.path,root),'utf8'),doc.path);
  assert.equal(JSON.parse(fs.readFileSync(new URL('package.json',root),'utf8')).license,'Apache-2.0');

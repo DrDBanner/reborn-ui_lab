@@ -1,12 +1,21 @@
 import {releaseNoteVersions} from '../components/release-notes.js';
 import {state,mutate,loadScenario,applyScenarioJson,applyDesign,toast,save,dismissToast,startDeviceIdentification,stopDeviceIdentification} from './store.js';
-import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,membershipPlan,addToGroup,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback,rootOutputId,targetStatus,compatibleRadioSource,deviceAddresses} from './model.js';
+import {entity,kind,source,visibleOutputs,assignSource,createComposite,dissolveComposite,updateMembership,removeMemberKeepingGroup,configureGroupMembership,removeDevice,currentSession,sessionFor,parentIds,leafDeviceIds,membershipPlan,addToGroup,renameItem,groupSettingsDraft,saveGroupSettings,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,presetAssignments,planPresetTransfer,transferButtonPresets,canAssignPresetSource,effectiveSessionFor,setDeviceVolume,setOutputVolume,stereoFamily,playbackJoinError,joinPlayback,rootOutputId,targetStatus,compatibleRadioSource,deviceAddresses,appearanceZoom} from './model.js';
 import {esc,icon,sourceDestination} from '../components/shared.js';
 import {addLibraryServer,libraryServers,newLibraryQueue,addTracksToLibraryQueues,saveLibraryQueue,deleteLibraryQueue,searchLibraryTracks} from './library.js';
 
 function navigate(view){mutate(s=>{s.view=view;s.sidebarOpen=false;s.appMenuOpen=false;s.filter='';s.historyQuery='';s.historyType='all';s.libraryQuery='';s.librarySearchOpen=false;s.librarySearchServer='all';s.libraryTrackIds=[];s.modal=null;s.selectedForComposite=[];});}
 function openModal(kind,extras={}){mutate(s=>s.modal={kind,...extras},false)}
-function closeModal(){mutate(s=>s.modal=null,false)}
+function closeModal(){mutate(s=>s.modal=s.modal?.kind==='member-change'?s.modal.previousModal||null:null,false)}
+function memberChangeSnapshot(model,parentId){
+ const ids=leafDeviceIds(model,parentId);
+ return JSON.stringify({item:entity(model,parentId),parents:parentIds(model,parentId),playbacks:model.sessions.filter(session=>leafDeviceIds(model,session.targetId).some(id=>ids.includes(id)))});
+}
+function openMemberChange(parentId,memberId=null){
+ const parent=entity(state.model,parentId),member=entity(state.model,memberId);
+ if(!parent||!['pair','group'].includes(kind(state.model,parentId))||memberId&&(!member||!parent.memberIds.includes(memberId)))throw new Error('Membership changed; open the members again');
+ openModal('member-change',{parentId,memberId,title:member?`Remove ${member.name}?`:`Dissolve ${parent.name}?`,scenarioId:state.scenarioId,snapshot:memberChangeSnapshot(state.model,parentId),previousModal:state.modal,error:''});
+}
 function confirmAction(title,description,callback){if(window.confirm(`${title}\n\n${description}`))callback()}
 function exported(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download=name;a.href=url;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function notifySafe(task){try{task()}catch(err){toast(err?.message||String(err),{kind:'error'})}}
@@ -18,7 +27,9 @@ let rangeWheel={key:'',delta:0,time:0};
 export function onRangeWheel(event){
  const target=event.target.closest('input[type="range"][data-field]');
  if(!target||target.disabled||event.ctrlKey||event.metaKey)return;
- const horizontal=Math.abs(event.deltaX)>Math.abs(event.deltaY),raw=horizontal?-event.deltaX:event.deltaY;
+ const horizontal=Math.abs(event.deltaX)>Math.abs(event.deltaY);
+ // Safari reports when natural scrolling inverted the physical device direction.
+ const raw=(horizontal?-event.deltaX:event.deltaY)*(event.webkitDirectionInvertedFromDevice===true?-1:1);
  if(!Number.isFinite(raw)||!raw)return;
  event.preventDefault();
  const key=[target.dataset.field,target.dataset.id,currentSession(state.model)?.id,state.detailDeviceId,state.detailOutputId,state.modal?.kind].join(':'),time=Date.now();
@@ -170,15 +181,22 @@ export async function onAction(action,element){
  }
  case 'group-settings':openModal('group-settings',{draft:groupSettingsDraft(m,id||state.detailOutputId)});break;
  case 'group-settings-save':if(state.modal?.kind==='group-settings'){mutate(s=>{saveGroupSettings(s.model,s.modal.draft);s.modal=null});toast('Group settings saved (mock data)')}break;
- case 'add-member':case 'add-to-group':openModal('membership',{direction:action==='add-to-group'?'parent':'members',anchorId:id||state.detailOutputId,selectedId:null,plan:null});break;
- case 'membership-choice':if(state.modal?.kind==='membership')mutate(s=>{const modal=s.modal,groupId=modal.direction==='parent'?id:modal.anchorId,memberId=modal.direction==='parent'?modal.anchorId:id;const plan=membershipPlan(m,groupId,memberId);if(plan.error)throw new Error(plan.error);modal.selectedId=id;modal.plan=plan},false);break;
+ case 'add-member':case 'add-to-group':{const anchorId=id||state.detailOutputId;openModal('membership',{direction:action==='add-to-group'?'parent':'members',anchorId,selectedId:null,plan:null,stereo:false,persistent:entity(m,anchorId)?.persistent!==false,leftId:'',rightId:''});break;}
+ case 'membership-choice':if(state.modal?.kind==='membership')mutate(s=>{const modal=s.modal,groupId=modal.direction==='parent'?id:modal.anchorId,memberId=modal.direction==='parent'?modal.anchorId:id;const plan=membershipPlan(m,groupId,memberId);if(plan.error)throw new Error(plan.error);modal.selectedId=id;modal.plan=plan;if(modal.direction==='members'){const members=[...entity(m,modal.anchorId).memberIds,id];modal.leftId=members[0]||'';modal.rightId=members[1]||''}},false);break;
  case 'membership-save':{
   const modal=state.modal;if(modal?.kind!=='membership'||!modal.selectedId||!modal.plan)throw new Error('Choose a group member first');
   const groupId=modal.direction==='parent'?modal.selectedId:modal.anchorId,memberId=modal.direction==='parent'?modal.anchorId:modal.selectedId;
-  mutate(s=>{addToGroup(s.model,groupId,memberId,modal.plan);s.detailOutputId=groupId;s.model.selectedOutputId=groupId;s.view='group';s.model.ui.groupTab='overview';s.modal=null});toast(`${entity(m,memberId)?.name} added to ${entity(m,groupId)?.name}`);break;
+  mutate(s=>{if(modal.direction==='members')configureGroupMembership(s.model,groupId,memberId,modal,modal.plan);else addToGroup(s.model,groupId,memberId,modal.plan);s.detailOutputId=groupId;s.model.selectedOutputId=groupId;s.view='group';s.model.ui.groupTab='overview';s.modal=null});toast(`${entity(m,memberId)?.name} added to ${entity(m,groupId)?.name}`);break;
  }
- case 'remove-member':confirmAction('Remove member','The speaker will become available as an individual output.',()=>mutate(s=>updateMembership(s.model,s.detailOutputId,id,false)));break;
- case 'dissolve-group':confirmAction('Dissolve this output?','The member speakers will remain configured and available.',()=>mutate(s=>{dissolveComposite(s.model,s.detailOutputId);s.detailOutputId=null;s.view='outputs'}));break;
+ case 'remove-member':openMemberChange(element.dataset.parent||state.detailOutputId,id);break;
+ case 'dissolve-group':openMemberChange(id||state.detailOutputId);break;
+ case 'member-change-keep':case 'member-change-dissolve':{
+  const modal=state.modal;if(modal?.kind!=='member-change')break;
+  if(modal.scenarioId!==state.scenarioId||modal.snapshot!==memberChangeSnapshot(m,modal.parentId)){mutate(s=>s.modal.error='Membership or playback changed. Close this dialog and review the members again.',false);break;}
+  const dissolve=action==='member-change-dissolve';
+  if(!dissolve&&!modal.memberId)throw new Error('Choose a member to remove');
+  mutate(s=>{if(dissolve){dissolveComposite(s.model,modal.parentId);s.detailOutputId=null;s.modal=null;s.view='outputs'}else{removeMemberKeepingGroup(s.model,modal.parentId,modal.memberId);s.modal=null}});break;
+ }
  case 'toggle-output-playback':mutate(s=>{const session=s.model.sessions.find(item=>item.id===id);if(session)session.status=session.status==='playing'?'paused':'playing'});break;
  case 'player-source':{
   const playback=currentSession(m),item=source(state.catalog,id),destination=sourceDestination(item);
@@ -271,6 +289,9 @@ export async function onField(field,target){
  case 'radio-search':mutate(s=>s.filter=val,false);break;
  case 'output-type':if(['all','device','pair','group'].includes(val))mutate(s=>s.model.ui.outputFilter=val);break;
  case 'output-search':mutate(s=>s.outputSearch=val,false);break;
+ case 'membership-stereo':if(state.modal?.kind==='membership'&&state.modal.direction==='members')mutate(s=>{s.modal.stereo=target.checked;const existing=entity(m,s.modal.anchorId).memberIds,selected=entity(m,s.modal.selectedId);if(target.checked&&selected&&(kind(m,selected.id)!=='device'||stereoFamily(selected)!==stereoFamily(entity(m,existing[0])))){s.modal.selectedId=null;s.modal.plan=null}const members=[...existing,s.modal.selectedId].filter(Boolean);s.modal.leftId=members[0]||'';s.modal.rightId=members[1]||''},false);break;
+ case 'membership-persistent':if(state.modal?.kind==='membership'&&state.modal.direction==='members')mutate(s=>s.modal.persistent=target.checked,false);break;
+ case 'membership-left':case 'membership-right':if(state.modal?.kind==='membership'&&state.modal.direction==='members')mutate(s=>s.modal[field==='membership-left'?'leftId':'rightId']=val,false);break;
  case 'composite-name':if(state.modal?.kind==='create')state.modal.nameDraft=val;break;
  case 'composite-persistent':if(state.modal?.kind==='create')state.modal.persistent=target.checked;break;
  case 'composite-stereo':if(state.modal?.kind==='create')mutate(s=>{s.modal.type=target.checked?'pair':'group';if(target.checked){const ids=s.selectedForComposite.filter(id=>stereoFamily(entity(m,id)));s.modal.leftId=ids[0]||'';s.modal.rightId=ids[1]||''}else{s.selectedForComposite=[...new Set([...s.selectedForComposite,s.modal.leftId,s.modal.rightId].filter(Boolean))]}},false);break;
@@ -295,7 +316,7 @@ export async function onField(field,target){
  case 'density':mutate(s=>{s.designTokens.density=val;applyDesign()});break;
  case 'radius':mutate(s=>{s.designTokens.radius=Number(val);applyDesign()});break;
  case 'sidebar-width':mutate(s=>{s.designTokens.sidebarWidth=Number(val);applyDesign()});break;
- case 'font-size':mutate(s=>{s.designTokens.fontSize=Number(val);applyDesign()});break;
+ case 'appearance-zoom':{const zoom=Number(val);if(!Number.isInteger(zoom)||zoom<100||zoom>200)throw new Error('Choose an app zoom from 100% to 200%');mutate(s=>{s.appSettings.appearanceZoom=appearanceZoom({appearanceZoom:zoom});applyDesign()});break;}
  default:console.warn('Unhandled field:',field)
  }}catch(err){if(['library-search','library-queue'].includes(state.modal?.kind))mutate(s=>s.modal.error=err?.message||String(err),false);else toast(err?.message||String(err),{kind:'error'})}
 }

@@ -24,29 +24,47 @@ let renderedPickerSearchOpen=false;
 let renderedPresetModalKey='';
 let renderedSourcePickerId=null;
 let renderedDialogKey='';
+let renderedMemberChange=null;
 let presetReturnKey=1;
 let renderedDetailLayoutKey='';
 let detailBodyHeight=0;
+let renderedSidebarCollapsed=null;
+let playerPulseRequested=false;
 function render(){
  if(!state.model)return;
  presetPress.cancelPending();
  const view=views[state.view]||renderListen;
  const playerContent=player(state);
+ const previousTransport=app.querySelector?.('.transport-play');
+ const playerToggleFocused=!!previousTransport&&document.activeElement===previousTransport;
  // Preserve typing position across updates from search or form controls.
  // Tab changes keep the current item's workspace position. A different item/route resets it.
  const viewKey=[state.view,state.detailDeviceId,state.detailOutputId].join(':');
  if(!['outputs','sessions'].includes(state.view))state.outputCardOrder=null;
  const openOutputIds=viewKey===renderedViewKey?new Set([...app.querySelectorAll?.('.output-members[open]')||[]].map(list=>list.closest('.output-card').dataset.outputId)):new Set();
  const detailView=['device','group'].includes(state.view);
- const detailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.designTokens?.fontSize,state.designTokens?.density,state.designTokens?.sidebarCollapsed].join(':'):'';
+ const detailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.appSettings?.appearanceZoom,state.designTokens?.density,state.designTokens?.sidebarCollapsed].join(':'):'';
  if(!detailView||detailLayoutKey!==renderedDetailLayoutKey)detailBodyHeight=0;
  else detailBodyHeight=Math.max(detailBodyHeight,app.querySelector?.('.detail-body')?.getBoundingClientRect().height||0);
- const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-slot-list','.preset-source-results','.group-settings-body','.library-search-body','.library-search-results','.library-queue-tracks'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
- const active=document.activeElement;const sidebarToggleFocused=active?.dataset?.action==='toggle-sidebar';const sessionToggleId=active?.classList?.contains('session-card__state')?active.dataset.id:null;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
+ const scrollPositions=['.workspace','.sidebar-scroll','.modal-window','.radio-filter-panel','.transfer-body','.transfer-targets','.preset-workbench','.preset-slot-list','.preset-source-results','.group-settings-body','.membership-dialog-body','.library-search-body','.library-search-results','.library-queue-tracks'].map(selector=>({selector,top:app.querySelector?.(selector)?.scrollTop||0}));
+ const active=document.activeElement;const membershipChoiceId=active?.dataset?.action==='membership-choice'?active.dataset.id:null;const sidebarToggleFocused=active?.dataset?.action==='toggle-sidebar';const sessionToggleId=active?.classList?.contains('session-card__state')?active.dataset.id:null;const field=active?.dataset?.field;const fieldId=active?.dataset?.id;const selStart=field&&typeof active.selectionStart==='number'?active.selectionStart:null;
  const focusValue=field?active.value:null;
  const identifyFocus=active?.dataset?.action==='device-identify'?{id:active.dataset.id,signal:active.dataset.signal}:null;
  const outputTransportId=active?.dataset?.action==='toggle-output-playback'?active.dataset.id:null;
  app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''} ${state.designTokens?.sidebarCollapsed?'sidebar-is-collapsed':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${workspaceHeader(state)}${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
+ const transport=app.querySelector?.('.transport-play');
+ if(transport&&playerPulseRequested)transport.classList.add('is-transport-pulsing');
+ else if(transport&&previousTransport&&previousTransport.dataset.session!==transport.dataset.session)transport.classList.add('is-transport-changing');
+ if(playerToggleFocused)transport?.focus({preventScroll:true});
+ const sidebarCollapsed=!!state.designTokens?.sidebarCollapsed;
+ if(renderedSidebarCollapsed!==null&&renderedSidebarCollapsed!==sidebarCollapsed)app.querySelector?.('.app-shell')?.classList.add(sidebarCollapsed?'sidebar-is-closing':'sidebar-is-opening');
+ renderedSidebarCollapsed=sidebarCollapsed;
+ syncSidebarAccess();
+ const memberChange=state.modal?.kind==='member-change'?state.modal:null;
+ if(memberChange&&!renderedMemberChange)app.querySelector?.('#member-change-cancel')?.focus({preventScroll:true});
+ if(!memberChange&&renderedMemberChange){const previous=renderedMemberChange;const selector=previous.memberId?'[data-action=remove-member]':'[data-action=dissolve-group]';const trigger=[...app.querySelectorAll?.(selector)||[]].find(button=>previous.memberId?button.dataset.id===previous.memberId&&button.dataset.parent===previous.parentId:button.dataset.id===previous.parentId);(trigger||app.querySelector?.('.item-membership [data-action=add-member]:not(:disabled)'))?.focus({preventScroll:true});}
+ if(membershipChoiceId)[...app.querySelectorAll?.('[data-action=membership-choice]')||[]].find(button=>button.dataset.id===membershipChoiceId)?.focus({preventScroll:true});
+ renderedMemberChange=memberChange;
  const dialogKey=state.modal?[state.modal.kind,state.modal.deviceId,state.modal.targetId,state.modal.sessionId,state.modal.draft?.groupId].join(':'):'';
  if(dialogKey&&dialogKey!==renderedDialogKey)app.querySelector?.('.overlay')?.classList.add('is-entering');
  renderedDialogKey=dialogKey;
@@ -55,7 +73,7 @@ function render(){
  // Keep shorter tabs from shrinking the scroll range below the visible position.
  const detailBody=detailView?app.querySelector?.('.detail-body'):null;
  if(detailBody){if(detailBodyHeight)detailBody.style.minHeight=detailBodyHeight+'px';detailBodyHeight=Math.max(detailBodyHeight,detailBody.getBoundingClientRect().height);}
- renderedDetailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.designTokens?.fontSize,state.designTokens?.density,state.designTokens?.sidebarCollapsed].join(':'):'';
+ renderedDetailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.appSettings?.appearanceZoom,state.designTokens?.density,state.designTokens?.sidebarCollapsed].join(':'):'';
  for(const {selector,top} of scrollPositions){const element=app.querySelector?.(selector);if(element&&(selector!=='.workspace'||viewKey===renderedViewKey))element.scrollTop=top;}
  renderedViewKey=viewKey;
  if(identifyFocus)[...app.querySelectorAll?.('[data-action=device-identify]')||[]].find(button=>button.dataset.id===identifyFocus.id&&button.dataset.signal===identifyFocus.signal)?.focus({preventScroll:true});
@@ -89,7 +107,7 @@ function render(){
  if(!sourcePickerId&&renderedSourcePickerId)[...app.querySelectorAll?.('[data-action=output-source-open]')||[]].find(button=>button.dataset.id===renderedSourcePickerId)?.focus({preventScroll:true});
  renderedSourcePickerId=sourcePickerId;
  if(state.appMenuOpen&&!renderedMenuOpen)app.querySelector?.('.app-menu .icon-btn')?.focus({preventScroll:true});
- if(!state.appMenuOpen&&renderedMenuOpen)app.querySelector?.(state.sidebarOpen||globalThis.innerWidth>720&&!state.designTokens?.sidebarCollapsed?'.brand-trigger':globalThis.innerWidth>720?'.desktop-app-menu':'.mobile-brand')?.focus({preventScroll:true});
+ if(!state.appMenuOpen&&renderedMenuOpen)[...app.querySelectorAll?.('.brand-trigger,.desktop-app-menu,.mobile-brand')||[]].find(button=>button.getClientRects().length&&getComputedStyle(button).visibility!=='hidden'&&(state.sidebarOpen||!button.closest('.sidebar')||getComputedStyle(button.closest('.sidebar')).position!=='fixed'))?.focus({preventScroll:true});
  renderedMenuOpen=state.appMenuOpen;
  if(sessionToggleId)[...app.querySelectorAll?.('.session-card__state')||[]].find(button=>button.dataset.id===sessionToggleId)?.focus({preventScroll:true});
  if(sidebarToggleFocused)app.querySelector?.(state.designTokens?.sidebarCollapsed?'.sidebar-toggle':'.sidebar-collapse')?.focus({preventScroll:true});
@@ -97,15 +115,24 @@ function render(){
   if(match){match.focus({preventScroll:true});if(selStart!==null&&typeof match.setSelectionRange==='function')try{match.setSelectionRange(selStart,selStart)}catch{}}
  }
 }
+function syncSidebarAccess(){
+ const navigation=app.querySelector?.('.sidebar'),mobileHeader=app.querySelector?.('.app-header');
+ if(navigation){
+  const hidden=!!state.designTokens?.sidebarCollapsed&&mobileHeader&&getComputedStyle(mobileHeader).display==='none';
+  navigation.inert=!!hidden;
+  if(hidden)navigation.setAttribute('aria-hidden','true');else navigation.removeAttribute('aria-hidden');
+ }
+}
+window.addEventListener('resize',syncSidebarAccess);
 subscribe(render);
-document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();onAction(button.dataset.action,button)}});
+document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();playerPulseRequested=button.dataset.action==='player-toggle'||button.dataset.action==='toggle-output-playback'&&button.dataset.id===app.querySelector?.('.transport-play')?.dataset.session;onAction(button.dataset.action,button);playerPulseRequested=false}});
 document.addEventListener('change',event=>{const field=event.target.closest('[data-field]');if(field)onField(field.dataset.field,field)});
 document.addEventListener('wheel',onRangeWheel,{passive:false});
 document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','history-search','library-page-search','output-search','output-source-search','picker-query','accent','device-name','composite-name','preset-search','library-name','library-address','library-query','library-new-queue','library-queue-name'].includes(field.dataset.field))onField(field.dataset.field,field)});
 document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&event.target.dataset?.field==='library-page-search'){event.preventDefault();onAction('library-page-mode',{dataset:{value:'titles'}});}
  if(event.key==='Enter'&&state.modal?.kind==='rename'&&event.target.dataset?.field==='device-name'){event.preventDefault();onAction('device-rename-save',document.createElement('button'));}
- if(event.key==='Tab'&&['library-search','library-queue','release-notes','preset','source-picker'].includes(state.modal?.kind)){
+ if(event.key==='Tab'&&['library-search','library-queue','release-notes','preset','source-picker','member-change'].includes(state.modal?.kind)){
   const controls=[...document.querySelectorAll('.modal-window button:not(:disabled),.modal-window input:not(:disabled),.modal-window select:not(:disabled),.modal-window a[href]')].filter(el=>el.getClientRects().length);
   const first=controls[0],last=controls.at(-1);if(controls.length&&(event.shiftKey&&document.activeElement===first||!event.shiftKey&&document.activeElement===last)){event.preventDefault();(event.shiftKey?last:first).focus();}
  }

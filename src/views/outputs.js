@@ -1,6 +1,6 @@
 import {renderItemDetail} from './item-detail.js';
 import {groupFunctionDevices,renderGroupFunctions} from './device-functions.js';
-import {esc,icon,action,card,empty,statusBadge,statusLabel,typeIcon,deviceProduct} from '../components/shared.js';
+import {esc,icon,action,card,empty,statusBadge,statusLabel,typeIcon,deviceProduct,sourceMediumLabel} from '../components/shared.js';
 import {kind,entity,parentIds,targetStatus,leafDeviceIds,effectiveSessionFor,source,visibleOutputs,outputsByPlayback} from '../app/model.js';
 
 const filters=[['all','All outputs'],['device','Speakers'],['pair','Stereo pairs'],['group','Groups']];
@@ -9,7 +9,7 @@ function outputCard(s,t){
  const devices=leafDeviceIds(m,t.id).map(id=>entity(m,id)),sourceData=source(s.catalog,session?.sourceId),direct=session?.targetId===t.id;
  const detailAction=type==='device'?'device-open':'group-open',available=['online','partial'].includes(status);
  const playbackState=sourceData?(session.status==='playing'?'Playing':session.status==='paused'?'Paused':'Stopped'):'Choose a source';
- const sourceLabel=sourceData?.name||'Choose source',mediumLabel=({radio:'Radio',library:'Library',spotify:'Spotify'})[sourceData?.type]||sourceData?.service||'Service';
+ const sourceLabel=sourceData?.name||'Choose source',mediumLabel=sourceMediumLabel(sourceData);
  const playbackIndicator=sourceData&&direct?action('toggle-output-playback',icon(session.status==='playing'?'music_cast':session.status==='paused'?'pause_circle':'play_circle','output-playback-status')+icon(session.status==='playing'?'pause_circle':'play_circle','output-playback-control'),'icon-btn output-transport',`data-id="${esc(session.id)}" data-status="${esc(session.status)}" title="${session.status==='playing'?'Pause':'Play'} ${esc(sourceLabel)}" aria-label="${session.status==='playing'?'Pause':'Play'} ${esc(sourceLabel)} on ${esc(t.name)}" ${available?'':'disabled'}`):sourceData&&session.status==='playing'?`<span class="output-playback-inherited" role="img" aria-label="Playing on ${esc(entity(m,session.targetId)?.name)}" title="Playing on ${esc(entity(m,session.targetId)?.name)}">${icon('music_cast')}</span>`:'';
  const sourceButton=action('output-source-open',`<span class="source-projection__body"><strong>${sourceData?`<span class="output-source-type">${esc(mediumLabel)} · </span>`:''}<span class="output-source-name">${esc(sourceLabel)}</span></strong>${sourceData?`<small>${esc(playbackState)}${!direct?` · ${esc(entity(m,session.targetId)?.name)}`:''}</small>`:parents.length?`<small>On ${esc(entity(m,parents[0])?.name)}</small>`:''}</span>`,'output-source-choice',`data-id="${esc(t.id)}" title="${sourceData?'Change source':'Choose a source'}" aria-label="${sourceData?'Change':'Choose a'} source for ${esc(t.name)}" ${available?'':'disabled'}`);
  return `<article class="target-card output-card" data-output-id="${esc(t.id)}">
@@ -42,6 +42,6 @@ export function renderGroup(s){const m=s.model,group=entity(m,s.detailOutputId),
   body=card('Volume','Adjust this output together or set individual speaker levels.',`<div class="volume-settings">${row(group.id,'Overall volume',overall,'composite-volume')}${ids.map(id=>{const d=entity(m,id);return row(id,d.name,d.volume??25,'member-volume',d.status)}).join('')}</div>`);
  }
  if(tabId==='functions')body=renderGroupFunctions(s,group.id);
- if(tabId==='advanced')body=card('Membership','Dissolving this output keeps the physical speakers configured.',action('dissolve-group',icon('delete_outline')+` Dissolve ${type==='pair'?'pair':'group'}`,'danger-btn'));
+ if(tabId==='advanced')body='<div class="panel"><div class="panel-body advanced-empty"><p>No advanced settings are reported for this output.</p></div></div>';
  return renderItemDetail(s,{item:group,subtitle:`${leafDeviceIds(m,group.id).length} speakers · ${type==='pair'?'Stereo':group.persistent?'Persistent':'Temporary'}`,tabs,tabId,tabAction:'group-tab',body});
 }

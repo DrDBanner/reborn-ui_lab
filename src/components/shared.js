@@ -1,8 +1,11 @@
 import {entity,kind,targetStatus,source,sessionFor,leafDeviceIds,deviceAddresses} from '../app/model.js';
+import {serviceBrandIcons} from './service-brands.js';
 import {materialIcons} from './material-icons.js';
 export const esc=(x)=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 // Local Google Material Symbols SVGs work in every preview, including offline.
 export const icon=(name,extra='')=>{
+ const brand=serviceBrandIcons[name];
+ if(brand)return `<span class="brand-symbol brand-symbol--${esc(name)} ${esc(extra)}" data-brand="${esc(name)}" aria-hidden="true"><svg viewBox="${esc(brand.viewBox)}" fill="currentColor" focusable="false">${brand.paths.map(d=>`<path d="${esc(d)}"/>`).join('')}</svg></span>`;
  const symbol=materialIcons[name]||materialIcons.help;
  return `<span class="material-symbols-rounded ${esc(extra)}" data-icon="${esc(name)}" aria-hidden="true"><svg viewBox="${esc(symbol.viewBox)}" fill="currentColor" focusable="false">${symbol.paths.map(d=>`<path d="${esc(d)}"/>`).join('')}</svg></span>`;
 };
@@ -38,6 +41,7 @@ export function outputItem(model,id,{compact=false,selected=false,extra=''}={}){
     <span class="output-item__trail">${s&&s.status!=='stopped'?icon('music_cast',s.status==='playing'?'stream-symbol':'stream-symbol--paused'):icon('chevron_right')}</span>
  </button>${extra}`;
 }
+export function sourceMediumLabel(item){return ({radio:'Radio',library:'Library',spotify:'Spotify'})[item?.type]||item?.service||'Service'}
 export function sourceTypeLabel(item){
  if(!item)return 'Unassigned';
  if(item.type==='radio')return 'Radio station';
@@ -47,7 +51,7 @@ export function sourceTypeLabel(item){
 }
 export function sourceTypeIcon(item){
  if(item?.type==='radio')return 'radio';
- if(item?.type==='spotify')return 'music_cast';
+ if(item?.type==='spotify')return 'spotify';
  if(item?.type==='library')return item.kind==='folder'?'folder':item.kind==='track'?'music_note':item.kind==='queue'?'library_music':'album';
  return 'music_cast';
 }
@@ -55,16 +59,16 @@ export function sourceDestination(item){
  return ({radio:{view:'listen',label:'Radio'},library:{view:'library',label:'Library'},spotify:{view:'spotify',label:'Spotify'}})[item?.type]||null;
 }
 export function sourceArtAttributes(item){
- return `data-source-type="${esc(item?.type||'')}" style="--source-color:${esc(item?.type==='radio'?'var(--muted)':item?.color||'#7289ae')}"`;
+ return `data-source-type="${esc(item?.type||'')}" style="--source-color:${esc(item?.type==='radio'?'var(--muted)':item?.type==='spotify'?'var(--spotify)':item?.color||'#7289ae')}"`;
 }
-export function sourceTile(s,{active=false,actionName='source-select',cls=''}={}){
- return `<button type="button" class="source-tile ${active?'is-selected':''} ${cls}" data-action="${esc(actionName)}" data-id="${esc(s.id)}" title="Choose output for ${esc(s.name)}">
-  <span class="source-art" ${sourceArtAttributes(s)}>${icon(s.type==='radio'?'radio':s.type==='spotify'?'music_note':'album')}</span>
+export function sourceTile(s,{active=false,playing=false,actionName='source-select',cls=''}={}){
+ return `<button type="button" class="source-tile ${active?'is-selected':''} ${playing?'is-playing':''} ${cls}" data-action="${esc(actionName)}" data-id="${esc(s.id)}" title="Choose output for ${esc(s.name)}">
+  <span class="source-art" ${sourceArtAttributes(s)}>${icon(sourceTypeIcon(s))}</span>
   <span class="source-tile__content"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></span>${icon('music_cast','source-tile__cast')}
  </button>`;
 }
 export function sourceRow(s,{favorite=false,playTarget=null,playable=false}={}){
- const artwork=icon(s.type==='radio'?'radio':s.type==='spotify'?'music_note':'album');
+ const artwork=icon(sourceTypeIcon(s));
  const playLabel=playTarget?`Play ${s.name} on ${playTarget.name}`:`Choose an output before playing ${s.name}`;
  const art=playTarget?action('source-play',`<span class="source-art__identity">${artwork}</span>${icon('play_circle','source-art__play')}`,'source-art source-art--sm source-art--play',`${sourceArtAttributes(s)} data-id="${esc(s.id)}" data-target="${esc(playTarget.id)}" title="${esc(playLabel)}" aria-label="${esc(playLabel)}" ${playable?'':'disabled'}`):`<span class="source-art source-art--sm" ${sourceArtAttributes(s)}>${artwork}</span>`;
  return `<div class="source-row">${art}<div class="source-row__main"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></div><span class="source-row__genre">${esc(s.genre)}</span><div class="source-row__actions">

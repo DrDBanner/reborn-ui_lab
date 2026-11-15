@@ -13,7 +13,7 @@ function boot(){
  const htmlDoc={dataset:{},style:{setProperty(){}},classList:{add(){}}};
  const ctx={
   console,Response,URL,URLSearchParams,Blob,Math,Date,structuredClone,fetch:globalThis.fetch,
-  setTimeout,clearTimeout,
+  setTimeout,clearTimeout,addEventListener(){},
   localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v),removeItem:k=>memory.delete(k)},
   document:{getElementById:()=>app,documentElement:htmlDoc,fonts:{ready:Promise.resolve(),*[Symbol.iterator](){}},addEventListener(){},activeElement:null,querySelectorAll:()=>[]},
   location:{search:'?offlineIcons=1'},
@@ -138,6 +138,9 @@ test('range wheel supports mouse and fine touchpad movement with bounds and disa
  run('wheel(10);wheel(10);wheel(10)');assert.equal(run('currentSession(state.model).volume'),start+1);
  run('wheel(10)');assert.equal(run('currentSession(state.model).volume'),start);
  run('wheel(0,{deltaX:40})');assert.equal(run('currentSession(state.model).volume'),start+1);
+ run('wheel(100,{webkitDirectionInvertedFromDevice:true})');assert.equal(run('currentSession(state.model).volume'),start+2);
+ run('wheel(-100,{webkitDirectionInvertedFromDevice:true})');assert.equal(run('currentSession(state.model).volume'),start+1);
+ run('wheel(0,{deltaX:-40,webkitDirectionInvertedFromDevice:true})');assert.equal(run('currentSession(state.model).volume'),start+2);
  run("setOutputVolume(state.model,currentSession(state.model).targetId,100);wheelTarget.value='100';wheel(-100)");
  assert.equal(run('currentSession(state.model).volume'),100);
  run("setOutputVolume(state.model,currentSession(state.model).targetId,0);wheelTarget.value='0';wheel(3,{deltaMode:1})");
@@ -424,7 +427,8 @@ test('presets start compact with direct Once/Twice and reveal configuration only
  assert(app.innerHTML.includes('Volume for Kitchen'));
  assert(app.innerHTML.indexOf('item-key-functions')<app.innerHTML.indexOf('item-membership'));
  await vm.runInContext("onAction('group-tab',{dataset:{value:'advanced'}})",ctx);
- assert(app.innerHTML.includes('data-action="dissolve-group"'));
+ assert(app.innerHTML.includes('No advanced settings are reported'));assert(!app.innerHTML.includes('data-action="dissolve-group"'));
+ await vm.runInContext("onAction('group-settings',{dataset:{id:'g1'}})",ctx);assert(app.innerHTML.includes('data-action="dissolve-group"'));
 });
 
 test('capture explicitly selects among simultaneous outputs without redirecting playback',async()=>{
@@ -877,4 +881,74 @@ test('Playing includes the fourth preset playback and every further running or p
  await run("onAction('toggle-section',{dataset:{value:'playbacks'}})");assert.equal(shortcuts().length,5);
  await run(`onAction('select-session',{dataset:{id:'${diningId}'}})`);assert.equal(run('state.detailOutputId'),'p2');assert.equal(run('state.view'),'group');
  run(`state.model.sessions.find(s=>s.id==='${diningId}').status='stopped';notify()`);assert(!shortcuts().includes(diningId));assert.equal(shortcuts().length,4);
+});
+
+
+test('member-removal lightbox can cancel or dissolve a stereo pair without removing devices',async()=>{
+ for(const memberId of ['d8','d9']){
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);ctx.confirm=()=>{throw new Error('Native confirmation must not be used')};
+ await run("onAction('group-open',{dataset:{id:'p2'}});onAction('preset-play',{dataset:{id:'d8',key:'1',gesture:'single'}})");
+ const devices=run('JSON.stringify(state.model.devices)'),other=run("JSON.stringify(state.model.sessions.filter(s=>s.targetId!=='p2'))"),before=run('JSON.stringify(state.model)');
+ await run(`onAction('remove-member',{dataset:{id:'${memberId}',parent:'p2'}})`);assert.equal(run('state.modal.kind'),'member-change');assert.equal(run('JSON.stringify(state.model)'),before);assert(app.innerHTML.includes('Remove and keep group'));assert(app.innerHTML.includes('Dissolve pair'));
+ await run("onAction('close-modal',{dataset:{}})");assert.equal(run('JSON.stringify(state.model)'),before);assert.equal(run('state.modal'),null);
+ await run(`onAction('remove-member',{dataset:{id:'${memberId}',parent:'p2'}});onAction('member-change-dissolve',{dataset:{}})`);
+ assert.equal(run("state.model.pairs.some(p=>p.id==='p2')"),false);assert.equal(run('JSON.stringify(state.model.devices)'),devices);assert.equal(run('JSON.stringify(state.model.sessions)'),other);assert.equal(run('state.view'),'outputs');assert.equal(run('JSON.stringify(validateScenario(state.model))'),'[]');
+ }
+});
+test('keeping an unpaired output retains its name and playback and accepts a replacement later',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('group-open',{dataset:{id:'p2'}});onAction('preset-play',{dataset:{id:'d8',key:'1',gesture:'single'}})");
+ const devices=run('JSON.stringify(state.model.devices)'),playback=run('JSON.stringify(state.model.sessions)');
+ await run("onAction('remove-member',{dataset:{id:'d9',parent:'p2'}});onAction('member-change-keep',{dataset:{}})");
+ assert.equal(run("kind(state.model,'p2')"),'group');assert.equal(run("entity(state.model,'p2').name"),'Dining Room');assert.equal(run("JSON.stringify(entity(state.model,'p2').memberIds)"),'["d8"]');assert.equal(run("entity(state.model,'p2').leftDeviceId"),undefined);
+ assert.equal(run('JSON.stringify(state.model.sessions)'),playback);assert.equal(run('JSON.stringify(state.model.devices)'),devices);assert.equal(run('state.view'),'group');assert.equal(run('state.detailOutputId'),'p2');assert.equal(run('state.modal'),null);assert(app.innerHTML.includes('Single speaker'));assert(app.innerHTML.includes('data-action="add-member" data-id="p2"'));
+ await run("onAction('add-member',{dataset:{id:'p2'}});onAction('membership-choice',{dataset:{id:'d5'}});onAction('membership-save',{dataset:{}})");
+ assert.equal(run("JSON.stringify(entity(state.model,'p2').memberIds)"),'["d8","d5"]');assert.equal(run("effectiveSessionFor(state.model,'d5').sourceId"),'1live');assert.equal(run('JSON.stringify(validateScenario(state.model))'),'[]');
+ // Keeping the final member cannot silently create an empty group.
+ await run("onAction('remove-member',{dataset:{id:'d5',parent:'p2'}});onAction('member-change-keep',{dataset:{}});onAction('remove-member',{dataset:{id:'d8',parent:'p2'}})");
+ const before=run('JSON.stringify(state.model)');await run("onAction('member-change-keep',{dataset:{}})");assert.equal(run('JSON.stringify(state.model)'),before);assert.equal(run('state.modal.kind'),'member-change');
+});
+test('membership lightbox rejects changed context and restores the settings draft on cancellation',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);ctx.confirm=()=>{throw new Error('Native confirmation must not be used')};
+ await run("onAction('group-open',{dataset:{id:'g1'}})");assert(app.innerHTML.includes('Single speaker'));
+ await run("onAction('remove-member',{dataset:{id:'d3',parent:'g1'}})");run("state.model.sessions[0].sourceId='ndr2'");const changed=run('JSON.stringify(state.model)');
+ await run("onAction('member-change-keep',{dataset:{}})");assert.equal(run('JSON.stringify(state.model)'),changed);assert(run('state.modal.error').includes('Membership or playback changed'));
+ await run("onAction('close-modal',{dataset:{}});onAction('remove-member',{dataset:{id:'d3',parent:'g1'}});onAction('member-change-keep',{dataset:{}})");assert.equal(run("entity(state.model,'g1').memberIds.includes('d3')"),false);assert.equal(run('state.view'),'group');
+ await run("loadScenario('home',false,true)");await run("onAction('group-open',{dataset:{id:'g1'}});onAction('group-tab',{dataset:{value:'advanced'}})");assert(app.innerHTML.includes('No advanced settings are reported'));
+ await run("onAction('group-settings',{dataset:{id:'g1'}});onField('group-settings-persistent',{checked:false})");const draft=run('JSON.stringify(state.modal.draft)'),before=run('JSON.stringify(state.model)');
+ await run("onAction('dissolve-group',{dataset:{id:'g1'}})");assert.equal(run('state.modal.kind'),'member-change');assert(!app.innerHTML.includes('Remove and keep group'));
+ await run("onAction('close-modal',{dataset:{}})");assert.equal(run('state.modal.kind'),'group-settings');assert.equal(run('JSON.stringify(state.modal.draft)'),draft);assert.equal(run('JSON.stringify(state.model)'),before);
+ await run("onAction('dissolve-group',{dataset:{id:'g1'}});onAction('member-change-dissolve',{dataset:{}})");assert.equal(run('state.modal'),null);assert.equal(run("state.model.groups.some(g=>g.id==='g1')"),false);assert.equal(run('JSON.stringify(validateScenario(state.model))'),'[]');
+});
+
+
+test('Add members shares group mode switches and can rebuild a kept pair with reversed channels',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('group-open',{dataset:{id:'p2'}});onAction('preset-play',{dataset:{id:'d8',key:'1',gesture:'single',target:'p2'}});onAction('remove-member',{dataset:{id:'d9',parent:'p2'}});onAction('member-change-keep',{dataset:{}})");
+ const before=run('JSON.stringify(state.model)');
+ await run("onAction('add-member',{dataset:{id:'p2'}})");assert(app.innerHTML.includes('data-field="membership-stereo"'));assert(app.innerHTML.includes('data-field="membership-persistent"'));assert(app.innerHTML.includes('Current members'));
+ await run("onField('membership-persistent',{checked:false});onAction('membership-choice',{dataset:{id:'d9'}});onField('membership-stereo',{checked:true})");
+ assert(app.innerHTML.includes('Left · L'));assert(app.innerHTML.includes('Right · R'));assert(app.innerHTML.includes('id="membership-persistent" data-field="membership-persistent" type="checkbox" role="switch" checked disabled'));assert(app.innerHTML.includes('Stereo pairs stay together')); assert(app.innerHTML.includes('Create stereo pair'));assert.equal(run('JSON.stringify(state.model)'),before);
+ await run("onAction('close-modal',{dataset:{}})");assert.equal(run('JSON.stringify(state.model)'),before);
+ await run("onAction('add-member',{dataset:{id:'p2'}});onAction('membership-choice',{dataset:{id:'d9'}});onField('membership-stereo',{checked:true});onField('membership-left',{value:''});onField('membership-right',{value:'d8'});onField('membership-left',{value:'d9'});onAction('membership-save',{dataset:{}})");
+ assert.equal(run('state.modal'),null);assert.equal(run("kind(state.model,'p2')"),'pair');assert.equal(run("entity(state.model,'p2').leftDeviceId"),'d9');assert.equal(run("entity(state.model,'p2').rightDeviceId"),'d8');assert.equal(run("effectiveSessionFor(state.model,'p2').sourceId"),'1live');assert.equal(run('JSON.stringify(validateScenario(state.model))'),'[]');
+ await run("loadScenario('home',false,true);onAction('remove-member',{dataset:{id:'d9',parent:'p2'}});onAction('member-change-keep',{dataset:{}});onAction('add-member',{dataset:{id:'p2'}});onAction('membership-choice',{dataset:{id:'d9'}});onField('membership-persistent',{checked:false});onAction('membership-save',{dataset:{}})");assert.equal(run("kind(state.model,'p2')"),'group');assert.equal(run("entity(state.model,'p2').persistent"),false);
+});
+
+test('Help puts the official project website above help and donations below credits',async()=>{
+ const {ctx,app}=boot();await ready();await vm.runInContext("onAction('navigate',{dataset:{value:'help'}})",ctx);
+ const content=app.innerHTML;
+ for(const url of ['https://st-reborn.de/de/','https://github.com/sponsors/JRpersonal','https://paypal.me/JR31337','https://ko-fi.com/streborn'])assert(content.includes(`href="${url}" target="_blank" rel="noopener noreferrer"`));
+ assert(content.indexOf('ST Reborn website')<content.indexOf('Get help'));assert(content.indexOf('Support ST Reborn')>content.indexOf('Licenses and attribution'));assert(content.includes('Visit st-reborn.de'));assert(content.includes('GitHub Sponsors'));
+});
+
+
+test('Appearance zoom persists independently of scenarios and multiplies the inherited CSS root',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx),styles=new Map();ctx.document.documentElement.style.setProperty=(key,value)=>styles.set(key,value);
+ run("applyDesign()");assert.equal(styles.get('--app-zoom'),'1');assert.equal(styles.get('--sidebar-width'),'16.875rem');assert.equal(styles.get('--radius'),'0.75rem');assert(!styles.has('font-size'));assert.equal(run('state.appSettings.appearanceZoom'),100);
+ await run("onAction('navigate',{dataset:{value:'settings'}});onAction('settings-tab',{dataset:{value:'appearance'}})");assert(app.innerHTML.includes('aria-label="App zoom"'));assert(app.innerHTML.includes('100% · Default'));
+ const before=run('JSON.stringify(state.model.sessions)');await run("onField('appearance-zoom',{value:'125'})");assert.equal(styles.get('--app-zoom'),'1.25');assert.equal(run('JSON.stringify(state.model.sessions)'),before);assert.equal(run("JSON.parse(localStorage.getItem('streborn-lab:app-settings')).appearanceZoom"),125);
+ await run("loadScenario('many',false,true)");assert.equal(run('state.appSettings.appearanceZoom'),125);await run("initialize()");assert.equal(styles.get('--app-zoom'),'1.25');assert.equal(run('state.appSettings.appearanceZoom'),125);
+ await run("onField('appearance-zoom',{value:'0'})");assert.equal(styles.get('--app-zoom'),'1.25');assert.equal(run('state.appSettings.appearanceZoom'),125);
+ await run("onField('appearance-zoom',{value:'100'})");assert.equal(styles.get('--app-zoom'),'1');assert.equal(run("JSON.parse(localStorage.getItem('streborn-lab:app-settings')).appearanceZoom"),100);
 });

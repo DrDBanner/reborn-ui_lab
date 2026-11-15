@@ -22,7 +22,7 @@ Membership describes the participating items. Stereo adds channel roles, persist
 
 Open an item's **Details → Group Members**:
 
-- **Add members…** brings available items into the current group. On a free speaker, it opens group creation with that speaker selected.
+- **Add members…** brings available items into the current group. On a free speaker, it opens group creation with that speaker selected. For an existing group, it offers the same Stereo and Keep group together options. Stereo assigns left and right channels when the result contains exactly two compatible individual speakers; the named output and its playback stay in place.
 - **Add to existing group…** joins the selected free item to another group.
 - **Open details** inspects a member; the parent link leads back up the hierarchy.
 - **Remove** separates a member. A removed subgroup retains its own members and becomes an independent playback target.
@@ -34,7 +34,7 @@ Both joining actions show the resulting source and any streams they replace befo
 
 A top-level group is one playback target. Its source and transport apply to all its members, including speakers inside subgroups and stereo pairs. Starting a source or recalling a device preset inside that hierarchy addresses the top-level target. Other playback targets can play independent sources at the same time.
 
-Overall volume adjusts the participating speakers together; individual levels remain available. Physical devices retain their own identity, firmware, capabilities and button assignments. **Buttons on** selects whose presets are shown; **Transfer buttons** explicitly copies assignments to other devices. The Group Members gear controls restoration and remote group templates.
+Overall volume adjusts the participating speakers together; individual levels remain available. Physical devices retain their own identity, firmware, capabilities and button assignments. **Buttons on** selects whose presets are shown; **Transfer buttons** explicitly copies assignments to other devices. The Group Members gear controls restoration, remote group templates and dissolving the group. Removing a member opens a lightbox with Remove and keep group or Dissolve group. Keeping a stereo pair converts it to a regular named group with the remaining speaker, ready for another member. Its identity and current playback are preserved. Dissolving the output separates its members. Physical devices keep their settings and button assignments. Single devices are labeled Single speaker. Advanced remains available for additional settings reported by an adapter.
 
 For example, Downstairs and Upstairs can play independently. Joining them under Whole home gives five speakers one shared playback while retaining both floor groups. Separating Upstairs makes its office and bedroom available together for their next source.
 

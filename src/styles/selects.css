@@ -1,6 +1,6 @@
 /* Local Google Material Symbols Rounded chevron; see docs/MATERIAL_ICONS.md. */
 :root{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23a4aab5%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
 [data-appearance="light"]{--select-arrow:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%20-960%20960%20960%22%20fill%3D%22%23566278%22%3E%3Cpath%20d%3D%22M480-362q-8%200-15-2.5t-13-8.5L268-557q-11-11-11-28t11-28q11-11%2028-11t28%2011l156%20156%20156-156q11-11%2028-11t28%2011q11%2011%2011%2028t-11%2028L508-373q-6%206-13%208.5t-15%202.5Z%22%2F%3E%3C%2Fsvg%3E")}
-select:not([multiple]){appearance:none;-webkit-appearance:none;background-image:var(--select-arrow);background-position:right 10px center;background-repeat:no-repeat;background-size:16px 16px;padding-inline-end:34px;line-height:1.4}
+select:not([multiple]){appearance:none;-webkit-appearance:none;background-image:var(--select-arrow);background-position:right 0.625rem center;background-repeat:no-repeat;background-size:1rem 1rem;padding-inline-end:2.125rem;line-height:1.4}
 select:not([multiple]):disabled{opacity:.5;cursor:not-allowed}
-[dir="rtl"] select:not([multiple]){background-position:left 10px center}
+[dir="rtl"] select:not([multiple]){background-position:left 0.625rem center}

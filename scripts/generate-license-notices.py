@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
-paths = [root / name for name in ['LICENSE', 'NOTICE', 'THIRD-PARTY-NOTICES.md']]
+paths = [root / name for name in ['LICENSE', 'NOTICE', 'THIRD-PARTY-NOTICES.md', 'BRAND-NOTICES.md']]
 paths += sorted((root / 'LICENSES').glob('*.txt'))
 documents = [{'path': str(path.relative_to(root)), 'text': path.read_text()} for path in paths]
 (root / 'src/components/license-notices.js').write_text(

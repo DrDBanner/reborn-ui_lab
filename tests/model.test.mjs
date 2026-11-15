@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume,joinPlayback,playbackJoinError,targetStatus,deviceAddresses,identificationSignals,historySources} from '../src/app/model.js';
+import {leafDeviceIds,visibleOutputs,assignSource,createComposite,updateMembership,removeMemberKeepingGroup,configureGroupMembership,appearanceZoom,dissolveComposite,removeDevice,validateScenario,buttonProfile,buttonPresets,setButtonPreset,recallButtonPreset,normalizeScenario,renameDevice,filterRadioSources,compatibleRadioSource,planPresetTransfer,transferButtonPresets,canAssignPresetSource,setDeviceVolume,setOutputVolume,joinPlayback,playbackJoinError,targetStatus,deviceAddresses,identificationSignals,historySources} from '../src/app/model.js';
 const base=JSON.parse(fs.readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../public/data/scenarios/home.json'),'utf8'));
 const fresh=()=>structuredClone(base);
 test('pair and group resolve to physical speakers',()=>{const m=fresh();assert.deepEqual(leafDeviceIds(m,'p1'),['d1','d2']);assert.deepEqual(leafDeviceIds(m,'g1'),['d1','d2','d3'])});
@@ -303,4 +303,36 @@ test('history search filters 150 sources without changing order, stored IDs or p
  assert.equal(historySources(model,catalog,'  ','radio').length,75);
  assert.equal(historySources(model,catalog,'not found').length,0);
  assert.deepEqual(historySources(model,catalog).map(s=>s.id),catalog.sources.map(s=>s.id));assert.equal(JSON.stringify(model),before);
+});
+
+test('unpairing into a named group preserves ancestors and playback and repairs the main speaker',()=>{
+ const m=fresh(),devices=JSON.stringify(m.devices),sessions=JSON.stringify(m.sessions);m.groups[0].leaderDeviceId='d1';
+ removeMemberKeepingGroup(m,'p1','d1');assert(!m.pairs.some(p=>p.id==='p1'));const kept=m.groups.find(g=>g.id==='p1');assert.equal(kept.name,'Living Room');assert.deepEqual(kept.memberIds,['d2']);assert.equal(kept.leaderDeviceId,'d2');assert.equal(m.groups.find(g=>g.id==='g1').memberIds.includes('p1'),true);assert.notEqual(m.groups.find(g=>g.id==='g1').leaderDeviceId,'d1');assert.equal(JSON.stringify(m.devices),devices);assert.equal(JSON.stringify(m.sessions),sessions);assert.deepEqual(validateScenario(m),[]);
+ const before=JSON.stringify(m);assert.throws(()=>removeMemberKeepingGroup(m,'p1','d2'));assert.equal(JSON.stringify(m),before);assert.throws(()=>removeMemberKeepingGroup(m,'g1','d7'));assert.equal(JSON.stringify(m),before);
+});
+
+
+test('a kept group can become stereo again without changing its identity, ancestors or playback',()=>{
+ const m=fresh();assignSource(m,'1live','p2');
+ m.groups.push({id:'home',name:'Whole home',memberIds:['p2','d7'],persistent:true,volume:31});
+ Object.assign(m.sessions.find(s=>s.targetId==='p2'),{targetId:'home',volume:31});
+ removeMemberKeepingGroup(m,'p2','d9');
+ const sessions=structuredClone(m.sessions),devices=structuredClone(m.devices),parent=structuredClone(m.groups.find(g=>g.id==='home'));
+ configureGroupMembership(m,'p2','d9',{stereo:true,leftId:'d9',rightId:'d8'});
+ const pair=m.pairs.find(p=>p.id==='p2');assert.equal(pair.name,'Dining Room');assert.equal(pair.leftDeviceId,'d9');assert.equal(pair.rightDeviceId,'d8');assert.equal(pair.persistent,true);
+ assert.deepEqual(m.groups.find(g=>g.id==='home'),parent);assert.deepEqual(m.sessions,sessions);assert.deepEqual(m.devices,devices);assert.deepEqual(validateScenario(m),[]);
+});
+
+test('group options commit atomically and reject incompatible stereo or stale playback',()=>{
+ const m=fresh();removeMemberKeepingGroup(m,'p2','d9');const before=structuredClone(m);
+ assert.throws(()=>configureGroupMembership(m,'p2','d6',{stereo:true,leftId:'d8',rightId:'d6'}),/compatible/);assert.deepEqual(m,before);
+ assert.throws(()=>configureGroupMembership(m,'p2','d9',{stereo:true,leftId:'d8',rightId:'d8'}),/exactly two/);assert.deepEqual(m,before);
+ assert.throws(()=>configureGroupMembership(m,'p2','d9',{persistent:false},{error:null}),/Playback changed/);assert.deepEqual(m,before);
+ configureGroupMembership(m,'p2','d9',{persistent:false});assert.equal(m.groups.find(g=>g.id==='p2').persistent,false);assert.deepEqual(validateScenario(m),[]);
+});
+
+
+test('app zoom defaults to the inherited browser scale and validates saved preferences',()=>{
+ for(const settings of [undefined,null,{}, {appearanceZoom:0},{appearanceZoom:99},{appearanceZoom:201},{appearanceZoom:'bad'},{appearanceZoom:125.5}])assert.equal(appearanceZoom(settings),100);
+ for(const zoom of [100,110,120,125,150,175,200])assert.equal(appearanceZoom({appearanceZoom:zoom}),zoom);
 });

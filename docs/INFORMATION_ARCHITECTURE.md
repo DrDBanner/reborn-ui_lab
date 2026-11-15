@@ -17,11 +17,11 @@ The UI operates on JSON-backed simulation state. Physical device IDs determine s
 
 The sidebar contains Playing, Media, Outputs and System. Category titles and overview icons open the corresponding workspace; chevrons collapse shortcut lists. The logo menu contains connection status, app preferences, scenarios and Design Lab. System contains Updates & maintenance and Set up speaker.
 
-The button beside the sidebar logo collapses desktop navigation. The header button restores it. This appearance preference persists across reloads and scenarios. The logo menu remains accessible in the header while collapsed. Mobile navigation uses its independent drawer.
+The button beside the sidebar logo collapses desktop navigation. A quiet button at the left edge restores it. Hover or keyboard focus reveals a faint, blurred edge preview; clicking slides the navigation open. Reduced-motion preferences remove the slide animation. This appearance preference persists across reloads and scenarios. The logo menu remains accessible in the header while collapsed. Mobile navigation uses its independent drawer.
 
-Playing lists all running and paused sessions in the scrollable sidebar; the count matches the list. Selecting one chooses its player context and opens its target details. The current content route determines the selected sidebar item. Each Playing shortcut has a separate Play/Pause button: hover or keyboard focus replaces the status icon with transport; touch shows transport directly. Toggling controls only that session and preserves route and player context. The bottom session selector changes player context. A device inside a composite is represented by its parent playback target in the sidebar.
+Playing lists all running and paused sessions in the scrollable sidebar, with the medium before the source title (for example Radio · FluxFM); the count matches the list. Selecting one chooses its player context and opens its target details. The current content route determines the selected sidebar item. Each Playing shortcut has a separate Play/Pause button: hover or keyboard focus replaces the status icon with transport; touch shows transport directly. Toggling controls only that session and preserves route and player context. The bottom session selector changes player context. A device inside a composite is represented by its parent playback target in the sidebar.
 
-Playing and the bottom bar render while a running or paused session exists. The player shows the source, target, transport and overall volume. Play/Pause titles follow session state; Stop has an explicit hover title. Paused sessions are labeled Paused.
+Playing and the bottom bar render while a running or paused session exists. The player shows the source, target, transport and overall volume. Play/Pause titles follow session state; Stop has an explicit hover title. Paused sessions are labeled Paused. The player Play/Pause control is blue while its session is playing; paused controls stay neutral until hover or keyboard focus. Clicking Play/Pause briefly pulses its ring; changing the selected playback moves a subtle arc once around it. Reduced-motion preferences suppress both effects.
 
 The quiet `read_more` button beside the player title opens Radio, Library or Spotify for that session's source. Library navigation selects the source's visible music server. Navigation preserves all playback sessions and the selected output. Sources with no corresponding media view have no navigation button.
 
@@ -127,3 +127,10 @@ Radio artwork placeholders share a neutral surface and foreground across media l
 Scrollable forms reserve room for focus outlines. Full-width list actions use inset focus rings. Entity icons carry screen-reader type labels; icon buttons carry action labels.
 
 Lightboxes soften their backdrop with a 2px blur and enter with a short fade and 6px vertical motion. Form updates keep the dialog steady. Hover colors and playback symbols crossfade; text-link underlines grow from the left. Reduced Motion disables these animations and transitions.
+
+
+## Appearance and scaling
+
+Appearance → App zoom enlarges the interface from 100% to 200%. At 100%, the browser's font and zoom preferences remain the base. Choosing a larger value applies an additional multiplier and persists as an application preference across scenarios. Design Lab exposes the same setting.
+
+Typography, spacing and UI dimensions use rem; inline text spacing can use em. Grid and Flex layouts adapt to the available width, and named app-container breakpoints follow the scaled root size. Dialogs stay within the dynamic viewport and scroll their contents. Fine borders and the measured Masonry row unit retain pixel sizing.

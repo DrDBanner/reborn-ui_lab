@@ -13,3 +13,5 @@ The UI Lab's own code and documentation are licensed under [Apache-2.0](LICENSE)
 The mark's neutral strokes inherit the active theme, and its wrapper is adapted for accessible controls. Material SVG paths are converted into local JavaScript data and a select-arrow background. Font binaries retain their supplied form. Regeneration and source provenance are documented in [branding](docs/BRANDING.md), [fonts](docs/FONTS.md) and [icons](docs/MATERIAL_ICONS.md).
 
 Help & info → Licenses and attribution displays the complete notices. Production builds include these files and `LICENSES/`; the standalone HTML embeds their contents for offline access.
+
+Spotify, Bose and GitHub marks: [theSVG](https://github.com/glincker/thesvg/tree/5c8bf9e866c44d3361b443d70e503734f3d3f298), revision `5c8bf9e866c44d3361b443d70e503734f3d3f298`. The collection labels these SVG files [CC0-1.0](LICENSES/theSVG-CC0-1.0.txt). Brand ownership and the collection's [trademark policy](LICENSES/theSVG-Trademark.txt) are documented in [BRAND-NOTICES.md](BRAND-NOTICES.md).

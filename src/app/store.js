@@ -1,11 +1,11 @@
 import {libraryQueueSources} from './library.js';
-import { validateScenario,normalizeScenario,availableUpdates,identificationSignals,identificationDuration } from './model.js';
+import { validateScenario,normalizeScenario,availableUpdates,identificationSignals,identificationDuration,appearanceZoom } from './model.js';
 
 const listeners=new Set();
 const reportedUpdateKeys=new Map();
 export const state={catalog:null,scenarioIndex:[],uiLayout:null,variants:null,scenarioId:'home',model:null,
   view:'listen', detailDeviceId:null, detailOutputId:null, selectedSourceId:null,
-  appSettings:{identificationSeconds:30}, identification:null, modal:null, toasts:[], sidebarOpen:false, speakerPickerFor:null, filter:'', historyQuery:'', historyType:'all', libraryQuery:'', librarySearchOpen:false, librarySearchServer:'all', libraryTrackIds:[], outputSearch:'', outputCardOrder:null, selectedForComposite:[],
+  appSettings:{identificationSeconds:30,appearanceZoom:100}, identification:null, modal:null, toasts:[], sidebarOpen:false, speakerPickerFor:null, filter:'', historyQuery:'', historyType:'all', libraryQuery:'', librarySearchOpen:false, librarySearchServer:'all', libraryTrackIds:[], outputSearch:'', outputCardOrder:null, selectedForComposite:[],
   setupStep:0, setupSelection:null, designOpen:false, designTokens:null, scenarioEditorOpen:false,
   updateChecked:false, radioFiltersOpen:false, appMenuOpen:false, presetGesture:'single', presetDeviceId:null, expandedPresetTargetId:null, expandingOutputs:false, alert:null};
 
@@ -48,7 +48,7 @@ export async function initialize(){
   const [index,catalog,design,uiLayout,variants]=await Promise.all(['/data/scenario-index.json','/data/catalog.json','/data/design-tokens.json','/data/ui-layout.json','/data/variants.json'].map(url=>fetch(url).then(r=>{if(!r.ok)throw new Error(`Failed to load ${url}`);return r.json()})));
   state.catalog=catalog;state.scenarioIndex=index;state.uiLayout=uiLayout;state.variants=variants;state.designTokens=design;
   try{const saved=localStorage.getItem('streborn-lab:design');if(saved)state.designTokens={...design,...JSON.parse(saved)}}catch{}
-  try{state.appSettings={identificationSeconds:identificationDuration(JSON.parse(localStorage.getItem('streborn-lab:app-settings')||'null'))}}catch{state.appSettings={identificationSeconds:30}}
+  try{const saved=JSON.parse(localStorage.getItem('streborn-lab:app-settings')||'null');state.appSettings={identificationSeconds:identificationDuration(saved),appearanceZoom:appearanceZoom(saved)}}catch{state.appSettings={identificationSeconds:30,appearanceZoom:100}}
   applyDesign();await loadScenario('home',true);
 }
 export async function loadScenario(id,initial=false,reset=false){
@@ -69,9 +69,9 @@ export function applyScenarioJson(json){
 export function applyDesign(){
   const d=state.designTokens||{};const root=document.documentElement;
   const accent=d.accent||'#79b8ff';
-  root.style.setProperty('--accent',d.appearance==='light'?`color-mix(in srgb,${accent} 35%,#173d6a)`:accent);root.style.setProperty('--radius',`${Number(d.radius||12)}px`);
-  root.style.setProperty('--sidebar-width',`${Number(d.sidebarWidth||270)}px`);
-  root.style.setProperty('--font-size',`${Number(d.fontSize||14)}px`);
+  root.style.setProperty('--accent',d.appearance==='light'?`color-mix(in srgb,${accent} 35%,#173d6a)`:accent);root.style.setProperty('--radius',`${Number(d.radius||12)/16}rem`);
+  root.style.setProperty('--sidebar-width',`${Number(d.sidebarWidth||270)/16}rem`);
+  root.style.setProperty('--app-zoom',String(appearanceZoom(state.appSettings)/100));
   root.dataset.density=d.density||'standard';root.dataset.appearance=d.appearance||'dark';
 }
 let toastSequence=0;

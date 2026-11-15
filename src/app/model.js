@@ -81,6 +81,25 @@ export function addToGroup(model,groupId,memberId,expectedPlan=null){
  return plan;
 }
 
+// Prepare the entire change before committing membership, persistence or channel roles.
+export function configureGroupMembership(model,groupId,memberId,options={},expectedPlan=null){
+ const next=structuredClone(model);
+ addToGroup(next,groupId,memberId,expectedPlan);
+ const group=entity(next,groupId);
+ if(options.stereo){
+  const members=[options.leftId,options.rightId];
+  if(group.memberIds.length!==2||members.length!==new Set(members).size||members.some(id=>!group.memberIds.includes(id)))throw new Error('Stereo requires exactly two member speakers with left and right channels');
+  const detached=structuredClone(next);
+  detached.groups=detached.groups.filter(item=>item.id!==groupId);
+  const error=validateGroupMembers(detached,members,'pair');
+  if(error)throw new Error(error);
+  const {leaderDeviceId,...record}=group;
+  next.groups=next.groups.filter(item=>item.id!==groupId);
+  next.pairs.push({...record,memberIds:members,leftDeviceId:members[0],rightDeviceId:members[1],persistent:true});
+ }else group.persistent=options.persistent??group.persistent;
+ Object.assign(model,next);
+}
+
 export function visibleOutputs(model) {
   // A speaker within a pair, or a pair/speaker within a group, is represented by its parent.
   return getTargets(model).filter(t => !parentIds(model, t.id).length);
@@ -506,6 +525,20 @@ export function removeDevice(model, deviceId) {
   if(model.selectedDeviceId===deviceId)model.selectedDeviceId=model.devices[0]?.id||null;
 }
 
+// Keeping the named output after unpairing turns it into an ordinary group.
+export function removeMemberKeepingGroup(model,parentId,memberId){
+ const parent=entity(model,parentId),type=kind(model,parentId);
+ if(!parent||!['pair','group'].includes(type)||!parent.memberIds.includes(memberId))throw new Error('Membership changed; open the members again');
+ const remaining=parent.memberIds.filter(id=>id!==memberId);
+ if(!remaining.length)throw new Error('Add another member first, or dissolve the group');
+ if(type==='pair'){
+  const {leftDeviceId,rightDeviceId,...record}=parent;
+  model.pairs=model.pairs.filter(item=>item.id!==parentId);
+  model.groups.push({...record,memberIds:remaining,leaderDeviceId:leafDeviceIds(model,remaining[0])[0]||null});
+ }else parent.memberIds=remaining;
+ for(const group of model.groups)if(group.leaderDeviceId&&!leafDeviceIds(model,group.id).includes(group.leaderDeviceId))group.leaderDeviceId=groupLeaderCandidates(model,group)[0]?.id||null;
+}
+
 export function updateMembership(model,groupId,memberId,shouldAdd) {
   const group=model.groups.find(x=>x.id===groupId);
   if(!group) throw new Error('Group not found');
@@ -548,4 +581,11 @@ export function validateScenario(m) {
     for(const key of ['presets','doublePresets'])if(d[key]!==undefined&&!Array.isArray(d[key]))errors.push(`${d.id}: ${key} must be an array`);
   }
   return errors;
+}
+
+
+// App scaling is an explicit multiplier of the browser's inherited base size.
+export function appearanceZoom(settings){
+ const zoom=Number(settings?.appearanceZoom??100);
+ return Number.isInteger(zoom)&&zoom>=100&&zoom<=200?zoom:100;
 }

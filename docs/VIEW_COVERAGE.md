@@ -19,7 +19,7 @@ Actions operate on local JSON simulation state. The table describes the behavior
 | Set up speaker | Candidate selection, configuration and simulated device creation |
 | Updates & maintenance | Availability, individual/bulk simulated firmware progress, diagnostics and settings export |
 | App settings | Language selection, session restoration, appearance and update preferences |
-| Help | Information and feedback links |
+| Help | Project website, information and feedback links, credits, licenses and donation links |
 | Design Lab | Scenario selection/reset, navigation variants, tokens, JSON editing and export |
 
 ## Scenario data

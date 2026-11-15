@@ -1,5 +1,5 @@
 import {esc,icon,action,card} from '../components/shared.js';
-import {currentSession,visibleOutputs,entity} from '../app/model.js';
+import {currentSession,visibleOutputs,entity,appearanceZoom} from '../app/model.js';
 
 export function renderLab(s){
  const d=s.designTokens||{},m=s.model,variant=m.ui.speakerVariant||'sidebar';
@@ -12,9 +12,9 @@ export function renderLab(s){
  ${action('reset-scenario',icon('restart_alt')+' Reset current scenario','btn-quiet mt-3')}`)}</div>
  <section class="section-wrap"><div class="section-heading"><div><h2>Visual tokens</h2><p>Changes apply to every view. Edit <code>src/styles/theme.css</code> for permanent styling changes.</p></div>${action('export-tokens',icon('download')+' Export tokens','btn-soft')}</div>
  <div class="panel"><div class="design-grid"><div class="design-control"><label>Accent</label><input type="color" data-field="accent" value="${esc(d.accent||'#79b8ff')}" /></div><div class="design-control"><label>Density</label><select data-field="density" class="small-select"><option value="compact" ${d.density==='compact'?'selected':''}>Compact</option><option value="standard" ${d.density==='standard'?'selected':''}>Standard</option><option value="comfortable" ${d.density==='comfortable'?'selected':''}>Comfortable</option></select></div>
- <div class="design-control"><label>Corner radius</label><input type="range" data-field="radius" min="4" max="24" value="${Number(d.radius||12)}" /><span>${d.radius||12}px</span></div>
- <div class="design-control"><label>Sidebar width</label><input type="range" data-field="sidebar-width" min="220" max="340" value="${Number(d.sidebarWidth||270)}" /><span>${d.sidebarWidth||270}px</span></div>
- <div class="design-control"><label>Font size</label><input type="range" data-field="font-size" min="12" max="17" value="${Number(d.fontSize||14)}" /><span>${d.fontSize||14}px</span></div>
+ <div class="design-control"><label>Corner radius</label><input type="range" data-field="radius" min="4" max="24" value="${Number(d.radius||12)}" /><span>${Number(d.radius||12)/16}rem</span></div>
+ <div class="design-control"><label>Sidebar width</label><input type="range" data-field="sidebar-width" min="220" max="340" value="${Number(d.sidebarWidth||270)}" /><span>${Number(d.sidebarWidth||270)/16}rem</span></div>
+ <div class="design-control"><label>App zoom</label><input type="range" data-field="appearance-zoom" min="100" max="200" step="5" value="${appearanceZoom(s.appSettings)}" /><span>${appearanceZoom(s.appSettings)}%</span></div>
  <div class="design-control"><label>Appearance</label><select data-field="appearance" class="small-select"><option value="dark" ${d.appearance==='dark'?'selected':''}>Dark</option><option value="light" ${d.appearance==='light'?'selected':''}>Light</option></select></div></div></div></section>
  <section class="section-wrap"><div class="section-heading"><div><h2>Scenario JSON editor</h2><p>Modify devices, pair/group membership, sessions and statuses directly.</p></div>${action('toggle-json-editor',s.scenarioEditorOpen?'Close editor':'Edit JSON','btn-soft')}</div>
  ${s.scenarioEditorOpen?`<div class="panel panel--editor"><div class="subtle-alert">${icon('info')}<span>Edits affect the current local prototype. JSON files in <code>public/data/scenarios/</code> remain unchanged.</span></div><textarea id="scenario-json-editor" spellcheck="false" aria-label="Editable scenario JSON">${esc(JSON.stringify(m,null,2))}</textarea><div class="button-row">${action('apply-json','Apply JSON','primary-btn')}${action('export-scenario','Download JSON','btn-soft')}</div></div>`:''}</section>

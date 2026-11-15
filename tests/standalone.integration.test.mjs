@@ -173,6 +173,30 @@ test('Playing opens the matching output detail without changing streams',async()
  assert.equal(vm.runInContext('state.detailOutputId',ctx),'p1');
  assert.equal(vm.runInContext('state.toasts.at(-1).kind',ctx),'error');
 });
+test('opening an output selects its playback in the player without changing streams',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ const before=run('JSON.stringify(state.model.sessions)');
+ for(const [action,id,sessionId] of [['select-output','d4','s2'],['select-output','g1','s1'],['device-open','d4','s2'],['group-open','g1','s1'],['device-open','d1','s1'],['group-open','p1','s1']]){
+  run(`state.model.selectedSessionId='${sessionId==='s1'?'s2':'s1'}'`);
+  await run(`onAction('${action}',{dataset:{id:'${id}'}})`);
+  assert.equal(run('currentSession(state.model).id'),sessionId,`${action} ${id}`);
+  assert.equal(run('state.model.selectedOutputId'),id);
+  assert.equal(run('JSON.stringify(state.model.sessions)'),before);
+  const bar=app.innerHTML.match(/<footer class="player"[\s\S]*?<\/footer>/)?.[0];
+  assert(bar?.includes(`data-session="${sessionId}"`));
+  assert(bar.includes(sessionId==='s1'?'FluxFM':'NDR Info'));
+  assert(bar.includes(`value="${sessionId==='s1'?25:28}" data-field="volume"`));
+ }
+ await run("onAction('select-output',{dataset:{id:'d4'}});onAction('player-toggle',{dataset:{}})");
+ assert.equal(run("state.model.sessions.find(session=>session.id==='s2').status"),'paused');
+ assert.equal(run("state.model.sessions.find(session=>session.id==='s1').status"),'playing');
+ await run("onAction('select-output',{dataset:{id:'g1'}});onAction('select-output',{dataset:{id:'d4'}})");
+ assert.equal(run('currentSession(state.model).id'),'s2');assert(app.innerHTML.includes('aria-label="Resume NDR Info"'));
+ await run("onAction('select-output',{dataset:{id:'d7'}})");
+ assert.equal(run('currentSession(state.model).id'),'s2','An idle output must not switch to an unrelated playback');
+ await run("onAction('player-stop',{dataset:{}});onAction('select-output',{dataset:{id:'d4'}})");
+ assert.equal(run('currentSession(state.model).id'),'s1','Stopped playback must not replace an active player context');
+});
 test('device functions expose the second preset layer and save to its bound device',async()=>{
  const {ctx,app}=boot();await ready();
  await vm.runInContext("onAction('device-open',{dataset:{id:'d1'}});onAction('device-tab',{dataset:{value:'functions'}});onAction('preset-gesture',{dataset:{value:'double'}})",ctx);

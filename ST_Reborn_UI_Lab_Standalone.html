@@ -2533,6 +2533,11 @@ function confirmAction(title,description,callback){if(window.confirm(`${title}\n
 function exported(name,obj){const blob=new Blob([JSON.stringify(obj,null,2)+'\n'],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.download=name;a.href=url;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function notifySafe(task){try{task()}catch(err){toast(err?.message||String(err),{kind:'error'})}}
 function currentDevice(){return entity(state.model,state.detailDeviceId||state.model.selectedDeviceId)}
+function selectOutputContext(s,id){
+ s.model.selectedOutputId=id;
+ const playback=effectiveSessionFor(s.model,id);
+ if(playback?.status==='playing'||playback?.status==='paused')s.model.selectedSessionId=playback.id;
+}
 function playbackNotice(sourceId,targetId){return `Playing ${source(state.catalog,sourceId)?.name||'selected source'} on ${entity(state.model,targetId)?.name||'selected output'}`;}
 function generic(title,description,body=''){openModal('generic',{title,description,body})}
 
@@ -2579,11 +2584,11 @@ async function onAction(action,element){
  case 'toggle-sidebar-mobile':mutate(s=>{s.sidebarOpen=!s.sidebarOpen},false);break;
  case 'expand-outputs':mutate(s=>s.expandingOutputs=true,false);break;
  case 'toggle-appearance':mutate(s=>{s.designTokens.appearance=s.designTokens.appearance==='dark'?'light':'dark';applyDesign()});break;
- case 'select-output':mutate(s=>{s.model.selectedOutputId=id;s.sidebarOpen=false;s.detailOutputId=id;if(kind(m,id)==='device'){s.detailDeviceId=id;s.model.selectedDeviceId=id;s.view='device'}else{s.view='group'}});break;
+ case 'select-output':mutate(s=>{selectOutputContext(s,id);s.sidebarOpen=false;s.detailOutputId=id;if(kind(m,id)==='device'){s.detailDeviceId=id;s.model.selectedDeviceId=id;s.view='device'}else{s.view='group'}});break;
  case 'device-rename':{const device=entity(m,id);if(!device)throw new Error('Device no longer available');openModal('rename',{deviceId:id,nameDraft:device.name});break;}
  case 'device-rename-save':{if(state.modal?.kind!=='rename')break;mutate(s=>{renameItem(s.model,s.modal.deviceId,s.modal.nameDraft);s.modal=null});toast('Name saved (mock data)');break;}
- case 'device-open':mutate(s=>{s.detailDeviceId=id;s.model.selectedDeviceId=id;s.view='device';s.model.ui.deviceTab=element.dataset.tab||'overview';s.modal=null;});break;
- case 'group-open':mutate(s=>{s.detailOutputId=id;s.model.selectedOutputId=id;s.view='group';s.model.ui.groupTab='overview';s.modal=null});break;
+ case 'device-open':mutate(s=>{selectOutputContext(s,id);s.detailDeviceId=id;s.model.selectedDeviceId=id;s.view='device';s.model.ui.deviceTab=element.dataset.tab||'overview';s.modal=null;});break;
+ case 'group-open':mutate(s=>{s.detailOutputId=id;selectOutputContext(s,id);s.view='group';s.model.ui.groupTab='overview';s.modal=null});break;
  case 'target-actions':{
   const target=entity(m,id),type=kind(m,id);generic(target.name,'Quick actions for this output',`<div class="button-row"><button class="btn-soft" data-action="target-play" data-id="${esc(id)}">${icon('play_circle')} Play selected source</button><button class="btn-soft" data-action="${type==='device'?'device-open':'group-open'}" data-id="${esc(id)}">${icon('tune')} Manage</button></div>`);break;
  }

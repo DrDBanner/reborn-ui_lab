@@ -29,6 +29,8 @@ Variant A accesses outputs through the player panel. Variant B adds sidebar outp
 
 Desktop route titles sit directly in the scrolling workspace. Device, pair and group details lead with the item name. Mobile retains a navigation bar with its menu controls. Section headings identify distinct content; page actions sit beside the title and wrap at narrow widths.
 
+Opening a device, pair or group through Outputs or a detail link selects its running or paused playback in the player. Members use their shared group playback. Opening an idle item keeps the existing player context. Navigation preserves all playback sources, statuses and volumes.
+
 ## Media
 
 Radio, Library and Recently played share a search field beside the title. Filters sit below the heading, followed by the results. Recently played searches the complete saved source history and filters by media type. Starting playback retains older history entries.

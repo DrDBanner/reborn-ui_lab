@@ -15,6 +15,31 @@ const scenarios=JSON.parse(fs.readFileSync(path.join(root,'scenario-index.json')
 const catalog=JSON.parse(fs.readFileSync(path.join(root,'catalog.json'),'utf8'));
 const tokens=JSON.parse(fs.readFileSync(path.join(root,'design-tokens.json'),'utf8'));
 const renderers={listen:renderListen,library:renderListen,history:renderListen,spotify:renderListen,outputs:renderOutputs,group:renderGroup,device:renderDevice,updates:renderUpdates,settings:renderSettings,setup:renderSetup,help:renderHelp,lab:renderLab,sessions:renderSessions};
+test('player displays only available track metadata for the selected playback',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
+ const s={model,catalog};model.selectedSessionId='s1';delete model.sessions[0].nowPlaying;
+ assert(!player(s).includes('class="player__now"'));
+ model.sessions[0].nowPlaying={title:'A long title <live>',artist:'Artist & guests',album:'An album'};
+ let html=player(s);assert(html.includes('player--metadata'));assert(html.includes('A long title &lt;live&gt;'));assert(html.includes('Artist &amp; guests · An album'));assert(html.includes('aria-label="Now playing"'));
+ model.selectedSessionId='s2';assert(!player(s).includes('class="player__now"'));
+ model.sessions[1].nowPlaying={artist:'Only artist',album:' '};html=player(s);assert(html.includes('Only artist'));assert(!html.includes('Only artist ·'));
+ delete model.sessions[1].nowPlaying;model.sessions[1].sourceId='track-demo';html=player(s);assert(html.includes('Mira Lane'));assert(html.includes('Morning Light'));assert(html.includes('Notes from the Window Seat'));
+ model.sessions[1].sourceId='album1';assert(!player(s).includes('class="player__now"'),'A queue must not pretend that its first track is playing');
+});
+test('station playlist button is offered only for a radio source with a supplied playlist',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
+ const s={model,catalog};model.selectedSessionId='s1';assert(player(s).includes('data-action="station-playlist"'));
+ s.modal={kind:'station-playlist',sourceId:'flux',title:'FluxFM · Playlist'};
+ const html=renderDialog(s);assert(html.includes('Sample playlist'));assert(html.includes('10:42'));assert(html.includes('The Long Way Home'));assert(html.includes('role="dialog"'));
+ model.selectedSessionId='s2';assert(!player(s).includes('data-action="station-playlist"'));
+});
+test('radio rows show quiet metadata capabilities only when reported',()=>{
+ const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
+ const s={model,catalog,view:'listen',filter:''};
+ const html=renderListen(s);assert(html.includes('data-icon="track_changes"'));assert(html.includes('Track information supported'));assert(html.includes('View station playlist for FluxFM'));
+ const unknown=renderListen({...s,catalog:{...catalog,sources:[catalog.sources.find(item=>item.id==='ndrinfo')]}});
+ assert(!unknown.includes('Track information supported'));assert(!unknown.includes('data-action="station-playlist"'));
+});
 test('output card order survives playback changes and filtering within the workspace',()=>{
  const model=JSON.parse(fs.readFileSync(path.join(root,'scenarios/home.json'),'utf8'));
  const s={model,catalog,outputSearch:''};

@@ -33,6 +33,7 @@ Select a scenario through the logo menu or Design Lab. Reset reloads its shipped
 | Scenario | Data and behavior |
 |---|---|
 | Everyday use | Nine devices: individual speakers, a standalone stereo pair, a room group and two streams |
+| Now Playing | Track, artist and album metadata, long titles, radio playlists and a running queue; simulate title changes in Design Lab |
 | Nested groups | Whole home combines Downstairs and Upstairs; a separate terrace stream keeps playing |
 | Problem of N · 50 devices | 50 physical devices, 38 playback targets, search and filters |
 | Several streams | Four concurrent playback sessions |
@@ -43,7 +44,9 @@ Select a scenario through the logo menu or Design Lab. Reset reloads its shipped
 
 For group nesting, choose **Nested groups → Whole home → Details → Group Members**. [Concept and walkthrough](docs/GROUP_NESTING.md) explain shared playback, opening subgroups, separating and rejoining floors.
 
-Library search selects titles across music servers and adds them to one or several saved queues. Queues persist with the scenario, support ordering and renaming, and can be used for playback or button presets. Collections show their source server.
+Library search selects titles across music servers and adds them to one or several saved queues. Queues persist with the scenario, support ordering and renaming, and can be used for playback or button presets. Collections show their source server. The player shows the current title when reported, with artist and album. Its playlist opens the station’s title history or the running queue; library queues support previous/next and reordering. Recently played retains received title information.
+
+Music server settings accept server addresses and M3U, M3U8, PLS or XSPF playlist links. Add Spotify playlist URLs on the Spotify page. Links persist as typed playback and preset sources; the connected backend loads their contents.
 
 Design Lab also provides navigation variants, appearance controls, JSON editing and export.
 

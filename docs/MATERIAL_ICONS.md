@@ -13,6 +13,8 @@ Run `python3 scripts/vendor-material-icons.py` to regenerate assets and resolve 
 | `play_circle` / `pause_circle` | Immediate playback actions |
 | `music_cast` | Output selection and stream indicators |
 | `read_more` | Open the current player's media view |
+| `format_list_bulleted` | View a supplied station playlist |
+| `track_changes` | Radio station supports track information |
 | `search_insights` | Radio station information |
 | `add_link` | One-time button-assignment transfer |
 | `open_in_new` | Explicit member-detail navigation |

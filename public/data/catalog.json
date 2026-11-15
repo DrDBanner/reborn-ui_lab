@@ -14,7 +14,36 @@
       "lastCheckOk": true,
       "votes": 1000,
       "clickCount": 80,
-      "hls": false
+      "hls": false,
+      "stationPlaylist": {
+        "sample": true,
+        "tracks": [
+          {
+            "title": "The Long Way Home Through Empty Streets Before the City Wakes Up",
+            "artist": "Mira Lane",
+            "album": "Quiet Sunday — Notes from the Window Seat and Other Slow Journeys",
+            "playedAt": "10:42",
+            "duration": 291
+          },
+          {
+            "title": "Morning Light",
+            "artist": "Mira Lane",
+            "album": "Quiet Sunday",
+            "playedAt": "10:37",
+            "duration": 246
+          },
+          {
+            "title": "Window Seat",
+            "artist": "Mira Lane",
+            "playedAt": "10:33",
+            "duration": 223
+          }
+        ]
+      },
+      "capabilities": {
+        "nowPlaying": true,
+        "stationPlaylist": true
+      }
     },
     {
       "id": "1live",
@@ -30,7 +59,10 @@
       "lastCheckOk": true,
       "votes": 930,
       "clickCount": 120,
-      "hls": false
+      "hls": false,
+      "capabilities": {
+        "nowPlaying": true
+      }
     },
     {
       "id": "ndrinfo",
@@ -142,7 +174,7 @@
     },
     {
       "id": "album2",
-      "name": "Quiet Sunday",
+      "name": "Quiet Sunday — Notes from the Window Seat and Other Slow Journeys",
       "type": "library",
       "kind": "folder",
       "subtitle": "6 sample titles",
@@ -177,7 +209,7 @@
       "name": "Morning Light · demo",
       "type": "library",
       "kind": "track",
-      "subtitle": "Mira Lane · Quiet Sunday",
+      "subtitle": "Mira Lane · Quiet Sunday — Notes from the Window Seat and Other Slow Journeys",
       "genre": "Jazz",
       "country": "Local",
       "bitrate": "FLAC",
@@ -318,7 +350,7 @@
       "id": "library-track-1",
       "title": "Morning Light",
       "artist": "Mira Lane",
-      "album": "Quiet Sunday",
+      "album": "Quiet Sunday — Notes from the Window Seat and Other Slow Journeys",
       "duration": 246,
       "serverId": "nas",
       "collectionId": "album2",
@@ -326,9 +358,9 @@
     },
     {
       "id": "library-track-2",
-      "title": "Quiet Sunday",
+      "title": "The Long Way Home Through Empty Streets Before the City Wakes Up",
       "artist": "Mira Lane",
-      "album": "Quiet Sunday",
+      "album": "Quiet Sunday — Notes from the Window Seat and Other Slow Journeys",
       "duration": 291,
       "serverId": "nas",
       "collectionId": "album2",
@@ -338,7 +370,7 @@
       "id": "library-track-3",
       "title": "Window Seat",
       "artist": "Mira Lane",
-      "album": "Quiet Sunday",
+      "album": "Quiet Sunday — Notes from the Window Seat and Other Slow Journeys",
       "duration": 223,
       "serverId": "nas",
       "collectionId": "album2",
@@ -348,7 +380,7 @@
       "id": "library-track-4",
       "title": "First Rain",
       "artist": "Mira Lane",
-      "album": "Quiet Sunday",
+      "album": "Quiet Sunday — Notes from the Window Seat and Other Slow Journeys",
       "duration": 304,
       "serverId": "nas",
       "collectionId": "album2",
@@ -358,7 +390,7 @@
       "id": "library-track-5",
       "title": "Open Water",
       "artist": "Mira Lane",
-      "album": "Quiet Sunday",
+      "album": "Quiet Sunday — Notes from the Window Seat and Other Slow Journeys",
       "duration": 262,
       "serverId": "nas",
       "collectionId": "album2",
@@ -368,7 +400,7 @@
       "id": "library-track-6",
       "title": "Homeward",
       "artist": "Mira Lane",
-      "album": "Quiet Sunday",
+      "album": "Quiet Sunday — Notes from the Window Seat and Other Slow Journeys",
       "duration": 278,
       "serverId": "nas",
       "collectionId": "album2",
@@ -376,7 +408,7 @@
     },
     {
       "id": "library-track-7",
-      "title": "Evening Lines",
+      "title": "Conversations After Midnight (Live at the Old Railway Station, Extended Session)",
       "artist": "Northline Trio",
       "album": "Evening Jazz",
       "duration": 318,

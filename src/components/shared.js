@@ -46,13 +46,13 @@ export function sourceTypeLabel(item){
  if(!item)return 'Unassigned';
  if(item.type==='radio')return 'Radio station';
  if(item.type==='spotify')return item.kind==='album'?'Spotify album':'Spotify playlist';
- if(item.type==='library')return ({track:'Library track',folder:'Library folder',queue:'Library queue',album:'Library album'})[item.kind]||'Library collection';
+ if(item.type==='library')return ({track:'Library track',folder:'Library folder',queue:'Library queue',playlist:'Library playlist',album:'Library album'})[item.kind]||'Library collection';
  return item.service||'Native service';
 }
 export function sourceTypeIcon(item){
  if(item?.type==='radio')return 'radio';
  if(item?.type==='spotify')return 'spotify';
- if(item?.type==='library')return item.kind==='folder'?'folder':item.kind==='track'?'music_note':item.kind==='queue'?'library_music':'album';
+ if(item?.type==='library')return item.kind==='folder'?'folder':item.kind==='track'?'music_note':['queue','playlist'].includes(item.kind)?'library_music':'album';
  return 'music_cast';
 }
 export function sourceDestination(item){
@@ -67,11 +67,12 @@ export function sourceTile(s,{active=false,playing=false,actionName='source-sele
   <span class="source-tile__content"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></span>${icon('music_cast','source-tile__cast')}
  </button>`;
 }
-export function sourceRow(s,{favorite=false,playTarget=null,playable=false}={}){
+export function sourceRow(s,{favorite=false,playTarget=null,playable=false,capabilities=false}={}){
  const artwork=icon(sourceTypeIcon(s));
  const playLabel=playTarget?`Play ${s.name} on ${playTarget.name}`:`Choose an output before playing ${s.name}`;
  const art=playTarget?action('source-play',`<span class="source-art__identity">${artwork}</span>${icon('play_circle','source-art__play')}`,'source-art source-art--sm source-art--play',`${sourceArtAttributes(s)} data-id="${esc(s.id)}" data-target="${esc(playTarget.id)}" title="${esc(playLabel)}" aria-label="${esc(playLabel)}" ${playable?'':'disabled'}`):`<span class="source-art source-art--sm" ${sourceArtAttributes(s)}>${artwork}</span>`;
- return `<div class="source-row">${art}<div class="source-row__main"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}</small></div><span class="source-row__genre">${esc(s.genre)}</span><div class="source-row__actions">
+ const support=capabilities&&s.type==='radio'?`<span class="source-row__capabilities">${s.capabilities?.nowPlaying?`<span role="img" aria-label="Track information supported" title="Track information supported">${icon('track_changes')}</span>`:''}${s.stationPlaylist?.tracks?.length?action('station-playlist',icon('format_list_bulleted'),'station-playlist-link',`data-id="${esc(s.id)}" aria-label="View station playlist for ${esc(s.name)}" title="View station playlist"`):s.capabilities?.stationPlaylist?`<span role="img" aria-label="Station playlist supported" title="Station playlist supported">${icon('format_list_bulleted')}</span>`:''}</span>`:'';
+ return `<div class="source-row">${art}<div class="source-row__main"><strong>${esc(s.name)}</strong><small>${esc(s.subtitle)}${support}</small></div><span class="source-row__genre">${esc(s.genre)}</span><div class="source-row__actions">
    ${action('source-select',icon('music_cast'),'icon-btn',`data-id="${esc(s.id)}" title="Choose output" aria-label="Choose output for ${esc(s.name)}"`)}
    ${action('toggle-favorite',icon(favorite?'favorite':'favorite_border'),'icon-btn',`data-id="${esc(s.id)}" title="Toggle favorite" aria-label="Favorite ${esc(s.name)}" aria-pressed="${favorite}"`)}
    ${action('source-info',icon(s.type==='radio'?'search_insights':'info'),'icon-btn',`data-id="${esc(s.id)}" title="${s.type==='radio'?'Station':'Source'} information" aria-label="Information about ${esc(s.name)}"`)}

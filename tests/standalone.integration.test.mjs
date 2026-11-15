@@ -182,7 +182,7 @@ test('opening an output selects its playback in the player without changing stre
   assert.equal(run('currentSession(state.model).id'),sessionId,`${action} ${id}`);
   assert.equal(run('state.model.selectedOutputId'),id);
   assert.equal(run('JSON.stringify(state.model.sessions)'),before);
-  const bar=app.innerHTML.match(/<footer class="player"[\s\S]*?<\/footer>/)?.[0];
+  const bar=app.innerHTML.match(/<footer class="player(?: player--metadata)?"[\s\S]*?<\/footer>/)?.[0];
   assert(bar?.includes(`data-session="${sessionId}"`));
   assert(bar.includes(sessionId==='s1'?'FluxFM':'NDR Info'));
   assert(bar.includes(`value="${sessionId==='s1'?25:28}" data-field="volume"`));
@@ -196,6 +196,28 @@ test('opening an output selects its playback in the player without changing stre
  assert.equal(run('currentSession(state.model).id'),'s2','An idle output must not switch to an unrelated playback');
  await run("onAction('player-stop',{dataset:{}});onAction('select-output',{dataset:{id:'d4'}})");
  assert.equal(run('currentSession(state.model).id'),'s1','Stopped playback must not replace an active player context');
+});
+test('station playlist lightbox preserves the bound station across player changes',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ const before=run('JSON.stringify(state.model.sessions)');
+ await run("onAction('station-playlist',{dataset:{id:'flux'}})");
+ assert(app.innerHTML.includes('FluxFM · Playlist'));assert(app.innerHTML.includes('The Long Way Home'));
+ await run("onField('session',{value:'s2'})");
+ assert.equal(run('state.modal.sourceId'),'flux');assert(app.innerHTML.includes('Sample playlist'));
+ await run("onAction('close-modal',{dataset:{}})");assert.equal(run('state.modal'),null);assert.equal(run('JSON.stringify(state.model.sessions)'),before);
+ await run("onAction('station-playlist',{dataset:{id:'ndrinfo'}})");assert.equal(run('state.modal'),null);assert.equal(run('state.toasts.at(-1).kind'),'error');
+});
+test('received track history remains searchable and survives source changes and reload',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ const count=run('state.model.listeningHistory.length');
+ await run("onAction('navigate',{dataset:{value:'history'}})");
+ assert(app.innerHTML.includes('Titles heard'));assert(app.innerHTML.includes('The Long Way Home'));
+ await run("onAction('navigate',{dataset:{value:'listen'}})");assert.equal(run('state.model.listeningHistory.length'),count,'Navigation must not duplicate track history');
+ await run("mutate(s=>s.model.sessions[0].nowPlaying={title:'Another received title',artist:'Guest artist',album:''})");
+ assert.equal(run('state.model.listeningHistory.length'),count+1);
+ await run("onAction('source-play',{dataset:{id:'1live',target:'g1'}});onAction('navigate',{dataset:{value:'history'}});onField('history-search',{value:'Guest artist'})");
+ assert(app.innerHTML.includes('Another received title'));assert(app.innerHTML.includes('Titles heard'));assert(!app.innerHTML.includes('class="player__now"'));
+ await run("loadScenario('home')");assert.equal(run('state.model.listeningHistory.length'),count+1);
 });
 test('device functions expose the second preset layer and save to its bound device',async()=>{
  const {ctx,app}=boot();await ready();
@@ -975,4 +997,38 @@ test('Appearance zoom persists independently of scenarios and multiplies the inh
  await run("loadScenario('many',false,true)");assert.equal(run('state.appSettings.appearanceZoom'),125);await run("initialize()");assert.equal(styles.get('--app-zoom'),'1.25');assert.equal(run('state.appSettings.appearanceZoom'),125);
  await run("onField('appearance-zoom',{value:'0'})");assert.equal(styles.get('--app-zoom'),'1.25');assert.equal(run('state.appSettings.appearanceZoom'),125);
  await run("onField('appearance-zoom',{value:'100'})");assert.equal(styles.get('--app-zoom'),'1');assert.equal(run("JSON.parse(localStorage.getItem('streborn-lab:app-settings')).appearanceZoom"),100);
+});
+
+test('Now Playing scenario exercises queue transport, independent order and received title changes',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('load-scenario',{dataset:{id:'now-playing'}})");await run("onField('session',{value:'s3'})");
+ assert(app.innerHTML.includes('Conversations After Midnight'));assert(app.innerHTML.includes('data-action="player-next"'));
+ const before=run('JSON.stringify(state.model.sessions.filter(session=>session.id!=="s3"))');
+ await run("onAction('station-playlist',{dataset:{id:'album1',session:'s3'}})");
+ assert(app.innerHTML.includes('aria-current="true"'));assert(app.innerHTML.includes('5:18'));assert(app.innerHTML.includes('Evening Jazz'));
+ const track=run('sourcePlaylist(state.catalog,"album1").tracks[1].id');
+ await run(`onAction('playback-queue-move',{dataset:{id:${JSON.stringify(track)},session:'s3',value:'-1'}})`);
+ assert.equal(run('state.model.sessions.find(session=>session.id==="s3").trackId'),'library-track-7');
+ assert.equal(run('state.model.sessions.find(session=>session.id==="s3").queueTrackIds[0]'),track);
+ await run("onAction('close-modal',{dataset:{}});onAction('player-previous',{dataset:{session:'s3'}})");
+ assert.equal(run('currentSession(state.model).trackId'),track);assert.equal(run('JSON.stringify(state.model.sessions.filter(session=>session.id!=="s3"))'),before);
+ await run("onAction('player-next',{dataset:{session:'s3'}})");assert.equal(run('currentSession(state.model).trackId'),'library-track-7');
+ await run("onField('session',{value:'s1'});onAction('simulate-track-change',{dataset:{}})");
+ assert.equal(run('currentSession(state.model).nowPlaying.title'),'Morning Light');assert.equal(run('state.model.listeningHistory[0].title'),'Morning Light');
+ await run("loadScenario('now-playing')");assert.equal(run('state.model.sessions.find(session=>session.id==="s3").queueTrackIds[0]'),track);
+});
+test('manual playlist links save as sources for playback and assignments across scenario reloads',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('library-settings',{dataset:{}});onField('library-name',{value:'Internet mix'});onField('library-address',{value:'https://music.example/mix.m3u'});onAction('library-add',{dataset:{}})");
+ assert.equal(run('state.model.libraryServers?.length||0'),0,'Adding stays in the dialog draft');
+ await run("onAction('library-settings-save',{dataset:{}})");
+ const id=run('state.model.libraryServers[0].id');assert.equal(run('state.catalog.sources.find(item=>item.id==="'+id+'").kind'),'playlist');
+ await run(`onAction('source-select',{dataset:{id:${JSON.stringify(id)}}});onAction('assign-output',{dataset:{id:'d7'}})`);
+ assert.equal(run('currentSession(state.model).sourceId'),id);
+ await run("onAction('spotify-playlist-link',{dataset:{}});onField('playlist-name',{value:'Spotify mix'});onField('playlist-address',{value:'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M?si=test'});onAction('spotify-playlist-save',{dataset:{}})");
+ assert.equal(run('state.model.spotifyPlaylists[0].type'),'spotify');assert.equal(run('state.modal'),null);
+ await run("loadScenario('home')");assert.equal(run('state.catalog.sources.filter(item=>item.origin==="manual-playlist-link").length'),2);
+ await run(`onAction('preset-edit',{dataset:{id:'d7',key:'3'}});onAction('preset-source-choose',{dataset:{id:${JSON.stringify(id)}}});onAction('preset-save',{dataset:{}})`);
+ assert.equal(run('state.modal'),null);assert.equal(run('state.model.devices.find(device=>device.id==="d7").presets[2]'),id);
+ await run(`onAction('library-settings',{dataset:{}});onAction('library-remove',{dataset:{id:${JSON.stringify(id)}}})`);assert.equal(run('state.modal.servers.length'),1);assert(run('state.modal.error').includes('Stop playback'));
 });

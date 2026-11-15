@@ -17,11 +17,11 @@ NAMES = """
 add add_circle add_link alarm album arrow_back arrow_forward backup bug_report build
 cast check check_circle chevron_right close code dark_mode delete desktop_windows
 dns dock_to_left do_not_disturb_on download edit expand_less expand_more fast_forward favorite favorite_border
-folder graphic_eq grid_view group_add groups help history hub info lan library_music
+folder format_list_bulleted graphic_eq grid_view group_add groups help history hub info lan library_music
 light_mode lightbulb menu more_horiz music_cast music_note network_check open_in_new pause pause_circle phone_iphone
 play_arrow play_circle push_pin radio read_more release_alert restart_alt science search search_insights search_off settings
 settings_backup_restore skip_next skip_previous speaker speaker_group stop sync
-system_update task_alt tune vertical_split volume_up warning wifi
+system_update task_alt track_changes tune vertical_split volume_up warning wifi
 """.split()
 ALIASES = {
     "add_circle_outline": "add_circle",

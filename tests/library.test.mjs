@@ -22,8 +22,8 @@ test('manual library sources validate addresses, avoid duplicates and leave cata
 });
 
 import fs from 'node:fs';
-import {searchLibraryTracks,newLibraryQueue,addTracksToLibraryQueues,saveLibraryQueue,deleteLibraryQueue,libraryQueueSources,libraryQueueErrors} from '../src/app/library.js';
-import {renderLibrarySearch} from '../src/components/library-search.js';
+import {searchLibraryTracks,newLibraryQueue,addTracksToLibraryQueues,saveLibraryQueue,deleteLibraryQueue,libraryQueueSources,libraryQueueErrors,libraryDuration} from '../src/app/library.js';
+import {renderLibrarySearch,renderLibraryQueueEditor} from '../src/components/library-search.js';
 const queueCatalog=JSON.parse(fs.readFileSync(new URL('../public/data/catalog.json',import.meta.url)));
 const queueModel=()=>({settings:{},libraryQueues:[],devices:[],sessions:[],history:[],favorites:[]});
 
@@ -69,4 +69,24 @@ test('queue edits preserve drafts and references prevent deleting or emptying us
 test('library search escapes draft names and keeps hidden selected titles across filters',()=>{
  const model=queueModel();const html=renderLibrarySearch({model,catalog:queueCatalog,modal:{query:'no match',serverId:'all',trackIds:['library-track-1'],queueIds:[],newQueues:[],newName:'"><script>bad</script>',error:''}});
  assert(!html.includes('<script>bad'));assert(html.includes('1 selected'));assert(html.includes('No matching titles'));
+});
+
+import {addSpotifyPlaylist,manualLinkSources} from '../src/app/library.js';
+test('playlist file links retain format and playback payload; Spotify stays in its connector',()=>{
+ const servers=[];
+ for(const format of ['m3u','m3u8','pls','xspf']){
+  const entry=addLibraryServer(servers,[],'Playlist '+format,'https://music.example/list.'+format+'?token=sample');servers.push(entry);
+  assert.equal(entry.sourceKind,'playlist');assert.equal(entry.playlistFormat,format);
+ }
+ const automatic=addLibraryServer(servers,[],'Dynamic','https://music.example/export','playlist');assert.equal(automatic.playlistFormat,'auto');
+ const model={libraryServers:[...servers,automatic]},items=manualLinkSources(model);assert.equal(items.length,5);assert.equal(items[0].playlistUrl,servers[0].address);assert.equal(items[0].type,'library');assert(!items[0].trackIds,'URL contents must not be invented');
+ const spotify=addSpotifyPlaylist([],'My list','https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M?si=sample');assert.equal(spotify.playlistUrl,'https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M');assert.equal(spotify.type,'spotify');
+ assert.throws(()=>addSpotifyPlaylist([spotify],'Duplicate',spotify.playlistUrl),/already listed/);
+ for(const url of ['https://open.spotify.com/album/37i9dQZF1DXcBWIGoYBM5M','https://open.spotify.com.example/playlist/37i9dQZF1DXcBWIGoYBM5M'])assert.throws(()=>addSpotifyPlaylist([],'Invalid',url));
+ assert.throws(()=>addLibraryServer([],[],'Spotify',spotify.playlistUrl),/in Spotify/);
+});
+
+test('queue editor shows album and duration alongside artist and source server',()=>{
+ const track=queueCatalog.tracks[0],html=renderLibraryQueueEditor({catalog:queueCatalog,modal:{draft:{id:'library-queue-1',name:'Test queue',trackIds:[track.id]}}});
+ assert(html.includes(track.album));assert(html.includes(track.artist));assert(html.includes(libraryDuration(track.duration)));
 });

@@ -340,6 +340,10 @@ export function identificationSignals(device){
 }
 
 export function normalizeScenario(model,fixture=null) {
+  for(const session of model.sessions||[]){
+   const original=fixture?.sessions?.find(item=>item.id===session.id&&item.sourceId===session.sourceId);
+   if(session.nowPlaying===undefined&&original?.nowPlaying)session.nowPlaying=structuredClone(original.nowPlaying);
+  }
   for(const collection of ['devices','setupCandidates'])for(const device of model[collection]||[]){
     const original=fixture?.[collection]?.find(item=>item.id===device.id);
     // Migrate only known sample identities; unknown devices keep unknown capabilities.
@@ -366,12 +370,49 @@ export function source(catalog, sourceId) {
   return catalog?.sources?.find(x => x.id === sourceId) ?? null;
 }
 
+export function playbackMetadata(catalog,session){
+ const item=source(catalog,session?.sourceId),reported=session?.nowPlaying;
+ const trackId=reported?.trackId||session?.trackId||(item?.kind==='track'?item.trackId:null);
+ const track=trackId?catalog?.tracks?.find(track=>track.id===trackId):null;
+ const data=(reported?{...track,...reported}:null)??track??(item?.kind==='track'?{title:item.name,artist:item.artist,album:item.album}:null);
+ if(!data)return null;
+ const metadata=Object.fromEntries(['title','artist','album'].map(key=>[key,typeof data[key]==='string'?data[key].trim():'']));
+ return Object.values(metadata).some(Boolean)?metadata:null;
+}
+
+export function stationPlaylist(catalog,sourceId){
+ const item=source(catalog,sourceId),playlist=item?.stationPlaylist;
+ return item?.type==='radio'&&Array.isArray(playlist?.tracks)&&playlist.tracks.length?playlist:null;
+}
+
+export function sourcePlaylist(catalog,sourceId,session=null){
+ const station=stationPlaylist(catalog,sourceId);if(station)return station;
+ const item=source(catalog,sourceId);
+ const tracks=Array.isArray(item?.trackIds)?item.trackIds.map(id=>catalog.tracks?.find(track=>track.id===id)||{id,title:'Title currently unavailable'}):item?.type==='library'?(catalog.tracks||[]).filter(track=>track.collectionId===sourceId):[];
+ if(!tracks.length)return null;
+ const ordered=session?.queueTrackIds;if(!Array.isArray(ordered))return {tracks};
+ const byId=new Map(tracks.map(track=>[track.id,track]));
+ return {tracks:[...new Set([...ordered,...tracks.map(track=>track.id)])].map(id=>byId.get(id)).filter(Boolean)};
+}
+export function rememberPlayingTracks(model,catalog){
+ if(!model||!catalog)return;
+ for(const session of model.sessions||[]){
+  if(session.status!=='playing')continue;
+  const metadata=playbackMetadata(catalog,session);if(!metadata?.title)continue;
+  const previous=model.listeningHistory?.find(entry=>entry.sessionId===session.id);
+  if(previous&&['title','artist','album'].every(key=>previous[key]===metadata[key]))continue;
+  model.listeningHistory=[{...metadata,sourceId:session.sourceId,targetId:session.targetId,sessionId:session.id,playedAt:new Date().toISOString()},...(model.listeningHistory||[])];
+  if(!model.history.includes(session.sourceId))model.history.unshift(session.sourceId);
+ }
+}
+
 export function historySources(model,catalog,query='',type='all'){
  const fold=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
  const words=fold(query).trim().split(/\s+/).filter(Boolean),byId=new Map((catalog?.sources||[]).map(item=>[item.id,item]));
  return (model.history||[]).map(id=>byId.get(id)).filter(Boolean).filter(item=>{
   const server=catalog?.servers?.find(server=>server.id===item.serverId);
-  const text=fold([item.name,item.subtitle,item.type,item.kind,item.genre,item.artist,item.album,item.service,server?.name].filter(Boolean).join(' '));
+  const titles=(model.listeningHistory||[]).filter(entry=>entry.sourceId===item.id).flatMap(entry=>[entry.title,entry.artist,entry.album]);
+  const text=fold([item.name,item.subtitle,item.type,item.kind,item.genre,item.artist,item.album,item.service,server?.name,...titles].filter(Boolean).join(' '));
   return (type==='all'||item.type===type)&&words.every(word=>text.includes(word));
  });
 }

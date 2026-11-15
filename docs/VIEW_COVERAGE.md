@@ -24,7 +24,7 @@ Actions operate on local JSON simulation state. The table describes the behavior
 
 ## Scenario data
 
-Eight scenarios cover everyday use, nested groups, 50 devices, concurrent streams, maintenance states, varied capabilities, first run and update notifications. [Nested groups](GROUP_NESTING.md) demonstrates named floors sharing Whole home playback alongside an independent terrace stream. The 50-device scenario provides 38 playback targets after grouping and pairing.
+Nine scenarios cover everyday use, Now Playing metadata and playlists, nested groups, 50 devices, concurrent streams, maintenance states, varied capabilities, first run and update notifications. [Nested groups](GROUP_NESTING.md) demonstrates named floors sharing Whole home playback alongside an independent terrace stream. The 50-device scenario provides 38 playback targets after grouping and pairing.
 
 ## Integration plan
 

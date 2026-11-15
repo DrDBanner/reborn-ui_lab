@@ -31,6 +31,8 @@ Desktop route titles sit directly in the scrolling workspace. Device, pair and g
 
 Opening a device, pair or group through Outputs or a detail link selects its running or paused playback in the player. Members use their shared group playback. Opening an idle item keeps the existing player context. Navigation preserves all playback sources, statuses and volumes.
 
+The player places reported track title, artist and album beside the source. Missing metadata leaves that area hidden. Long track text scrolls only when it overflows, pauses on player hover or keyboard focus, and remains still with reduced motion. Narrow layouts stack source and track metadata while reserving the player's full height. Radio sources with a supplied station playlist offer a playlist lightbox.
+
 ## Media
 
 Radio, Library and Recently played share a search field beside the title. Filters sit below the heading, followed by the results. Recently played searches the complete saved source history and filters by media type. Starting playback retains older history entries.
@@ -136,3 +138,9 @@ Lightboxes soften their backdrop with a 2px blur and enter with a short fade and
 Appearance → App zoom enlarges the interface from 100% to 200%. At 100%, the browser's font and zoom preferences remain the base. Choosing a larger value applies an additional multiplier and persists as an application preference across scenarios. Design Lab exposes the same setting.
 
 Typography, spacing and UI dimensions use rem; inline text spacing can use em. Grid and Flex layouts adapt to the available width, and named app-container breakpoints follow the scaled root size. Dialogs stay within the dynamic viewport and scroll their contents. Fine borders and the measured Masonry row unit retain pixel sizing.
+
+The Now Playing scenario combines a radio stream, a library queue and Spotify metadata. Design Lab can advance the selected title to exercise updates and received-title history. Recently played exposes those received titles under a disclosure and includes artist and album in search. Radio rows indicate reported track information (`track_changes`) and station playlists with muted capability icons.
+
+The player playlist uses the queue title-row presentation: title, artist, album and known duration, with a marker for the current queue title. Previous/next and order changes are scoped to the bound library playback. Moving titles keeps the current track playing; source collection order remains separate. Radio title history is read-only.
+
+The Buttons on selector shares the preset header with Once/Twice and settings. Its label remains available to screen readers.

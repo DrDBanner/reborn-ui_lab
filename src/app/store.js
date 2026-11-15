@@ -1,5 +1,5 @@
-import {libraryQueueSources} from './library.js';
-import { validateScenario,normalizeScenario,availableUpdates,identificationSignals,identificationDuration,appearanceZoom } from './model.js';
+import {libraryQueueSources,manualLinkSources} from './library.js';
+import { validateScenario,normalizeScenario,availableUpdates,identificationSignals,identificationDuration,appearanceZoom,sourcePlaylist,rememberPlayingTracks } from './model.js';
 
 const listeners=new Set();
 const reportedUpdateKeys=new Map();
@@ -10,7 +10,7 @@ export const state={catalog:null,scenarioIndex:[],uiLayout:null,variants:null,sc
   updateChecked:false, radioFiltersOpen:false, appMenuOpen:false, presetGesture:'single', presetDeviceId:null, expandedPresetTargetId:null, expandingOutputs:false, alert:null};
 
 export function subscribe(listener){listeners.add(listener);return()=>listeners.delete(listener)}
-export function notify(){if(state.catalog&&state.model)state.catalog.sources=[...state.catalog.sources.filter(item=>item.origin!=='saved-library-queue'),...libraryQueueSources(state.model)];reportAvailableUpdates();for(const fn of listeners)fn(state)}
+export function notify(){if(state.catalog&&state.model)state.catalog.sources=[...state.catalog.sources.filter(item=>!['saved-library-queue','manual-playlist-link'].includes(item.origin)),...libraryQueueSources(state.model),...manualLinkSources(state.model)];reportAvailableUpdates();for(const fn of listeners)fn(state)}
 function reportAvailableUpdates(){
  if(!state.model)return;
  const updates=availableUpdates(state.model),seen=reportedUpdateKeys.get(state.scenarioId)||new Set(),fresh=updates.filter(update=>!seen.has(update.key));
@@ -20,7 +20,10 @@ function reportAvailableUpdates(){
   toast(`${fresh.length===1?'Update':'Updates'} available: ${description}`,{kind:'update',destination:'updates',announce:false});
  }
 }
-export function mutate(fn,persist=true){fn(state);if(persist)save();notify()}
+export function mutate(fn,persist=true){const previous=new Set(state.model?.sessions.map(session=>session.id));fn(state);
+ // In the lab, a newly started library queue begins at its first known title.
+ for(const session of state.model?.sessions||[]){if(previous.has(session.id)||session.trackId||session.nowPlaying!==undefined)continue;const item=state.catalog?.sources.find(item=>item.id===session.sourceId);if(item?.type==='library'){const track=sourcePlaylist(state.catalog,item.id)?.tracks[0];if(track?.id)session.trackId=track.id;}}
+ rememberPlayingTracks(state.model,state.catalog);if(persist)save();notify()}
 export function save(){if(!state.model)return;try{localStorage.setItem(`streborn-lab:${state.scenarioId}`,JSON.stringify(state.model));localStorage.setItem('streborn-lab:design',JSON.stringify(state.designTokens));localStorage.setItem('streborn-lab:app-settings',JSON.stringify(state.appSettings));}catch{}}
 let identificationTimer=null;
 export function stopDeviceIdentification(announce=true){
@@ -56,7 +59,7 @@ export async function loadScenario(id,initial=false,reset=false){
   const response=await fetch(`/data/scenarios/${id}.json`);if(!response.ok)throw new Error('Scenario file unavailable');
   const fixture=await response.json();let model=structuredClone(fixture),refreshed=false;
   if(!reset){try{const saved=localStorage.getItem(`streborn-lab:${id}`);if(saved){const candidate=JSON.parse(saved);if((candidate.fixtureRevision||0)===(fixture.fixtureRevision||0))model=candidate;else refreshed=true}}catch{}}
-  normalizeScenario(model,fixture);
+  normalizeScenario(model,fixture);rememberPlayingTracks(model,state.catalog);
   const errors=validateScenario(model);if(errors.length)throw new Error(errors.join('; '));
   state.scenarioId=id;state.model=model;state.view=model.activeView || 'listen';
   if(reset)reportedUpdateKeys.delete(id);

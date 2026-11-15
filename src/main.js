@@ -18,6 +18,7 @@ let renderedViewKey='';
 let renderedMenuOpen=false;
 let renderedRenameId=null;
 let renderedVolumeId=null;
+let renderedStationPlaylistId=null;
 let renderedCreateOpen=false;
 let renderedLibraryModalKey='';
 let renderedPickerSearchOpen=false;
@@ -30,6 +31,21 @@ let renderedDetailLayoutKey='';
 let detailBodyHeight=0;
 let renderedSidebarCollapsed=null;
 let playerPulseRequested=false;
+let playerTextObserver=null;
+function syncPlayerMarquees(){
+ playerTextObserver?.disconnect();
+ const fields=[...app.querySelectorAll?.('[data-player-marquee]')||[]];
+ function measure(){
+  for(const field of fields){
+   const text=field.querySelector('.player__scroll-text'),distance=Math.max(0,text.scrollWidth-field.clientWidth);
+   field.classList.toggle('is-overflowing',distance>2);
+   field.style.setProperty('--marquee-offset',`-${distance}px`);
+   field.style.setProperty('--marquee-duration',`${Math.max(12,distance/18+6)}s`);
+  }
+ }
+ measure();
+ if(typeof ResizeObserver!=='undefined'&&fields.length){playerTextObserver=new ResizeObserver(measure);fields.forEach(field=>playerTextObserver.observe(field));}
+}
 function render(){
  if(!state.model)return;
  presetPress.cancelPending();
@@ -41,6 +57,7 @@ function render(){
  // Tab changes keep the current item's workspace position. A different item/route resets it.
  const viewKey=[state.view,state.detailDeviceId,state.detailOutputId].join(':');
  if(!['outputs','sessions'].includes(state.view))state.outputCardOrder=null;
+ const openHistoryIds=new Set([...app.querySelectorAll?.('.history-tracks[open]')||[]].map(list=>list.closest('[data-history-source]').dataset.historySource));
  const openOutputIds=viewKey===renderedViewKey?new Set([...app.querySelectorAll?.('.output-members[open]')||[]].map(list=>list.closest('.output-card').dataset.outputId)):new Set();
  const detailView=['device','group'].includes(state.view);
  const detailLayoutKey=detailView?[viewKey,app.querySelector?.('.workspace')?.clientWidth||0,state.appSettings?.appearanceZoom,state.designTokens?.density,state.designTokens?.sidebarCollapsed].join(':'):'';
@@ -51,7 +68,9 @@ function render(){
  const focusValue=field?active.value:null;
  const identifyFocus=active?.dataset?.action==='device-identify'?{id:active.dataset.id,signal:active.dataset.signal}:null;
  const outputTransportId=active?.dataset?.action==='toggle-output-playback'?active.dataset.id:null;
+ const queueActionFocus=['player-previous','player-next','playback-queue-move'].includes(active?.dataset?.action)?{...active.dataset}:null;
  app.innerHTML=`<div class="app-shell ${playerContent?'has-player':''} ${state.designTokens?.sidebarCollapsed?'sidebar-is-collapsed':''}">${sidebar(state)}<div class="app-main">${header(state)}<main class="workspace" id="workspace">${workspaceHeader(state)}${view(state)}</main></div>${playerContent}</div>${appMenu(state)}${renderDialog(state)}${notificationStack(state)}`;
+ syncPlayerMarquees();
  const transport=app.querySelector?.('.transport-play');
  if(transport&&playerPulseRequested)transport.classList.add('is-transport-pulsing');
  else if(transport&&previousTransport&&previousTransport.dataset.session!==transport.dataset.session)transport.classList.add('is-transport-changing');
@@ -69,6 +88,7 @@ function render(){
  if(dialogKey&&dialogKey!==renderedDialogKey)app.querySelector?.('.overlay')?.classList.add('is-entering');
  renderedDialogKey=dialogKey;
  for(const list of app.querySelectorAll?.('.output-members')||[])list.open=openOutputIds.has(list.closest('.output-card').dataset.outputId);
+ for(const list of app.querySelectorAll?.('.history-tracks')||[])if(openHistoryIds.has(list.closest('[data-history-source]').dataset.historySource))list.open=true;
  layoutOutputCards();
  // Keep shorter tabs from shrinking the scroll range below the visible position.
  const detailBody=detailView?app.querySelector?.('.detail-body'):null;
@@ -77,12 +97,17 @@ function render(){
  for(const {selector,top} of scrollPositions){const element=app.querySelector?.(selector);if(element&&(selector!=='.workspace'||viewKey===renderedViewKey))element.scrollTop=top;}
  renderedViewKey=viewKey;
  if(identifyFocus)[...app.querySelectorAll?.('[data-action=device-identify]')||[]].find(button=>button.dataset.id===identifyFocus.id&&button.dataset.signal===identifyFocus.signal)?.focus({preventScroll:true});
+ if(queueActionFocus){const buttons=[...app.querySelectorAll?.('[data-action]')||[]],same=buttons.find(button=>button.dataset.action===queueActionFocus.action&&button.dataset.id===queueActionFocus.id&&button.dataset.session===queueActionFocus.session&&button.dataset.value===queueActionFocus.value&&!button.disabled),fallback=queueActionFocus.action==='playback-queue-move'?buttons.find(button=>button.dataset.action===queueActionFocus.action&&button.dataset.id===queueActionFocus.id&&!button.disabled):transport;(same||fallback)?.focus({preventScroll:true});}
  if(outputTransportId)Array.from(app.querySelectorAll?.('.output-transport')||[]).find(button=>button.dataset.id===outputTransportId)?.focus({preventScroll:true});
  for(const checkbox of app.querySelectorAll?.('.transfer-target-heading input[aria-checked="mixed"]')||[])checkbox.indeterminate=true;
  const renameId=state.modal?.kind==='rename'?state.modal.deviceId:null;
  if(renameId&&renameId!==renderedRenameId){const input=app.querySelector?.('#device-name');input?.focus();input?.select();}
  if(!renameId&&renderedRenameId&&['device','group'].includes(state.view))app.querySelector?.('.title-edit')?.focus({preventScroll:true});
  renderedRenameId=renameId;
+ const playlistId=state.modal?.kind==='station-playlist'?state.modal.sourceId:state.modal?.kind==='playlist-link'?'spotify-new':null;
+ if(playlistId&&playlistId!==renderedStationPlaylistId)app.querySelector?.(state.modal?.kind==='playlist-link'?'#playlist-name':'.modal-window__close button')?.focus({preventScroll:true});
+ if(!playlistId&&renderedStationPlaylistId)[...app.querySelectorAll?.('[data-action=station-playlist]')||[]].find(button=>button.dataset.id===renderedStationPlaylistId)?.focus({preventScroll:true});
+ renderedStationPlaylistId=playlistId;
  const volumeId=state.modal?.kind==='volume'?state.modal.sessionId:null;
  if(volumeId&&volumeId!==renderedVolumeId)app.querySelector?.('#dialog-overall-volume')?.focus({preventScroll:true});
  if(!volumeId&&renderedVolumeId)app.querySelector?.('.volume-details-trigger')?.focus({preventScroll:true});
@@ -124,15 +149,16 @@ function syncSidebarAccess(){
  }
 }
 window.addEventListener('resize',syncSidebarAccess);
+document.fonts?.ready?.then(syncPlayerMarquees);
 subscribe(render);
 document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();playerPulseRequested=button.dataset.action==='player-toggle'||button.dataset.action==='toggle-output-playback'&&button.dataset.id===app.querySelector?.('.transport-play')?.dataset.session;onAction(button.dataset.action,button);playerPulseRequested=false}});
 document.addEventListener('change',event=>{const field=event.target.closest('[data-field]');if(field)onField(field.dataset.field,field)});
 document.addEventListener('wheel',onRangeWheel,{passive:false});
-document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','history-search','library-page-search','output-search','output-source-search','picker-query','accent','device-name','composite-name','preset-search','library-name','library-address','library-query','library-new-queue','library-queue-name'].includes(field.dataset.field))onField(field.dataset.field,field)});
+document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','history-search','library-page-search','output-search','output-source-search','picker-query','accent','device-name','composite-name','preset-search','library-name','library-address','playlist-name','playlist-address','library-query','library-new-queue','library-queue-name'].includes(field.dataset.field))onField(field.dataset.field,field)});
 document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&event.target.dataset?.field==='library-page-search'){event.preventDefault();onAction('library-page-mode',{dataset:{value:'titles'}});}
  if(event.key==='Enter'&&state.modal?.kind==='rename'&&event.target.dataset?.field==='device-name'){event.preventDefault();onAction('device-rename-save',document.createElement('button'));}
- if(event.key==='Tab'&&['library-search','library-queue','release-notes','preset','source-picker','member-change'].includes(state.modal?.kind)){
+ if(event.key==='Tab'&&['playlist-link','station-playlist','library-search','library-queue','release-notes','preset','source-picker','member-change'].includes(state.modal?.kind)){
   const controls=[...document.querySelectorAll('.modal-window button:not(:disabled),.modal-window input:not(:disabled),.modal-window select:not(:disabled),.modal-window a[href]')].filter(el=>el.getClientRects().length);
   const first=controls[0],last=controls.at(-1);if(controls.length&&(event.shiftKey&&document.activeElement===first||!event.shiftKey&&document.activeElement===last)){event.preventDefault();(event.shiftKey?last:first).focus();}
  }

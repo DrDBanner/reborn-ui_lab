@@ -5,6 +5,11 @@
     "description": "9 speakers: individual devices, a standalone stereo pair, an active room group and two streams"
   },
   {
+    "id": "now-playing",
+    "name": "Now Playing",
+    "description": "Track, artist and album metadata, long titles, station playlists, queue and concurrent streams"
+  },
+  {
     "id": "nested-groups",
     "name": "Nested groups",
     "description": "Whole home contains Downstairs and Upstairs; open their details, separate and rejoin them"

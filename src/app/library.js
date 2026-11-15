@@ -9,13 +9,15 @@ export function normalizeLibraryAddress(value){
  if(!['http:','https:'].includes(url.protocol)||!url.hostname||url.username||url.password||url.hash)throw new Error('Use an HTTP or HTTPS address without login details or a fragment');
  return url.href;
 }
-export function addLibraryServer(servers,discovered,name,address){
+export function addLibraryServer(servers,discovered,name,address,sourceKind='server'){
  const label=String(name||'').trim();
  if(!label||label.length>120)throw new Error('Enter a source name of up to 120 characters');
- const normalized=normalizeLibraryAddress(address);
+ const normalized=normalizeLibraryAddress(address),url=new URL(normalized);
+ if(url.hostname==='open.spotify.com'||url.hostname.endsWith('.spotify.com'))throw new Error('Add Spotify playlist links in Spotify.');
+ const playlistFormat=url.pathname.match(/\.(m3u8?|pls|xspf)$/i)?.[1]?.toLowerCase();
  if([...servers,...discovered].some(server=>normalizeLibraryAddress(server.address)===normalized))throw new Error('This server is already listed');
  let number=1;while([...servers,...discovered].some(server=>server.id==='manual-library-'+number))number++;
- return {id:'manual-library-'+number,name:label,address:normalized,folders:[],manual:true};
+ return {id:'manual-library-'+number,name:label,address:normalized,folders:[],manual:true,...(sourceKind==='playlist'||playlistFormat?{sourceKind:'playlist',playlistFormat:playlistFormat||'auto'}:{})};
 }
 
 export function searchLibraryTracks(model,catalog,{query='',serverId='all'}={}){
@@ -83,3 +85,15 @@ export function libraryQueueSources(model){
  return (model.libraryQueues||[]).filter(queue=>queue.trackIds.length).map(queue=>({id:queue.id,name:queue.name,type:'library',kind:'queue',origin:'saved-library-queue',subtitle:`${queue.trackIds.length} titles · Saved queue`,color:'#708b9e',trackIds:[...queue.trackIds]}));
 }
 export function libraryDuration(seconds){const value=Math.max(0,Number(seconds)||0);return Math.floor(value/60)+':'+String(value%60).padStart(2,'0')}
+
+export function addSpotifyPlaylist(existing,name,address){
+ const label=String(name||'').trim();if(!label||label.length>120)throw new Error('Enter a playlist name of up to 120 characters');
+ const url=new URL(normalizeLibraryAddress(address)),match=url.pathname.match(/^\/(?:intl-[a-z]{2}\/)?playlist\/([a-zA-Z0-9]{22})\/?$/);
+ if(url.hostname!=='open.spotify.com'||!match)throw new Error('Use an open.spotify.com/playlist/… link');
+ const playlistUrl='https://open.spotify.com/playlist/'+match[1],id='spotify-link-'+match[1];
+ if(existing.some(item=>item.id===id||item.playlistUrl===playlistUrl))throw new Error('This Spotify playlist is already listed');
+ return {id,name:label,type:'spotify',kind:'playlist',playlistUrl,subtitle:'Spotify playlist',origin:'manual-playlist-link'};
+}
+export function manualLinkSources(model){
+ return [...(model.libraryServers||[]).filter(server=>server.sourceKind==='playlist').map(server=>({id:server.id,name:server.name,type:'library',kind:'playlist',serverId:server.id,playlistUrl:server.address,playlistFormat:server.playlistFormat||'auto',subtitle:(server.playlistFormat||'Playlist').toUpperCase()+' · Playlist link',origin:'manual-playlist-link'})),...(model.spotifyPlaylists||[]).map(item=>({...item,origin:'manual-playlist-link'}))];
+}

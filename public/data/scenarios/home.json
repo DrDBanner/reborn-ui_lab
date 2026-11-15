@@ -755,7 +755,12 @@
       "targetId": "g1",
       "sourceId": "flux",
       "status": "playing",
-      "volume": 25
+      "volume": 25,
+      "nowPlaying": {
+        "title": "The Long Way Home Through Empty Streets Before the City Wakes Up",
+        "artist": "Mira Lane",
+        "album": "Quiet Sunday — Notes from the Window Seat and Other Slow Journeys"
+      }
     },
     {
       "id": "s2",

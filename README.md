@@ -26,6 +26,26 @@ Open the standalone HTML directly in a browser. For the module preview, serve th
 
 Group membership brings multiroom, stereo pairs, temporary/saved groups and nested rooms into the same item details. [Concept and controls](docs/GROUP_MEMBERSHIP.md) explain who plays together and how playback and device functions relate.
 
+### VS Code Live Server · phones and tablets
+
+Open the repository folder in VS Code and install [Live Server by Ritwick Dey](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer). Add these [Live Server settings](https://ritwickdey.github.io/vscode-live-server/docs/settings.html) to your workspace’s `.vscode/settings.json`:
+
+```json
+{
+  "liveServer.settings.host": "0.0.0.0",
+  "liveServer.settings.useLocalIp": true,
+  "liveServer.settings.port": 5500
+}
+```
+
+For a `.code-workspace` file, put these keys inside its existing `"settings"` object.
+
+1. Right-click `preview.html` → **Open with Live Server**. Keep the repository folder as the server root.
+2. Connect your phone, tablet or another computer to the same local network.
+3. Open `http://<computer-LAN-IP>:5500/preview.html`, for example `http://192.168.0.42:5500/preview.html`. Find the computer’s LAN address in its network settings; `localhost` refers to the device opening the page.
+
+Allow incoming connections for VS Code if the computer’s firewall asks. The network must allow devices to communicate. Saved code changes refresh connected browsers; each browser keeps its own simulated scenario state.
+
 ## Scenarios
 
 Select a scenario through the logo menu or Design Lab. Reset reloads its shipped fixture.

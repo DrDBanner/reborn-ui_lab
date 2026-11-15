@@ -8,7 +8,8 @@ Run `python3 scripts/vendor-material-icons.py` to regenerate assets and resolve 
 
 | Symbol | Use |
 |---|---|
-| `speaker` / `speaker_group` / `hub` | Device, stereo pair and group types |
+| `speaker` / `speaker_group` | Device and stereo pair types |
+| `lan` | Group type and Add to existing group |
 | `play_circle` / `pause_circle` | Immediate playback actions |
 | `music_cast` | Output selection and stream indicators |
 | `read_more` | Open the current player's media view |

@@ -51,9 +51,9 @@ Collections show their source server and follow the server selection. Search lib
 
 ## Output workspace
 
-Playback targets lists each top-level device, pair or group once. All devices lists every physical endpoint with its parent relationship. Cards share identity, availability, source/state and a Details action. Member lists expand within the card; `open_in_new` opens a member's details.
+Playback targets lists each top-level device, pair or group once. All devices lists every physical endpoint with its parent relationship. Cards lead with the item name. The smaller, muted source row follows the content inset below it and names the medium before the title, for example Radio · NDR Info. Members uses the same inset. The source title opens source selection; hover highlights its text without a filled surface or dropdown chevron. Availability appears as a small dot: green online, gray offline, yellow updating and red for a reported device error; a tooltip and accessible text name the state. Running streams show blue music_cast, changing to Pause on hover/focus. Paused and stopped controls remain neutral. Inherited running streams show the same blue playback indicator and name their group once. The header's open icon shows details on hover/focus and stays visible on touch. Member lists expand within their own card; a measured Masonry grid packs following cards into available space without changing DOM or keyboard order. Viewport and member changes trigger remeasurement. `open_in_new` opens a member's details.
 
-Search, type and Active only filters apply to the workspace. The N scenario contains 50 physical devices and 38 playback targets.
+On entering the workspace, playing targets appear first. Card order stays fixed while changing playback, sources, filters or volume; newly available targets append. Reopening the workspace refreshes playback priority. Expanded member lists and transport keyboard focus survive playback changes. Search, type and Active only filters apply to the workspace. The N scenario contains 50 physical devices and 38 playback targets.
 
 ## Item details
 
@@ -64,7 +64,15 @@ Devices, pairs and groups share this order:
 3. Group Members.
 4. Capability-specific tabs and their content.
 
-Presets use at most three columns, adapting to two or one at narrower widths. Buttons on selects the physical owner of the bank; Once/Twice selects its gesture layer. The adjacent gear reveals assignment editing, transfer and source metadata.
+Presets use at most three columns, adapting to two or one at narrower widths. Groups and pairs offer Buttons on to select the physical owner of the bank. A device uses its own bank. Once/Twice and the settings gear sit in the preset header at the top right; the gear reveals assignment editing, transfer and source metadata.
+
+Hold a preset for 700 ms to open assignment editing with that device, key and gesture layer selected. The button fills from right to left while holding. Releasing early, dragging or scrolling cancels the hold; a short click plays an assigned preset. Unassigned keys open assignment editing on click. Editing keeps playback and saved assignments unchanged until Save assignments.
+
+Assignment editing shows a compact key list next to the source browser. The gesture layer appears in the dialog heading. A single available playback shows its source and output with a direct Assign action; several playbacks offer a selector, and no playback hides that section. Assignment updates remain drafts until saved.
+
+In the output overview, Choose source or clicking the current source opens source selection bound to that playback target. Source types and search cover radio, library, Spotify and services. Choosing a source starts playback on that target; other independent streams continue. Cards show the speaker count once in their heading and offer Members and the details icon for further information.
+
+Item details link directly to their parent by name next to All outputs. A device opens its pair or group; a nested group opens the next enclosing group. Each step follows the current membership hierarchy.
 
 Tabs preserve workspace scroll position within the same item. Changing item or route starts the workspace at the top. Visited tabs reserve their content height for the current item and layout, so shorter tabs preserve the scroll range. Changing item, width or display density recalculates that height.
 
@@ -106,4 +114,8 @@ Reported app/device update availability produces one toast for newly reported ta
 
 Light appearance uses neutral surfaces; selection uses the accent color. Flat surfaces, consistent insets and grid columns establish alignment. Secondary icons use muted color until hover/focus. Member Open/Remove actions appear on row hover or keyboard focus and stay visible on touch. Saved favorites use pink-red; unselected hearts use that color on hover/focus.
 
+Radio artwork placeholders share a neutral surface and foreground across media lists and the player. Radio source icons in presets use the same neutral foreground. Output cards show the medium as inline text before the source title.
+
 Scrollable forms reserve room for focus outlines. Full-width list actions use inset focus rings. Entity icons carry screen-reader type labels; icon buttons carry action labels.
+
+Lightboxes soften their backdrop with a 2px blur and enter with a short fade and 6px vertical motion. Form updates keep the dialog steady. Hover colors and playback symbols crossfade; text-link underlines grow from the left. Reduced Motion disables these animations and transitions.

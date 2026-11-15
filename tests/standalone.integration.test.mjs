@@ -86,6 +86,27 @@ test('radio information has an explicit insight action and preserves playback',a
  assert.equal(vm.runInContext('JSON.stringify(state.model.sessions)',ctx),before);
 });
 
+test('output picker lists playing then paused targets and identifies their sources before replacement',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ run("state.model.sessions.find(s=>s.id==='s1').status='paused';state.model.sessions.push({id:'stopped-test',targetId:'d7',sourceId:'ffn',status:'stopped',volume:20})");
+ const before=run('JSON.stringify(state.model.sessions)'),order=run('JSON.stringify(visibleOutputs(state.model).map(t=>t.id))');
+ await run("onAction('source-select',{dataset:{id:'discover'}})");
+ const rows=[...app.innerHTML.matchAll(/class="modal-output picker-output" data-action="assign-output" data-id="([^"]+)"[\s\S]*?<\/button>/g)];
+ assert.deepEqual(rows.slice(0,2).map(row=>row[1]),['d4','g1']);
+ assert(rows[0][0].includes('Playing · NDR Info'));assert(rows[0][0].includes('class="picker-replacement"'));
+ assert(rows[1][0].includes('Paused · FluxFM'));assert(rows[1][0].includes('class="picker-replacement"'));
+ assert(!rows.find(row=>row[1]==='d7')[0].includes('picker-playback'));
+ assert.equal(run('JSON.stringify(state.model.sessions)'),before);
+ assert.equal(run('JSON.stringify(visibleOutputs(state.model).map(t=>t.id))'),order);
+ run("state.view='outputs';notify()");
+ const cards=[...app.innerHTML.matchAll(/class="target-card__title"><strong>([^<]+)<\/strong>/g)];
+ assert.deepEqual(cards.slice(0,2).map(card=>card[1]),['Office','Downstairs']);
+ await run("onAction('assign-output',{dataset:{id:'d4'}})");
+ assert.equal(run("state.model.sessions.find(s=>s.targetId==='d4').sourceId"),'discover');
+ assert.equal(run("state.model.sessions.find(s=>s.targetId==='g1').sourceId"),'flux');
+ assert.equal(run("state.model.sessions.find(s=>s.targetId==='g1').status"),'paused');
+});
+
 test('range wheel supports mouse and fine touchpad movement with bounds and disabled controls',async()=>{
  const {ctx}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
  run(`var wheelTarget={dataset:{field:'volume'},value:String(currentSession(state.model).volume),min:'0',max:'100',step:'1',disabled:false,focus(){},closest(){return this}};
@@ -418,9 +439,9 @@ test('player output picker can join a member and keeps its bound playback when p
  const {ctx,app}=boot();await ready();const before=vm.runInContext('JSON.stringify(state.model)',ctx);
  await vm.runInContext("onAction('open-output-picker',{dataset:{}})",ctx);
  assert(app.innerHTML.includes('As member'));assert.equal(vm.runInContext('state.modal.asMember',ctx),false);
- await vm.runInContext("onField('picker-as-member',{checked:true});onAction('close-modal',{dataset:{}})",ctx);
+ await vm.runInContext("onField('picker-mode',{value:'member',checked:true});onAction('close-modal',{dataset:{}})",ctx);
  assert.equal(vm.runInContext('JSON.stringify(state.model)',ctx),before);
- await vm.runInContext("onAction('open-output-picker',{dataset:{}});onField('picker-as-member',{checked:true});onField('session',{value:'s2'});onAction('assign-output',{dataset:{id:'d5'}})",ctx);
+ await vm.runInContext("onAction('open-output-picker',{dataset:{}});onField('picker-mode',{value:'member',checked:true});onField('session',{value:'s2'});onAction('assign-output',{dataset:{id:'d5'}})",ctx);
  assert.equal(vm.runInContext("state.model.groups[0].memberIds.includes('d5')",ctx),true);
  assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s1').sourceId",ctx),'flux');
  assert.equal(vm.runInContext('state.model.sessions.length',ctx),2);
@@ -432,7 +453,7 @@ test('unchecked player casting stays independent and list pickers offer the same
  assert.equal(vm.runInContext('state.model.sessions.length',ctx),3);assert.equal(vm.runInContext('state.model.groups.length',ctx),1);
  assert.equal(vm.runInContext('state.toasts.at(-1).message',ctx),'Playing FluxFM on Terrace L');
  await vm.runInContext("onAction('source-select',{dataset:{id:'ndr2'}})",ctx);
- assert(app.innerHTML.includes('data-field="picker-as-member"'));
+ assert(app.innerHTML.includes('data-field="picker-mode"'));
  await vm.runInContext("onAction('assign-output',{dataset:{id:'d5'}})",ctx);
  assert.equal(vm.runInContext('state.toasts.at(-1).message',ctx),'Playing NDR 2 on Terrace L');
  await vm.runInContext("onAction('source-play',{dataset:{id:'flux',target:'d5'}})",ctx);
@@ -440,7 +461,7 @@ test('unchecked player casting stays independent and list pickers offer the same
 });
 test('stale member joins fail without changing topology or playback',async()=>{
  const {ctx}=boot();await ready();
- await vm.runInContext("onAction('open-output-picker',{dataset:{}});onField('picker-as-member',{checked:true});state.model.sessions.find(s=>s.id==='s1').status='stopped'",ctx);
+ await vm.runInContext("onAction('open-output-picker',{dataset:{}});onField('picker-mode',{value:'member',checked:true});state.model.sessions.find(s=>s.id==='s1').status='stopped'",ctx);
  const before=vm.runInContext('JSON.stringify(state.model)',ctx);
  await vm.runInContext("onAction('assign-output',{dataset:{id:'d5'}})",ctx);
  assert.equal(vm.runInContext('JSON.stringify(state.model)',ctx),before);assert.equal(vm.runInContext('state.modal.kind',ctx),'picker');
@@ -449,7 +470,7 @@ test('stale member joins fail without changing topology or playback',async()=>{
 
 test('list Choose output joins the player output and explicitly applies the selected source to the whole group',async()=>{
  const {ctx,app}=boot();await ready();
- await vm.runInContext("onAction('source-select',{dataset:{id:'ndr2'}});onField('picker-as-member',{checked:true})",ctx);
+ await vm.runInContext("onAction('source-select',{dataset:{id:'ndr2'}});onField('picker-mode',{value:'member',checked:true})",ctx);
  assert(app.innerHTML.includes('FluxFM on Downstairs will be replaced by NDR 2 for the whole output.'));
  await vm.runInContext("onAction('assign-output',{dataset:{id:'d5'}})",ctx);
  assert.equal(vm.runInContext("state.model.groups[0].memberIds.includes('d5')",ctx),true);
@@ -457,13 +478,50 @@ test('list Choose output joins the player output and explicitly applies the sele
  assert.equal(vm.runInContext("state.model.sessions.find(s=>s.id==='s2').sourceId",ctx),'ndrinfo');
  assert(vm.runInContext('state.toasts.at(-1).message',ctx).includes('NDR 2 on Downstairs'));
 });
-test('list picker shows disabled membership when no current playback exists',async()=>{
+test('list picker offers Play together when no current playback exists',async()=>{
  const {ctx,app}=boot();await ready();
  await vm.runInContext("state.model.sessions.forEach(s=>s.status='stopped');onAction('source-select',{dataset:{id:'flux'}})",ctx);
- assert(app.innerHTML.includes('data-field="picker-as-member"  disabled'));
- assert(app.innerHTML.includes('Start or select a playback to join.'));
+ assert(app.innerHTML.includes('Play together'));
+ assert(!app.innerHTML.includes('data-field="picker-mode" value="member"  disabled'));
  await vm.runInContext("onAction('assign-output',{dataset:{id:'d5'}})",ctx);
  assert.equal(vm.runInContext("state.model.sessions.find(s=>s.targetId==='d5').status",ctx),'playing');
+});
+
+test('member picker remains open for N additions and creates an ad-hoc group from silence',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("state.model.sessions.forEach(s=>s.status='stopped');onAction('source-select',{dataset:{id:'flux'}});onField('picker-mode',{value:'member',checked:true})");
+ await run("onAction('assign-output',{dataset:{id:'d5'}})");
+ assert.equal(run('state.modal.kind'),'picker');assert(app.innerHTML.includes('Add members to Terrace L'));
+ await run("onAction('assign-output',{dataset:{id:'d6'}});onAction('assign-output',{dataset:{id:'d7'}})");
+ assert.equal(run('state.modal.kind'),'picker');assert.equal(run('state.modal.joinedTargetIds.length'),3);
+ assert.equal(run("leafDeviceIds(state.model,state.modal.joinContext.targetId).slice().sort().join(',')"),'d5,d6,d7');
+ assert.equal(run('entity(state.model,state.modal.joinContext.targetId).persistent'),false);
+ assert(app.innerHTML.includes('3 outputs added'));assert(app.innerHTML.includes('>Done</button>'));
+ const row=app.innerHTML.match(/class="modal-output picker-output" data-action="assign-output" data-id="d6"[\s\S]*?<\/button>/)?.[0];
+ assert(row?.includes('disabled'));assert(row.includes('Added'));assert(row.includes('data-icon="check_circle"'));
+ const before=run('JSON.stringify(state.model)');await run("onAction('assign-output',{dataset:{id:'d6'}})");
+ assert.equal(run('JSON.stringify(state.model)'),before);assert.equal(run('state.toasts.at(-1).kind'),'error');
+ await run("onAction('close-modal',{dataset:{}})");assert.equal(run('JSON.stringify(state.model)'),before);
+ assert.equal(run('state.model.sessions.filter(s=>s.status===\'playing\').length'),1);
+});
+
+test('picker search is revealed above eight outputs and filters name, model and source',async()=>{
+ const {ctx,app}=boot();await ready();const run=code=>vm.runInContext(code,ctx);
+ await run("onAction('source-select',{dataset:{id:'flux'}})");assert(!app.innerHTML.includes('picker-search-toggle'));
+ await run("loadScenario('many',false,true)");await run("onAction('source-select',{dataset:{id:'flux'}})");
+ assert(app.innerHTML.includes('picker-search-toggle'));assert(!app.innerHTML.includes('id="picker-query"'));
+ const before=run('JSON.stringify(state.model.sessions)');
+ await run("onAction('picker-toggle-search',{dataset:{}});onField('picker-query',{value:'Office Wing'})");
+ let rows=[...app.innerHTML.matchAll(/class="modal-output picker-output" data-action="assign-output" data-id="([^"]+)"[\s\S]*?<\/button>/g)];
+ assert.equal(rows.length,1);assert(rows[0][0].includes('Office Wing'));
+ await run("onField('picker-query',{value:'FluxFM'})");
+ rows=[...app.innerHTML.matchAll(/class="modal-output picker-output" data-action="assign-output" data-id="([^"]+)"[\s\S]*?<\/button>/g)];
+ assert(rows.length>0);assert(rows.every(row=>row[0].includes('Playing · FluxFM')||row[0].includes('Paused · FluxFM')));
+ await run("onField('picker-query',{value:'no-such-output'})");assert(app.innerHTML.includes('No matching outputs.'));
+ await run("onAction('picker-toggle-search',{dataset:{}})");assert.equal(run('state.modal.query'),'');assert(!app.innerHTML.includes('id="picker-query"'));
+ assert.equal(run('JSON.stringify(state.model.sessions)'),before);
+ run("state.model.groups=[];state.model.pairs=[];state.model.sessions=[];state.model.devices=state.model.devices.slice(0,8);notify()");
+ assert(!app.innerHTML.includes('picker-search-toggle'));
 });
 
 test('group gear drafts persistence, main speaker and remote group keys without affecting playback',async()=>{

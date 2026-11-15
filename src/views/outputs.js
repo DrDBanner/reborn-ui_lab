@@ -1,7 +1,7 @@
 import {renderItemDetail} from './item-detail.js';
 import {groupFunctionDevices,renderGroupFunctions} from './device-functions.js';
 import {esc,icon,action,card,empty,statusBadge,typeIcon,deviceProduct} from '../components/shared.js';
-import {kind,entity,parentIds,targetStatus,leafDeviceIds,effectiveSessionFor,source,visibleOutputs,buttonProfile} from '../app/model.js';
+import {kind,entity,parentIds,targetStatus,leafDeviceIds,effectiveSessionFor,source,visibleOutputs,outputsByPlayback,buttonProfile} from '../app/model.js';
 
 const filters=[['all','All outputs'],['device','Speakers'],['pair','Stereo pairs'],['group','Groups']];
 function outputCard(s,t){
@@ -17,7 +17,7 @@ function outputCard(s,t){
 }
 export function renderOutputs(s){
  const m=s.model,physical=m.ui.outputView==='devices',filter=m.ui.outputFilter||'all',q=s.outputSearch.toLowerCase(),activeOnly=m.ui.outputScope==='active',outputs=visibleOutputs(m);
- const targets=(physical?m.devices:outputs).filter(item=>(filter==='all'||physical||kind(m,item.id)===filter)&&item.name.toLowerCase().includes(q)&&(!activeOnly||effectiveSessionFor(m,item.id)?.status&&effectiveSessionFor(m,item.id).status!=='stopped'));
+ const targets=outputsByPlayback(m,(physical?m.devices:outputs).filter(item=>(filter==='all'||physical||kind(m,item.id)===filter)&&item.name.toLowerCase().includes(q)&&(!activeOnly||effectiveSessionFor(m,item.id)?.status&&effectiveSessionFor(m,item.id).status!=='stopped')));
  return `<div class="output-workspace-heading"><div class="segmented output-view-tabs" aria-label="Output views">${action('output-view',`Playback targets <span>${outputs.length}</span>`,`tab-control ${!physical?'active':''}`,'data-value="outputs" aria-pressed="'+!physical+'"')}${action('output-view',`All devices <span>${m.devices.length}</span>`,`tab-control ${physical?'active':''}`,'data-value="devices" aria-pressed="'+physical+'"')}</div><div class="output-create-actions">${action('start-group-create',icon('group_add')+' Create group','btn-soft')}</div></div>
  <div class="output-toolbar"><label class="search-field">${icon('search')}<input type="search" data-field="output-search" value="${esc(s.outputSearch)}" placeholder="${physical?'Find a device':'Find a playback target'}" aria-label="Search devices and groups" /></label>${!physical?`<select class="small-select" data-field="output-type" aria-label="Output type">${filters.map(([id,name])=>`<option value="${id}" ${filter===id?'selected':''}>${name}</option>`).join('')}</select>`:''}${action('filter-output-scope',icon('music_cast')+' Active only',`btn-quiet scope-filter ${activeOnly?'is-active':''}`,`aria-pressed="${activeOnly}"`)}</div>
  <p class="output-result-count">${targets.length} ${physical?'devices':'playback targets'}${activeOnly?' with playback':''} · ${physical?'Every physical device, including group and pair members':'One speaker, stereo pair or group per target'}</p>

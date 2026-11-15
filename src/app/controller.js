@@ -68,10 +68,11 @@ export async function onAction(action,element){
  case 'open-output-picker':{const playback=currentSession(m);mutate(s=>{s.speakerPickerFor=playback?.sourceId||m.selectedSourceId||'flux';s.modal={kind:'picker',sourceId:s.speakerPickerFor,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
  case 'source-play':{if(!source(state.catalog,id))throw new Error('Source no longer available');const targetId=currentSession(m)?.targetId;if(!targetId||element.dataset.target!==targetId)throw new Error('Playback output changed; choose the current output again');mutate(s=>{assignSource(s.model,id,targetId);s.model.history=[id,...s.model.history.filter(item=>item!==id)].slice(0,20)});toast(playbackNotice(id,targetId));break;}
  case 'source-select':{const playback=currentSession(m);mutate(s=>{s.model.selectedSourceId=id;s.speakerPickerFor=id;s.modal={kind:'picker',sourceId:id,asMember:false,joinContext:playback?{sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId}:null}},false);break;}
+ case 'picker-toggle-search':if(state.modal?.kind==='picker')mutate(s=>{s.modal.searchOpen=!s.modal.searchOpen;if(!s.modal.searchOpen)s.modal.query=''},false);break;
  case 'assign-output':{
   const modal=state.modal,src=modal?.sourceId||state.speakerPickerFor||m.selectedSourceId||currentSession(m)?.sourceId||'flux';
   if(modal?.kind==='picker'&&modal.asMember){
-   let outputId;mutate(s=>{if(!source(state.catalog,src))throw new Error('Source no longer available');outputId=joinPlayback(s.model,modal.joinContext,id,src);s.model.history=[src,...s.model.history.filter(item=>item!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null});toast(`${source(state.catalog,src)?.name} on ${entity(m,outputId)?.name} · ${entity(m,id)?.name} joined`);
+   let outputId;mutate(s=>{if(!source(state.catalog,src))throw new Error('Source no longer available');if(modal.joinContext)outputId=joinPlayback(s.model,modal.joinContext,id,src);else{assignSource(s.model,src,id);outputId=currentSession(s.model).targetId;}const playback=currentSession(s.model);modal.joinContext={sessionId:playback.id,targetId:playback.targetId,sourceId:playback.sourceId};modal.joinedTargetIds=[...new Set([...(modal.joinedTargetIds||[]),id])];s.model.history=[src,...s.model.history.filter(item=>item!==src)].slice(0,20);});toast(`${source(state.catalog,src)?.name} on ${entity(m,outputId)?.name} · ${entity(m,id)?.name} joined`);
   }else{mutate(s=>{assignSource(s.model,src,id);s.model.history=[src,...s.model.history.filter(x=>x!==src)].slice(0,20);s.modal=null;s.speakerPickerFor=null});toast(playbackNotice(src,id))}break;
  }
  case 'source-info':{const d=source(state.catalog,id);generic(d?.name||'Source',`${d?.type||''} · ${d?.country||''} · ${d?.bitrate||''}`,`<div class="key-values"><div><span>Genre</span><strong>${esc(d?.genre)}</strong></div><div><span>Station</span><strong>${esc(d?.subtitle)}</strong></div></div>`);break}
@@ -205,6 +206,7 @@ export async function onAction(action,element){
 export async function onField(field,target){
  const m=state.model,val=target.value;
  try{switch(field){
+ case 'picker-query':if(state.modal?.kind==='picker')mutate(s=>s.modal.query=val,false);break;
  case 'release-note-version':if(state.modal?.kind==='release-notes'&&releaseNoteVersions(state,state.modal.targetId).includes(val))mutate(s=>s.modal.version=val,false);break;
  case 'library-name':case 'library-address':if(state.modal?.kind==='library-settings')mutate(s=>s.modal[field==='library-name'?'name':'address']=val,false);break;
  case 'library-query':case 'library-new-queue':if(state.modal?.kind==='library-search')mutate(s=>s.modal[field==='library-query'?'query':'newName']=val,false);break;
@@ -213,7 +215,7 @@ export async function onField(field,target){
  case 'library-queue-name':if(state.modal?.kind==='library-queue')mutate(s=>s.modal.draft.name=val,false);break;
  case 'library-discovered':if(state.modal?.kind==='library-settings')mutate(s=>s.modal.showDiscovered=target.checked,false);break;
  case 'scenario':await loadScenario(val,false,true);break;
- case 'picker-as-member':if(state.modal?.kind==='picker'&&state.modal.joinContext){const error=playbackJoinError(m,state.modal.joinContext);if(target.checked&&error)throw new Error(error);mutate(s=>s.modal.asMember=target.checked,false)}break;
+ case 'picker-mode':if(state.modal?.kind==='picker'&&['member','separate'].includes(val)&&target.checked!==false){const joining=val==='member',error=state.modal.joinContext?playbackJoinError(m,state.modal.joinContext):null;if(joining&&error)throw new Error(error);mutate(s=>{s.modal.asMember=joining;if(joining)s.modal.candidateIds=visibleOutputs(s.model).map(target=>target.id)},false)}break;
  case 'button-transfer-overwrite':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.overwrite=target.checked,false);break;
  case 'button-transfer-key':if(state.modal?.kind==='button-transfer')mutate(s=>s.modal.keys=target.checked?[...new Set([...s.modal.keys,val])]:s.modal.keys.filter(item=>item!==val),false);break;
  case 'button-transfer-target':if(state.modal?.kind==='button-transfer')mutate(s=>{const selected=new Set(s.modal.targetIds.flatMap(id=>leafDeviceIds(m,id))),ids=leafDeviceIds(m,val).filter(id=>id!==s.modal.deviceId&&buttonProfile(entity(m,id))&&entity(m,id).status==='online');for(const id of ids)target.checked?selected.add(id):selected.delete(id);s.modal.targetIds=[...selected]},false);break;

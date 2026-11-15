@@ -113,6 +113,11 @@ export function currentSession(model) {
   return active.find(item=>item.id===model.selectedSessionId)??active[0]??null;
 }
 
+export function outputsByPlayback(model,targets){
+ const rank=target=>({playing:0,paused:1})[effectiveSessionFor(model,target.id)?.status]??2;
+ return targets.map((target,index)=>({target,index,rank:rank(target)})).sort((a,b)=>a.rank-b.rank||a.index-b.index).map(item=>item.target);
+}
+
 export function availableUpdates(model){
  const updates=[];
  if(model?.appUpdate?.available)updates.push({key:`app:${model.appUpdate.version||'unknown'}`,name:'ST Reborn desktop',version:model.appUpdate.version||null,type:'app'});

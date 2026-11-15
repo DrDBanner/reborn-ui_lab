@@ -2,8 +2,8 @@ import {renderReleaseNotes} from './release-notes.js';
 import {renderLibrarySearch,renderLibraryQueueEditor} from './library-search.js';
 import {renderPresetEditor} from './preset-editor.js';
 import {renderPresetTransfer,renderPresetTransferResult} from './preset-transfer.js';
-import {esc,icon,action,statusBadge,targetIcon,subline,typeIcon} from './shared.js';
-import {entity,kind,visibleOutputs,parentIds,source,targetStatus,buttonProfile,buttonPresets,leafDeviceIds,stereoFamily,validateGroupMembers,playbackJoinError,effectiveSessionFor,groupLeaderCandidates,remoteGroupKeyDevices,membershipPlan,membershipError} from '../app/model.js';
+import {esc,icon,action,statusBadge,targetIcon,subline,typeIcon,deviceProduct} from './shared.js';
+import {entity,kind,visibleOutputs,outputsByPlayback,parentIds,source,targetStatus,buttonProfile,buttonPresets,leafDeviceIds,stereoFamily,validateGroupMembers,playbackJoinError,effectiveSessionFor,groupLeaderCandidates,remoteGroupKeyDevices,membershipPlan,membershipError} from '../app/model.js';
 
 function renderMembershipDialog(s){
  const modal=s.modal,m=s.model,item=entity(m,modal.anchorId),toParent=modal.direction==='parent';
@@ -37,18 +37,21 @@ function renderGroupSettings(s){
 }
 
 function outputPicker(s){
- const m=s.model,modal=s.modal,src=source(s.catalog,modal.sourceId||s.speakerPickerFor||m.selectedSourceId),targets=visibleOutputs(m),context=modal.joinContext,joining=!!modal.asMember;
- const origin=entity(m,context?.targetId),contextError=context?playbackJoinError(m,context):'Start or select a playback to join.';
+ const m=s.model,modal=s.modal,src=source(s.catalog,modal.sourceId||s.speakerPickerFor||m.selectedSourceId),context=modal.joinContext,joining=!!modal.asMember,targets=outputsByPlayback(m,joining&&modal.candidateIds?modal.candidateIds.map(id=>entity(m,id)).filter(Boolean):visibleOutputs(m));
+ const query=(targets.length>8&&modal.searchOpen?modal.query||'':'').trim().toLowerCase(),matches=targets.filter(target=>[target.name,deviceProduct(target),source(s.catalog,effectiveSessionFor(m,target.id)?.sourceId)?.name].filter(Boolean).join(' ').toLowerCase().includes(query));
+ const origin=entity(m,context?.targetId),contextError=context?playbackJoinError(m,context):null;
  const changesSource=context&&src?.id!==context.sourceId;
- return `<div class="modal-heading"><h2>${joining?`Add members to ${esc(origin?.name||'playback')}`:src?'Play '+esc(src.name)+' on…':'Choose output'}</h2><p>${joining?'Join the same playback and share its controls.':'Start a separate playback on the selected output.'}</p></div>
- ${`<label class="picker-membership"><input type="checkbox" data-field="picker-as-member" ${joining?'checked':''} ${contextError&&!joining?'disabled':''}/><span><strong>As member</strong><small>${contextError?esc(contextError):`Play ${esc(src?.name||'this source')} together with ${esc(origin?.name)}.`}</small></span></label>`}
+ return `<div class="modal-heading picker-heading"><div><h2>${joining?`Add members to ${esc(origin?.name||'playback')}`:src?'Play '+esc(src.name)+' on…':'Choose output'}</h2></div>${targets.length>8?action('picker-toggle-search',icon('search'),'icon-btn picker-search-toggle',`aria-label="${modal.searchOpen?'Close':'Search'} outputs" title="${modal.searchOpen?'Close search':'Search outputs'}" aria-expanded="${!!modal.searchOpen}" aria-controls="picker-search"`):''}</div>
+ ${targets.length>8&&modal.searchOpen?`<label class="search-field picker-search" id="picker-search">${icon('search')}<input id="picker-query" type="search" data-field="picker-query" value="${esc(modal.query||'')}" placeholder="Name, model or source" aria-label="Search outputs by name, model or source" /></label>`:''}
+ <fieldset class="picker-mode"><legend class="sr-only">Playback mode</legend><label><input type="radio" name="picker-mode" data-field="picker-mode" value="separate" ${!joining?'checked':''}/><span>Separate playback</span></label><label><input type="radio" name="picker-mode" data-field="picker-mode" value="member" ${joining?'checked':''} ${contextError&&!joining?'disabled':''}/><span>${origin?'As member · '+esc(origin.name):'Play together'}</span></label></fieldset>
+ ${contextError?`<p class="picker-mode-help">${esc(contextError)}</p>`:''}
  ${joining&&changesSource?`<p class="picker-source-change">${esc(source(s.catalog,context.sourceId)?.name||'The current source')} on ${esc(origin?.name)} will be replaced by ${esc(src?.name)} for the whole output.</p>`:''}
- <div class="modal-list">${targets.length?targets.map(target=>{
-  const status=targetStatus(m,target.id),joinError=joining?playbackJoinError(m,context,target.id):null,playback=effectiveSessionFor(m,target.id),replacing=playback&&playback.id!==context?.sessionId&&playback.status!=='stopped';
-  const unavailable=['offline','needs_setup','updating'].includes(status),hint=joinError?esc(joinError):replacing?esc(`Replaces ${source(s.catalog,playback.sourceId)?.name||'existing playback'} on ${target.name}`):subline(m,target.id);
-  return `<button class="modal-output" data-action="assign-output" data-id="${esc(target.id)}" ${unavailable||joinError?'disabled':''}><span class="target-card__icon">${typeIcon(kind(m,target.id))}</span><span class="picker-output-label"><strong>${esc(target.name)}</strong><small>${hint}</small></span>${statusBadge(status)}${icon(joining?'group_add':'play_circle')}</button>`;
- }).join(''):'<p class="empty-line">No outputs configured.</p>'}</div>
- <div class="modal-footer">${action('close-modal','Cancel','btn-quiet')}${action('navigate','Manage all outputs','btn-soft','data-value="outputs"')}</div>`;
+ <div class="modal-list">${matches.length?matches.map(target=>{
+  const status=targetStatus(m,target.id),joinError=joining&&context?playbackJoinError(m,context,target.id):null,added=joining&&modal.joinedTargetIds?.includes(target.id),playback=effectiveSessionFor(m,target.id),active=playback&&['playing','paused'].includes(playback.status),replacing=active&&!joinError&&(joining?playback.id!==context?.sessionId:playback.sourceId!==src?.id);
+  const unavailable=['offline','needs_setup','updating'].includes(status),description=kind(m,target.id)==='device'?deviceProduct(target):`${leafDeviceIds(m,target.id).length} speakers`;
+  return `<button class="modal-output picker-output" data-action="assign-output" data-id="${esc(target.id)}" ${unavailable||joinError?'disabled':''}><span class="target-card__icon">${typeIcon(kind(m,target.id))}</span><span class="picker-output-label"><strong>${esc(target.name)}</strong><small>${esc(description)}</small>${active?`<small class="picker-playback" data-status="${esc(playback.status)}">${icon(playback.status==='playing'?'music_cast':'pause_circle')}<span>${playback.status==='playing'?'Playing':'Paused'} · ${esc(source(s.catalog,playback.sourceId)?.name||playback.sourceId)}${replacing?'<span class="picker-replacement"> · will be replaced</span>':''}</span></small>`:''}${added||joinError?`<small>${added?'Added':esc(joinError)}</small>`:''}</span>${statusBadge(status)}${icon(added?'check_circle':joining?'group_add':'play_circle')}</button>`;
+ }).join(''):`<p class="empty-line">${targets.length?'No matching outputs.':'No outputs configured.'}</p>`}</div>
+ <div class="modal-footer">${modal.joinedTargetIds?.length?`<span class="picker-added-count" role="status">${modal.joinedTargetIds.length} ${modal.joinedTargetIds.length===1?'output':'outputs'} added</span>${action('close-modal','Done','primary-btn')}`:`${action('close-modal','Cancel','btn-quiet')}${action('navigate','Manage all outputs','btn-soft','data-value="outputs"')}`}</div>`;
 }
 function renderCompositeDialog(s){
  const m=s.model,draft=s.modal,pair=draft.type==='pair',available=visibleOutputs(m).filter(t=>kind(m,t.id)!=='group');

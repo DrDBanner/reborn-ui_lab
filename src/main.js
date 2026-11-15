@@ -17,6 +17,7 @@ let renderedRenameId=null;
 let renderedVolumeId=null;
 let renderedCreateOpen=false;
 let renderedLibraryModalKey='';
+let renderedPickerSearchOpen=false;
 let renderedDetailLayoutKey='';
 let detailBodyHeight=0;
 function render(){
@@ -56,6 +57,10 @@ function render(){
  if(libraryModalKey&&libraryModalKey!==renderedLibraryModalKey)app.querySelector?.(state.modal.kind==='library-search'?'#library-track-search':'#library-queue-name')?.focus({preventScroll:true});
  if(!libraryModalKey&&renderedLibraryModalKey&&state.view==='library')app.querySelector?.('[data-action=library-search]')?.focus({preventScroll:true});
  renderedLibraryModalKey=libraryModalKey;
+ const pickerSearchOpen=state.modal?.kind==='picker'&&!!state.modal.searchOpen;
+ if(pickerSearchOpen&&!renderedPickerSearchOpen)app.querySelector?.('#picker-query')?.focus({preventScroll:true});
+ if(!pickerSearchOpen&&renderedPickerSearchOpen&&state.modal?.kind==='picker')app.querySelector?.('.picker-search-toggle')?.focus({preventScroll:true});
+ renderedPickerSearchOpen=pickerSearchOpen;
  if(state.appMenuOpen&&!renderedMenuOpen)app.querySelector?.('.app-menu .icon-btn')?.focus({preventScroll:true});
  if(!state.appMenuOpen&&renderedMenuOpen)app.querySelector?.(state.sidebarOpen||globalThis.innerWidth>720&&!state.designTokens?.sidebarCollapsed?'.brand-trigger':'.mobile-brand')?.focus({preventScroll:true});
  renderedMenuOpen=state.appMenuOpen;
@@ -69,7 +74,7 @@ subscribe(render);
 document.addEventListener('click',event=>{const button=event.target.closest('[data-action]');if(button&&!button.disabled){event.preventDefault();onAction(button.dataset.action,button)}});
 document.addEventListener('change',event=>{const field=event.target.closest('[data-field]');if(field)onField(field.dataset.field,field)});
 document.addEventListener('wheel',onRangeWheel,{passive:false});
-document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','accent','device-name','composite-name','preset-search','library-name','library-address','library-query','library-new-queue','library-queue-name'].includes(field.dataset.field))onField(field.dataset.field,field)});
+document.addEventListener('input',event=>{const field=event.target.closest('[data-field]');if(field&&['radio-search','output-search','picker-query','accent','device-name','composite-name','preset-search','library-name','library-address','library-query','library-new-queue','library-queue-name'].includes(field.dataset.field))onField(field.dataset.field,field)});
 document.addEventListener('keydown',event=>{
  if(event.key==='Enter'&&state.modal?.kind==='rename'&&event.target.dataset?.field==='device-name'){event.preventDefault();onAction('device-rename-save',document.createElement('button'));}
  if(event.key==='Tab'&&['library-search','library-queue','release-notes'].includes(state.modal?.kind)){

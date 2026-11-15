@@ -33,9 +33,15 @@ The app header names each route once. Workspace headings identify concrete items
 
 Station artwork starts the source on the target named in the bottom player. Hover/focus reveals `play_circle`; touch exposes the action directly. The accessible label and tooltip identify source and target. Availability and the bound player context are checked at activation.
 
-The `music_cast` action opens output selection. Independent playback is the default. As member joins a free device or pair to the bound session, extending its group or creating a temporary group. The review identifies any replaced source. Selecting a different source applies it to the whole joined target. Confirmation revalidates session, source and destination.
+The `music_cast` action opens output selection. Radio options choose Separate playback (the default) or As member, naming the bound output inline. As member joins a free device or pair to the bound session, extending its group or creating a temporary group. The review identifies any replaced source. Selecting a different source applies it to the whole joined target. Confirmation revalidates session, source and destination.
+
+Member additions leave the picker open for further outputs; added rows stay visible and disabled. Done closes it after the changes have applied. Without a current playback, Play together starts the source on the first chosen output; subsequent additions form or extend a temporary group. Separate playback starts an independent session and closes the picker.
 
 Radio and Recently Played share this picker. Source-change notifications name both values, for example: Playing FluxFM on Downstairs.
+
+The output picker and output workspace list playing targets first, followed by paused targets and remaining outputs. Order within each state stays consistent. Picker rows name the current source and playback state alongside connectivity. The replacement hint appears on hover or keyboard focus and remains visible on touch devices.
+
+When the picker contains more than eight outputs, a search icon reveals a field for target name, device model or current source. Closing search clears its query.
 
 Radio rows use `search_insights` to open station information.
 
